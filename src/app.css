@@ -5,6 +5,8 @@
 @import "./lib/components/Sidebar.css";
 @import "./lib/components/table/AcademicTable.css";
 @import "./lib/components/table/TableCell.css";
+@import "./lib/components/table/ColumnResizer.css";
+@import "./lib/components/table/RowResizer.css";
 @import "./routes/+page.css";
 
 @custom-variant dark (&:is(.dark *));
@@ -126,26 +128,7 @@
 }
 
 /* Computer Modern font */
-@font-face {
-  font-family: 'Computer Modern Serif';
-  src: url('https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts/cmunrm.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Computer Modern Serif';
-  src: url('https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts/cmunbx.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Computer Modern Serif';
-  src: url('https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts/cmunti.woff') format('woff');
-  font-weight: normal;
-  font-style: italic;
-}
+@import "computer-modern/cmu-serif.css";
 
 html, body {
   height: 100%;

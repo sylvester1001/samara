@@ -54,6 +54,14 @@
 		tableStore.updateCell(row, col, { content });
 	}
 
+	function handleColumnResize(colIndex: number, width: number) {
+		tableStore.setColumnWidth(colIndex, width);
+	}
+
+	function handleRowResize(rowIndex: number, height: number) {
+		tableStore.setRowHeight(rowIndex, height);
+	}
+
 	async function handleExportPng() {
 		if (tableElement) {
 			await exportAndDownloadPng(tableElement, 'table.png', {
@@ -124,6 +132,8 @@
 					tableStyle={tableStore.tableStyle}
 					canvasConfig={tableStore.canvasConfig}
 					onCellUpdate={handleCellUpdate}
+					onColumnResize={handleColumnResize}
+					onRowResize={handleRowResize}
 				/>
 			</div>
 		</main>
