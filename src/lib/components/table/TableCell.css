@@ -1,0 +1,27 @@
+.table-cell {
+	padding: 8px 12px;
+	position: relative;
+	min-width: 60px;
+	cursor: default;
+	transition: background-color 0.15s;
+}
+
+.table-cell:hover {
+	background-color: rgba(0, 0, 0, 0.02);
+}
+
+.cell-input {
+	width: 100%;
+	border: none;
+	background: transparent;
+	font: inherit;
+	text-align: inherit;
+	outline: none;
+	padding: 0;
+	margin: 0;
+}
+
+.katex-error {
+	color: #dc2626;
+	font-style: italic;
+}

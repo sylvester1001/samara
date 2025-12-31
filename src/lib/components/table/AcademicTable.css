@@ -1,0 +1,47 @@
+.canvas-wrapper {
+	display: inline-block;
+	min-width: 200px;
+}
+
+.academic-table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+
+.academic-table th,
+.academic-table td {
+	padding: var(--cell-padding, 8px) 12px;
+}
+
+/* Booktabs preset - three-line table */
+.academic-table.preset-booktabs {
+	border-top: var(--border-top) solid black;
+	border-bottom: var(--border-bottom) solid black;
+}
+
+.academic-table.preset-booktabs thead tr {
+	border-bottom: var(--border-header) solid black;
+}
+
+.academic-table.preset-booktabs th,
+.academic-table.preset-booktabs td {
+	border-left: none;
+	border-right: none;
+}
+
+/* Bordered preset */
+.academic-table.preset-bordered {
+	border: var(--border-top) solid black;
+}
+
+.academic-table.preset-bordered th,
+.academic-table.preset-bordered td {
+	border: var(--border-horizontal) solid black;
+}
+
+/* Minimal preset */
+.academic-table.preset-minimal th,
+.academic-table.preset-minimal td {
+	border: none;
+}

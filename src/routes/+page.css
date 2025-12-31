@@ -1,0 +1,36 @@
+.app-layout {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	overflow: hidden;
+}
+
+.main-content {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+}
+
+.canvas-area {
+	flex: 1;
+	overflow: auto;
+	background: #f4f4f5;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 40px;
+}
+
+.canvas-container {
+	box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.hidden {
+	display: none;
+}
+
+:global(.dark) .canvas-area {
+	background: #18181b;
+}
