@@ -1,15 +1,17 @@
 <script lang="ts">
 	interface Props {
 		onResize: (delta: number) => void;
+		style?: string;
 	}
 
-	let { onResize }: Props = $props();
+	let { onResize, style }: Props = $props();
 
 	let isDragging = $state(false);
 	let startY = 0;
 
 	function handleMouseDown(e: MouseEvent) {
 		e.preventDefault();
+		e.stopPropagation();
 		isDragging = true;
 		startY = e.clientY;
 		document.addEventListener('mousemove', handleMouseMove);
@@ -33,6 +35,7 @@
 <div
 	class="row-resizer"
 	class:dragging={isDragging}
+	{style}
 	onmousedown={handleMouseDown}
 	role="separator"
 	aria-orientation="horizontal"

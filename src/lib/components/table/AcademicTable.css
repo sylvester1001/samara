@@ -3,6 +3,11 @@
 	min-width: 200px;
 }
 
+.table-container {
+	position: relative;
+	display: inline-block;
+}
+
 .academic-table {
 	border-collapse: collapse;
 	border-spacing: 0;
@@ -13,7 +18,8 @@
 .academic-table td {
 	padding: var(--cell-padding, 8px) 12px;
 	position: relative;
-	overflow: hidden;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
 }
 
 .resizable-cell {
