@@ -125,17 +125,15 @@
 			onCanvasChange={handleCanvasChange}
 		/>
 
-		<main class="canvas-area">
-			<div class="canvas-container" bind:this={tableElement}>
-				<AcademicTable
-					tableData={tableStore.tableData}
-					tableStyle={tableStore.tableStyle}
-					canvasConfig={tableStore.canvasConfig}
-					onCellUpdate={handleCellUpdate}
-					onColumnResize={handleColumnResize}
-					onRowResize={handleRowResize}
-				/>
-			</div>
+		<main class="canvas-area" bind:this={tableElement}>
+			<AcademicTable
+				tableData={tableStore.tableData}
+				tableStyle={tableStore.tableStyle}
+				canvasConfig={tableStore.canvasConfig}
+				onCellUpdate={handleCellUpdate}
+				onColumnResize={handleColumnResize}
+				onRowResize={handleRowResize}
+			/>
 		</main>
 	</div>
 </div>
