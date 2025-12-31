@@ -3,6 +3,7 @@
 @import "katex/dist/katex.min.css";
 @import "./lib/components/Toolbar.css";
 @import "./lib/components/Sidebar.css";
+@import "./lib/components/TableEditor.css";
 @import "./lib/components/table/AcademicTable.css";
 @import "./lib/components/table/TableCell.css";
 @import "./lib/components/table/ColumnResizer.css";

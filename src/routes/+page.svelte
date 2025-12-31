@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Toolbar, Sidebar, AcademicTable } from '$lib/components';
+	import { Toolbar, Sidebar, AcademicTable, TableEditor } from '$lib/components';
 	import { tableStore } from '$lib/stores/table.svelte';
 	import { handleFileImport, handlePaste } from '$lib/utils/import';
 	import { exportAndDownloadPng, exportAndDownloadSvg } from '$lib/utils/export';
@@ -50,7 +50,7 @@
 		Object.assign(tableStore.canvasConfig, config);
 	}
 
-	function handleCellUpdate(row: number, col: number, content: string) {
+	function handleCellChange(row: number, col: number, content: string) {
 		tableStore.updateCell(row, col, { content });
 	}
 
@@ -60,6 +60,22 @@
 
 	function handleRowResize(rowIndex: number, height: number) {
 		tableStore.setRowHeight(rowIndex, height);
+	}
+
+	function handleAddRow() {
+		tableStore.addRow();
+	}
+
+	function handleAddColumn() {
+		tableStore.addColumn();
+	}
+
+	function handleDeleteRow(index: number) {
+		tableStore.deleteRow(index);
+	}
+
+	function handleDeleteColumn(index: number) {
+		tableStore.deleteColumn(index);
 	}
 
 	async function handleExportPng() {
@@ -125,12 +141,24 @@
 			onCanvasChange={handleCanvasChange}
 		/>
 
-		<main class="canvas-area" bind:this={tableElement}>
+		<div class="editor-area">
+			<TableEditor
+				rows={tableStore.tableData.rows}
+				onCellChange={handleCellChange}
+				onAddRow={handleAddRow}
+				onAddColumn={handleAddColumn}
+				onDeleteRow={handleDeleteRow}
+				onDeleteColumn={handleDeleteColumn}
+			/>
+		</div>
+
+		<main class="preview-area" bind:this={tableElement}>
+			<div class="preview-label">Preview</div>
 			<AcademicTable
 				tableData={tableStore.tableData}
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}
-				onCellUpdate={handleCellUpdate}
+				onCellUpdate={handleCellChange}
 				onColumnResize={handleColumnResize}
 				onRowResize={handleRowResize}
 			/>

@@ -11,17 +11,46 @@
 	overflow: hidden;
 }
 
-.canvas-area {
+.editor-area {
 	flex: 1;
+	padding: 16px;
 	overflow: auto;
 	background: #f4f4f5;
-	padding: 40px;
+	border-right: 1px solid #e5e7eb;
+}
+
+.preview-area {
+	flex: 1;
+	overflow: auto;
+	background: #fafafa;
+	padding: 16px;
+	position: relative;
+}
+
+.preview-label {
+	position: absolute;
+	top: 8px;
+	right: 12px;
+	font-size: 11px;
+	font-weight: 500;
+	color: #a1a1aa;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .hidden {
 	display: none;
 }
 
-:global(.dark) .canvas-area {
+:global(.dark) .editor-area {
+	background: #0a0a0a;
+	border-color: #27272a;
+}
+
+:global(.dark) .preview-area {
 	background: #18181b;
+}
+
+:global(.dark) .preview-label {
+	color: #71717a;
 }
