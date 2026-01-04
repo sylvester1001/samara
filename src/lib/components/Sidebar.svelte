@@ -164,7 +164,7 @@
 	}
 </script>
 
-<aside class="sidebar">
+<div class="settings-panel">
 	<Card.Root class="p-4">
 		<Card.Header class="p-0 pb-4">
 			<Card.Title class="text-sm">Table Style</Card.Title>
@@ -380,4 +380,4 @@
 			</label>
 		</Card.Content>
 	</Card.Root>
-</aside>
+</div>

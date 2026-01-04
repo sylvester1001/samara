@@ -29,14 +29,14 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 .dark {
@@ -63,14 +63,14 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 @theme inline {
@@ -132,7 +132,8 @@ html, body {
 .app-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -140,12 +141,14 @@ html, body {
   display: flex;
   flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
 .editor-area {
   flex: 1;
   padding: 16px;
   overflow: auto;
+  min-height: 0;
   background: #f4f4f5;
   border-right: 1px solid #e5e7eb;
 }
@@ -153,6 +156,7 @@ html, body {
 .preview-area {
   flex: 1;
   overflow: auto;
+  min-height: 0;
   background: #fafafa;
   padding: 16px;
   position: relative;
@@ -194,6 +198,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 64px;
   padding: 8px 16px;
   border-bottom: 1px solid #e5e7eb;
   background: white;
@@ -238,16 +243,6 @@ html, body {
   background: #0a0a0a;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 280px;
-  padding: 16px;
-  border-right: 1px solid #e5e7eb;
-  background: #fafafa;
-  overflow-y: auto;
-  height: 100%;
-}
-
 .color-input {
   width: 100%;
   height: 36px;
@@ -288,11 +283,6 @@ html, body {
   height: 16px;
   accent-color: #2563eb;
   cursor: pointer;
-}
-
-:global(.dark) .sidebar {
-  background: #0a0a0a;
-  border-color: #27272a;
 }
 
 :global(.dark) .color-input {

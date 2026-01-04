@@ -1,9 +1,12 @@
 <script lang="ts">
-	import { Toolbar, Sidebar, AcademicTable, TableEditor } from '$lib/components';
+	import { Toolbar, AcademicTable, TableEditor } from '$lib/components';
+	import SettingsSidebar from '$lib/components/Sidebar.svelte';
+	import * as AppSidebar from '$lib/components/ui/sidebar/index.js';
 	import { tableStore } from '$lib/stores/table.svelte';
 	import { handleFileImport, handlePaste } from '$lib/utils/import';
 	import { exportAndDownloadPng, exportAndDownloadSvg } from '$lib/utils/export';
 	import type { TableStyle, CanvasConfig } from '$lib/types';
+	import { Table2 } from 'lucide-svelte';
 
 	let tableElement: HTMLElement;
 	let fileInput: HTMLInputElement;
@@ -154,66 +157,87 @@
 	onchange={handleFileChange}
 />
 
-<div class="app-layout">
-	<Toolbar
-		preset={tableStore.tableStyle.preset}
-		{canUndo}
-		{canRedo}
-		{hasSelection}
-		onImport={handleImportClick}
-		onNewTable={handleNewTable}
-		onUndo={handleUndo}
-		onRedo={handleRedo}
-		onPresetChange={handlePresetChange}
-		onExportPng={handleExportPng}
-		onExportSvg={handleExportSvg}
-		onAlignChange={handleAlignChange}
-		onToggleBold={handleToggleBold}
-		onToggleItalic={handleToggleItalic}
-		onTextColorChange={handleTextColorChange}
-		onBackgroundColorChange={handleBackgroundColorChange}
-		onMergeCells={handleMergeCells}
-		onUnmergeCells={handleUnmergeCells}
-		dpi={exportDpi}
-		onDpiChange={(value) => (exportDpi = value)}
-	/>
+<AppSidebar.Provider>
+	<AppSidebar.Root collapsible="none" class="border-r border-border">
+		<AppSidebar.Header class="h-16 justify-center px-4">
+			<AppSidebar.Menu>
+				<AppSidebar.MenuItem>
+					<AppSidebar.MenuButton size="lg">
+						<div class="bg-sidebar-primary text-sidebar-primary-foreground flex size-8 items-center justify-center rounded-lg">
+							<Table2 class="size-4" />
+						</div>
+						<span class="text-sm font-semibold">Tablix</span>
+					</AppSidebar.MenuButton>
+				</AppSidebar.MenuItem>
+			</AppSidebar.Menu>
+		</AppSidebar.Header>
 
-	<div class="main-content">
-		<Sidebar
-			tableStyle={tableStore.tableStyle}
-			canvasConfig={tableStore.canvasConfig}
-			onStyleChange={handleStyleChange}
-			onCanvasChange={handleCanvasChange}
-			lockColumnResize={tableStore.lockColumnResize}
-			lockRowResize={tableStore.lockRowResize}
-			onLockColumnResizeChange={(value) => (tableStore.lockColumnResize = value)}
-			onLockRowResizeChange={(value) => (tableStore.lockRowResize = value)}
-		/>
-
-		<div class="editor-area">
-			<TableEditor
-				rows={tableStore.tableData.rows}
-				selectedCells={tableStore.selectedCells}
-				onSelectionChange={handleSelectionChange}
-				onCellChange={handleCellChange}
-				onAddRow={handleAddRow}
-				onAddColumn={handleAddColumn}
-				onDeleteRow={handleDeleteRow}
-				onDeleteColumn={handleDeleteColumn}
-			/>
-		</div>
-
-		<main class="preview-area" bind:this={tableElement}>
-			<div class="preview-label">Preview</div>
-			<AcademicTable
-				tableData={tableStore.tableData}
+		<AppSidebar.Content class="px-4 pb-4">
+			<SettingsSidebar
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}
-				onCellUpdate={handleCellChange}
-				onColumnResize={handleColumnResize}
-				onRowResize={handleRowResize}
-				onCanvasResize={handleCanvasChange}
+				onStyleChange={handleStyleChange}
+				onCanvasChange={handleCanvasChange}
+				lockColumnResize={tableStore.lockColumnResize}
+				lockRowResize={tableStore.lockRowResize}
+				onLockColumnResizeChange={(value) => (tableStore.lockColumnResize = value)}
+				onLockRowResizeChange={(value) => (tableStore.lockRowResize = value)}
 			/>
-		</main>
-	</div>
-</div>
+		</AppSidebar.Content>
+	</AppSidebar.Root>
+
+	<AppSidebar.Inset>
+		<div class="app-layout">
+			<Toolbar
+				preset={tableStore.tableStyle.preset}
+				{canUndo}
+				{canRedo}
+				{hasSelection}
+				onImport={handleImportClick}
+				onNewTable={handleNewTable}
+				onUndo={handleUndo}
+				onRedo={handleRedo}
+				onPresetChange={handlePresetChange}
+				onExportPng={handleExportPng}
+				onExportSvg={handleExportSvg}
+				onAlignChange={handleAlignChange}
+				onToggleBold={handleToggleBold}
+				onToggleItalic={handleToggleItalic}
+				onTextColorChange={handleTextColorChange}
+				onBackgroundColorChange={handleBackgroundColorChange}
+				onMergeCells={handleMergeCells}
+				onUnmergeCells={handleUnmergeCells}
+				dpi={exportDpi}
+				onDpiChange={(value) => (exportDpi = value)}
+			/>
+
+			<div class="main-content">
+				<div class="editor-area">
+					<TableEditor
+						rows={tableStore.tableData.rows}
+						selectedCells={tableStore.selectedCells}
+						onSelectionChange={handleSelectionChange}
+						onCellChange={handleCellChange}
+						onAddRow={handleAddRow}
+						onAddColumn={handleAddColumn}
+						onDeleteRow={handleDeleteRow}
+						onDeleteColumn={handleDeleteColumn}
+					/>
+				</div>
+
+				<main class="preview-area" bind:this={tableElement}>
+					<div class="preview-label">Preview</div>
+					<AcademicTable
+						tableData={tableStore.tableData}
+						tableStyle={tableStore.tableStyle}
+						canvasConfig={tableStore.canvasConfig}
+						onCellUpdate={handleCellChange}
+						onColumnResize={handleColumnResize}
+						onRowResize={handleRowResize}
+						onCanvasResize={handleCanvasChange}
+					/>
+				</main>
+			</div>
+		</div>
+	</AppSidebar.Inset>
+</AppSidebar.Provider>
