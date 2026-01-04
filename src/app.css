@@ -727,3 +727,23 @@ html, body {
   background: #0a0a0a;
   border-color: #3f3f46;
 }
+
+
+/* Toolbar responsive */
+.toolbar-format-full {
+  display: none;
+}
+
+.toolbar-format-compact {
+  display: flex;
+}
+
+@media (min-width: 1460px) {
+  .toolbar-format-full {
+    display: flex;
+  }
+  
+  .toolbar-format-compact {
+    display: none;
+  }
+}

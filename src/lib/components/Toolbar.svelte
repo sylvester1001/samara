@@ -2,7 +2,8 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { Undo2, Redo2, Upload, FilePlus, Download, AlignLeft, TextAlignCenter, AlignRight, Bold, Italic, TableCellsMerge, ChevronDown, Check } from 'lucide-svelte';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import { Undo2, Redo2, Upload, FilePlus, Download, AlignLeft, TextAlignCenter, AlignRight, Bold, Italic, TableCellsMerge, ChevronDown, Wrench } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
 
 	interface Props {
@@ -121,7 +122,8 @@
 		</Select.Root>
 	</div>
 
-	<div class="toolbar-group">
+	<!-- Format tools - visible when width >= 1460px -->
+	<div class="toolbar-group toolbar-format-full">
 		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('left')} disabled={!hasSelection} title="Align Left">
 			<AlignLeft class="w-4 h-4" />
 		</Button>
@@ -160,6 +162,62 @@
 		<Button variant="outline" size="sm" onclick={onUnmergeCells} disabled={!hasSelection}>
 			Unmerge
 		</Button>
+	</div>
+
+	<!-- Format tools popover - visible when width < 1460px -->
+	<div class="toolbar-group toolbar-format-compact">
+		<Popover.Root>
+			<Popover.Trigger>
+				{#snippet child({ props })}
+					<Button variant="outline" size="sm" {...props}>
+						<Wrench class="w-4 h-4 mr-1" />
+						Tools
+					</Button>
+				{/snippet}
+			</Popover.Trigger>
+			<Popover.Content class="w-auto p-2">
+				<div class="flex items-center gap-1">
+					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('left'); }} disabled={!hasSelection} title="Align Left">
+						<AlignLeft class="w-4 h-4" />
+					</Button>
+					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('center'); }} disabled={!hasSelection} title="Align Center">
+						<TextAlignCenter class="w-4 h-4" />
+					</Button>
+					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('right'); }} disabled={!hasSelection} title="Align Right">
+						<AlignRight class="w-4 h-4" />
+					</Button>
+					<div class="toolbar-divider"></div>
+					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleBold?.(); }} disabled={!hasSelection} title="Bold">
+						<Bold class="w-4 h-4" />
+					</Button>
+					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleItalic?.(); }} disabled={!hasSelection} title="Italic">
+						<Italic class="w-4 h-4" />
+					</Button>
+					<input
+						type="color"
+						class="toolbar-color-input"
+						disabled={!hasSelection}
+						title="Text Color"
+						onchange={handleTextColorChange}
+					/>
+					<input
+						type="color"
+						class="toolbar-color-input"
+						disabled={!hasSelection}
+						title="Cell Background"
+						onchange={handleBackgroundColorChange}
+					/>
+					<div class="toolbar-divider"></div>
+					<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onMergeCells?.(); }} disabled={!hasSelection}>
+						<TableCellsMerge class="w-4 h-4 mr-1" />
+						Merge
+					</Button>
+					<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onUnmergeCells?.(); }} disabled={!hasSelection}>
+						Unmerge
+					</Button>
+				</div>
+			</Popover.Content>
+		</Popover.Root>
 	</div>
 
 	<div class="toolbar-group">
