@@ -53,12 +53,24 @@
 	});
 	const scaledTableWidth = $derived(tableWidth * tableStyle.scale);
 	const scaledTableHeight = $derived(tableHeight * tableStyle.scale);
-	const canvasWidth = $derived(
-		canvasConfig.width === 'auto' ? scaledTableWidth : canvasConfig.width
+	const requestedCanvasWidth = $derived(
+		canvasConfig.width === 'auto'
+			? Math.ceil(scaledTableWidth + canvasConfig.padding * 2)
+			: canvasConfig.width
 	);
-	const canvasHeight = $derived(
-		canvasConfig.height === 'auto' ? scaledTableHeight : canvasConfig.height
+	const requestedCanvasHeight = $derived(
+		canvasConfig.height === 'auto'
+			? Math.ceil(scaledTableHeight + canvasConfig.padding * 2)
+			: canvasConfig.height
 	);
+	const minCanvasWidth = $derived(Math.ceil(scaledTableWidth));
+	const minCanvasHeight = $derived(Math.ceil(scaledTableHeight));
+	const canvasWidth = $derived(Math.max(requestedCanvasWidth, minCanvasWidth));
+	const canvasHeight = $derived(Math.max(requestedCanvasHeight, minCanvasHeight));
+	const maxPaddingX = $derived(Math.max(0, (canvasWidth - scaledTableWidth) / 2));
+	const maxPaddingY = $derived(Math.max(0, (canvasHeight - scaledTableHeight) / 2));
+	const effectivePaddingX = $derived(Math.min(canvasConfig.padding, Math.floor(maxPaddingX)));
+	const effectivePaddingY = $derived(Math.min(canvasConfig.padding, Math.floor(maxPaddingY)));
 
 	// -----------------------------------------------------------------------
 	// 修改核心逻辑
@@ -153,8 +165,8 @@
 			nextHeight = startHeight - dy;
 		}
 
-		nextWidth = Math.max(200, Math.round(nextWidth));
-		nextHeight = Math.max(200, Math.round(nextHeight));
+		nextWidth = Math.max(minCanvasWidth, Math.round(nextWidth));
+		nextHeight = Math.max(minCanvasHeight, Math.round(nextHeight));
 		onCanvasResize?.({ width: nextWidth, height: nextHeight });
 	}
 
@@ -164,14 +176,23 @@
 		document.removeEventListener('mousemove', handleCanvasResizeMove);
 		document.removeEventListener('mouseup', handleCanvasResizeEnd);
 	}
+
+	$effect(() => {
+		if (canvasConfig.width !== 'auto' && canvasConfig.width < minCanvasWidth) {
+			onCanvasResize?.({ width: minCanvasWidth });
+		}
+		if (canvasConfig.height !== 'auto' && canvasConfig.height < minCanvasHeight) {
+			onCanvasResize?.({ height: minCanvasHeight });
+		}
+	});
 </script>
 
 <div
 	class="canvas-wrapper"
-	style:padding="{canvasConfig.padding}px"
+	style:padding="{`${effectivePaddingY}px ${effectivePaddingX}px`}"
 	style:background-color={canvasConfig.backgroundColor}
-	style:width="{canvasConfig.width === 'auto' ? `${canvasWidth}px` : `${canvasConfig.width}px`}"
-	style:height="{canvasConfig.height === 'auto' ? `${canvasHeight}px` : `${canvasConfig.height}px`}"
+	style:width="{`${canvasWidth}px`}"
+	style:height="{`${canvasHeight}px`}"
 >
 	<div class="table-container" style:width="{scaledTableWidth}px" style:height="{scaledTableHeight}px">
 		<div class="table-scale" style:transform="scale({tableStyle.scale})">
