@@ -91,39 +91,43 @@
 </script>
 
 <div class="toolbar">
-	<div class="toolbar-group">
-		<Button variant="outline" size="sm" onclick={onImport}>
-			<Upload class="w-4 h-4 mr-1" />
-			Import
-		</Button>
-		<Button variant="outline" size="sm" onclick={onNewTable}>
-			<FilePlus class="w-4 h-4 mr-1" />
-			New
-		</Button>
-		<div class="toolbar-divider"></div>
-		<Button variant="ghost" size="icon" onclick={onUndo} disabled={!canUndo}>
-			<Undo2 class="w-4 h-4" />
-		</Button>
-		<Button variant="ghost" size="icon" onclick={onRedo} disabled={!canRedo}>
-			<Redo2 class="w-4 h-4" />
-		</Button>
-	</div>
+	<div class="toolbar-left">
+		<div class="toolbar-group">
+			<Button variant="outline" size="sm" onclick={onImport}>
+				<Upload class="w-4 h-4 mr-1" />
+				Import
+			</Button>
+			<Button variant="outline" size="sm" onclick={onNewTable}>
+				<FilePlus class="w-4 h-4 mr-1" />
+				New
+			</Button>
+			<div class="toolbar-divider"></div>
+			<Button variant="ghost" size="icon" onclick={onUndo} disabled={!canUndo}>
+				<Undo2 class="w-4 h-4" />
+			</Button>
+			<Button variant="ghost" size="icon" onclick={onRedo} disabled={!canRedo}>
+				<Redo2 class="w-4 h-4" />
+			</Button>
+		</div>
 
-	<div class="toolbar-group">
-		<Select.Root type="single" value={preset} onValueChange={handlePresetChange}>
-			<Select.Trigger class="w-40">
-				{presetOptions.find(o => o.value === preset)?.label || 'Select style'}
-			</Select.Trigger>
-			<Select.Content>
-				{#each presetOptions as option}
-					<Select.Item value={option.value}>{option.label}</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
+		<div class="toolbar-group">
+			<Select.Root type="single" value={preset} onValueChange={handlePresetChange}>
+				<Select.Trigger class="w-40 min-w-0">
+					<span class="truncate">
+						{presetOptions.find(o => o.value === preset)?.label || 'Select style'}
+					</span>
+				</Select.Trigger>
+				<Select.Content>
+					{#each presetOptions as option}
+						<Select.Item value={option.value}>{option.label}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
 	</div>
 
 	<!-- Format tools - visible when width >= 1460px -->
-	<div class="toolbar-group toolbar-format-full">
+	<div class="toolbar-format-full">
 		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('left')} disabled={!hasSelection} title="Align Left">
 			<AlignLeft class="w-4 h-4" />
 		</Button>
@@ -164,63 +168,62 @@
 		</Button>
 	</div>
 
-	<!-- Format tools popover - visible when width < 1460px -->
-	<div class="toolbar-group toolbar-format-compact">
-		<Popover.Root>
-			<Popover.Trigger>
-				{#snippet child({ props })}
-					<Button variant="outline" size="sm" {...props}>
-						<Wrench class="w-4 h-4 mr-1" />
-						Tools
-					</Button>
-				{/snippet}
-			</Popover.Trigger>
-			<Popover.Content class="w-auto p-2">
-				<div class="flex items-center gap-1">
-					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('left'); }} disabled={!hasSelection} title="Align Left">
-						<AlignLeft class="w-4 h-4" />
-					</Button>
-					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('center'); }} disabled={!hasSelection} title="Align Center">
-						<TextAlignCenter class="w-4 h-4" />
-					</Button>
-					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('right'); }} disabled={!hasSelection} title="Align Right">
-						<AlignRight class="w-4 h-4" />
-					</Button>
-					<div class="toolbar-divider"></div>
-					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleBold?.(); }} disabled={!hasSelection} title="Bold">
-						<Bold class="w-4 h-4" />
-					</Button>
-					<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleItalic?.(); }} disabled={!hasSelection} title="Italic">
-						<Italic class="w-4 h-4" />
-					</Button>
-					<input
-						type="color"
-						class="toolbar-color-input"
-						disabled={!hasSelection}
-						title="Text Color"
-						onchange={handleTextColorChange}
-					/>
-					<input
-						type="color"
-						class="toolbar-color-input"
-						disabled={!hasSelection}
-						title="Cell Background"
-						onchange={handleBackgroundColorChange}
-					/>
-					<div class="toolbar-divider"></div>
-					<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onMergeCells?.(); }} disabled={!hasSelection}>
-						<TableCellsMerge class="w-4 h-4 mr-1" />
-						Merge
-					</Button>
-					<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onUnmergeCells?.(); }} disabled={!hasSelection}>
-						Unmerge
-					</Button>
-				</div>
-			</Popover.Content>
-		</Popover.Root>
-	</div>
-
-	<div class="toolbar-group">
+	<div class="toolbar-right">
+		<!-- Format tools popover - visible when width < 1460px -->
+		<div class="toolbar-format-compact">
+			<Popover.Root>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<Button variant="outline" size="sm" {...props}>
+							<Wrench class="w-4 h-4 mr-1" />
+							Tools
+						</Button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-2">
+					<div class="flex items-center gap-1">
+						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('left'); }} disabled={!hasSelection} title="Align Left">
+							<AlignLeft class="w-4 h-4" />
+						</Button>
+						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('center'); }} disabled={!hasSelection} title="Align Center">
+							<TextAlignCenter class="w-4 h-4" />
+						</Button>
+						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('right'); }} disabled={!hasSelection} title="Align Right">
+							<AlignRight class="w-4 h-4" />
+						</Button>
+						<div class="toolbar-divider"></div>
+						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleBold?.(); }} disabled={!hasSelection} title="Bold">
+							<Bold class="w-4 h-4" />
+						</Button>
+						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleItalic?.(); }} disabled={!hasSelection} title="Italic">
+							<Italic class="w-4 h-4" />
+						</Button>
+						<input
+							type="color"
+							class="toolbar-color-input"
+							disabled={!hasSelection}
+							title="Text Color"
+							onchange={handleTextColorChange}
+						/>
+						<input
+							type="color"
+							class="toolbar-color-input"
+							disabled={!hasSelection}
+							title="Cell Background"
+							onchange={handleBackgroundColorChange}
+						/>
+						<div class="toolbar-divider"></div>
+						<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onMergeCells?.(); }} disabled={!hasSelection}>
+							<TableCellsMerge class="w-4 h-4 mr-1" />
+							Merge
+						</Button>
+						<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onUnmergeCells?.(); }} disabled={!hasSelection}>
+							Unmerge
+						</Button>
+					</div>
+				</Popover.Content>
+			</Popover.Root>
+		</div>
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}

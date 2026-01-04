@@ -197,19 +197,37 @@ html, body {
 .toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 64px;
   padding: 8px 16px;
   border-bottom: 1px solid #e5e7eb;
   background: white;
   gap: 16px;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .toolbar-group {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .toolbar-divider {
@@ -732,10 +750,13 @@ html, body {
 /* Toolbar responsive */
 .toolbar-format-full {
   display: none;
+  align-items: center;
+  gap: 8px;
 }
 
 .toolbar-format-compact {
   display: flex;
+  align-items: center;
 }
 
 @media (min-width: 1460px) {
