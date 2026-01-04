@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { Undo2, Redo2, Upload, FilePlus, Download, AlignLeft, TextAlignCenter, AlignRight, Bold, Italic, TableCellsMerge } from 'lucide-svelte';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { Undo2, Redo2, Upload, FilePlus, Download, AlignLeft, TextAlignCenter, AlignRight, Bold, Italic, TableCellsMerge, ChevronDown, Check } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
 
 	interface Props {
@@ -162,24 +163,37 @@
 	</div>
 
 	<div class="toolbar-group">
-		<Select.Root type="single" value={String(dpi)} onValueChange={handleDpiChange}>
-			<Select.Trigger class="w-28">
-				{dpiOptions.find(o => o.value === dpi)?.label || `${dpi} DPI`}
-			</Select.Trigger>
-			<Select.Content>
-				{#each dpiOptions as option}
-					<Select.Item value={String(option.value)}>{option.label}</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
-		<div class="toolbar-divider"></div>
-		<Button size="sm" onclick={onExportPng}>
-			<Download class="w-4 h-4 mr-1" />
-			PNG
-		</Button>
-		<Button variant="outline" size="sm" onclick={onExportSvg}>
-			<Download class="w-4 h-4 mr-1" />
-			SVG
-		</Button>
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger>
+				{#snippet child({ props })}
+					<Button size="sm" {...props}>
+						<Download class="w-4 h-4 mr-1" />
+						Export
+						<ChevronDown class="w-3 h-3 ml-1" />
+					</Button>
+				{/snippet}
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content align="end" class="w-48">
+				<DropdownMenu.Sub>
+					<DropdownMenu.SubTrigger>Resolution</DropdownMenu.SubTrigger>
+					<DropdownMenu.SubContent>
+						<DropdownMenu.RadioGroup value={String(dpi)} onValueChange={handleDpiChange}>
+							{#each dpiOptions as option}
+								<DropdownMenu.RadioItem value={String(option.value)}>
+									{option.label}
+								</DropdownMenu.RadioItem>
+							{/each}
+						</DropdownMenu.RadioGroup>
+					</DropdownMenu.SubContent>
+				</DropdownMenu.Sub>
+				<DropdownMenu.Separator />
+				<DropdownMenu.Item onclick={onExportPng}>
+					Export as PNG
+				</DropdownMenu.Item>
+				<DropdownMenu.Item onclick={onExportSvg}>
+					Export as SVG
+				</DropdownMenu.Item>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
 	</div>
 </div>
