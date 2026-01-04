@@ -25,7 +25,7 @@
 {#if collapsible === "none"}
 	<div
 		class={cn(
-			"bg-sidebar text-sidebar-foreground flex h-svh w-(--sidebar-width) flex-col",
+			"bg-sidebar text-sidebar-foreground flex h-svh w-[280px] flex-col shrink-0",
 			className
 		)}
 		bind:this={ref}
