@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { Undo2, Redo2, Upload, FilePlus, Download } from 'lucide-svelte';
+	import { Undo2, Redo2, Upload, FilePlus, Download, AlignLeft, TextAlignCenter, AlignRight, Bold, Italic, TableCellsMerge } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
 
 	interface Props {
@@ -15,6 +15,16 @@
 		onPresetChange?: (preset: TableStyle['preset']) => void;
 		canUndo?: boolean;
 		canRedo?: boolean;
+		hasSelection?: boolean;
+		onAlignChange?: (align: 'left' | 'center' | 'right') => void;
+		onToggleBold?: () => void;
+		onToggleItalic?: () => void;
+		onTextColorChange?: (color: string) => void;
+		onBackgroundColorChange?: (color: string) => void;
+		onMergeCells?: () => void;
+		onUnmergeCells?: () => void;
+		dpi?: number;
+		onDpiChange?: (dpi: number) => void;
 	}
 
 	let {
@@ -27,7 +37,17 @@
 		preset,
 		onPresetChange,
 		canUndo = false,
-		canRedo = false
+		canRedo = false,
+		hasSelection = false,
+		onAlignChange,
+		onToggleBold,
+		onToggleItalic,
+		onTextColorChange,
+		onBackgroundColorChange,
+		onMergeCells,
+		onUnmergeCells,
+		dpi = 300,
+		onDpiChange
 	}: Props = $props();
 
 	const presetOptions = [
@@ -36,10 +56,35 @@
 		{ value: 'minimal', label: 'Minimal' }
 	];
 
+	const dpiOptions = [
+		{ value: 96, label: '96 DPI' },
+		{ value: 150, label: '150 DPI' },
+		{ value: 300, label: '300 DPI' },
+		{ value: 600, label: '600 DPI' }
+	];
+
 	function handlePresetChange(value: string | undefined) {
 		if (value) {
 			onPresetChange?.(value as TableStyle['preset']);
 		}
+	}
+
+	function handleDpiChange(value: string | undefined) {
+		if (!value) return;
+		const parsed = parseInt(value);
+		if (!Number.isNaN(parsed)) {
+			onDpiChange?.(parsed);
+		}
+	}
+
+	function handleTextColorChange(e: Event) {
+		const target = e.target as HTMLInputElement;
+		onTextColorChange?.(target.value);
+	}
+
+	function handleBackgroundColorChange(e: Event) {
+		const target = e.target as HTMLInputElement;
+		onBackgroundColorChange?.(target.value);
 	}
 </script>
 
@@ -76,6 +121,58 @@
 	</div>
 
 	<div class="toolbar-group">
+		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('left')} disabled={!hasSelection} title="Align Left">
+			<AlignLeft class="w-4 h-4" />
+		</Button>
+		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('center')} disabled={!hasSelection} title="Align Center">
+			<TextAlignCenter class="w-4 h-4" />
+		</Button>
+		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('right')} disabled={!hasSelection} title="Align Right">
+			<AlignRight class="w-4 h-4" />
+		</Button>
+		<div class="toolbar-divider"></div>
+		<Button variant="ghost" size="icon" onclick={onToggleBold} disabled={!hasSelection} title="Bold">
+			<Bold class="w-4 h-4" />
+		</Button>
+		<Button variant="ghost" size="icon" onclick={onToggleItalic} disabled={!hasSelection} title="Italic">
+			<Italic class="w-4 h-4" />
+		</Button>
+		<input
+			type="color"
+			class="toolbar-color-input"
+			disabled={!hasSelection}
+			title="Text Color"
+			onchange={handleTextColorChange}
+		/>
+		<input
+			type="color"
+			class="toolbar-color-input"
+			disabled={!hasSelection}
+			title="Cell Background"
+			onchange={handleBackgroundColorChange}
+		/>
+		<div class="toolbar-divider"></div>
+		<Button variant="outline" size="sm" onclick={onMergeCells} disabled={!hasSelection}>
+			<TableCellsMerge class="w-4 h-4 mr-1" />
+			Merge
+		</Button>
+		<Button variant="outline" size="sm" onclick={onUnmergeCells} disabled={!hasSelection}>
+			Unmerge
+		</Button>
+	</div>
+
+	<div class="toolbar-group">
+		<Select.Root type="single" value={String(dpi)} onValueChange={handleDpiChange}>
+			<Select.Trigger class="w-28">
+				{dpiOptions.find(o => o.value === dpi)?.label || `${dpi} DPI`}
+			</Select.Trigger>
+			<Select.Content>
+				{#each dpiOptions as option}
+					<Select.Item value={String(option.value)}>{option.label}</Select.Item>
+				{/each}
+			</Select.Content>
+		</Select.Root>
+		<div class="toolbar-divider"></div>
 		<Button size="sm" onclick={onExportPng}>
 			<Download class="w-4 h-4 mr-1" />
 			PNG

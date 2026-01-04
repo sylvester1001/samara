@@ -7,6 +7,7 @@
 
 	let tableElement: HTMLElement;
 	let fileInput: HTMLInputElement;
+	let exportDpi = $state(300);
 
 	function handleImportClick() {
 		fileInput?.click();
@@ -78,10 +79,43 @@
 		tableStore.deleteColumn(index);
 	}
 
+	function handleSelectionChange(cells: { row: number; col: number }[]) {
+		tableStore.setSelectedCells(cells);
+	}
+
+	function handleAlignChange(align: 'left' | 'center' | 'right') {
+		tableStore.applyToSelectedCells({ align });
+	}
+
+	function handleToggleBold() {
+		tableStore.toggleSelectedCells('isBold');
+	}
+
+	function handleToggleItalic() {
+		tableStore.toggleSelectedCells('isItalic');
+	}
+
+	function handleTextColorChange(color: string) {
+		tableStore.applyToSelectedCells({ textColor: color });
+	}
+
+	function handleBackgroundColorChange(color: string) {
+		tableStore.applyToSelectedCells({ backgroundColor: color });
+	}
+
+	function handleMergeCells() {
+		tableStore.mergeSelectedCells();
+	}
+
+	function handleUnmergeCells() {
+		tableStore.unmergeSelectedCells();
+	}
+
 	async function handleExportPng() {
 		if (tableElement) {
+			const pixelRatio = Math.max(1, exportDpi / 96);
 			await exportAndDownloadPng(tableElement, 'table.png', {
-				pixelRatio: 2,
+				pixelRatio,
 				backgroundColor: tableStore.canvasConfig.backgroundColor
 			});
 		}
@@ -107,6 +141,7 @@
 
 	const canUndo = $derived(tableStore.historyIndex > 0);
 	const canRedo = $derived(tableStore.historyIndex < tableStore.history.length - 1);
+	const hasSelection = $derived(tableStore.selectedCells.length > 0);
 </script>
 
 <svelte:window onpaste={handleGlobalPaste} />
@@ -124,6 +159,7 @@
 		preset={tableStore.tableStyle.preset}
 		{canUndo}
 		{canRedo}
+		{hasSelection}
 		onImport={handleImportClick}
 		onNewTable={handleNewTable}
 		onUndo={handleUndo}
@@ -131,6 +167,15 @@
 		onPresetChange={handlePresetChange}
 		onExportPng={handleExportPng}
 		onExportSvg={handleExportSvg}
+		onAlignChange={handleAlignChange}
+		onToggleBold={handleToggleBold}
+		onToggleItalic={handleToggleItalic}
+		onTextColorChange={handleTextColorChange}
+		onBackgroundColorChange={handleBackgroundColorChange}
+		onMergeCells={handleMergeCells}
+		onUnmergeCells={handleUnmergeCells}
+		dpi={exportDpi}
+		onDpiChange={(value) => (exportDpi = value)}
 	/>
 
 	<div class="main-content">
@@ -139,11 +184,17 @@
 			canvasConfig={tableStore.canvasConfig}
 			onStyleChange={handleStyleChange}
 			onCanvasChange={handleCanvasChange}
+			lockColumnResize={tableStore.lockColumnResize}
+			lockRowResize={tableStore.lockRowResize}
+			onLockColumnResizeChange={(value) => (tableStore.lockColumnResize = value)}
+			onLockRowResizeChange={(value) => (tableStore.lockRowResize = value)}
 		/>
 
 		<div class="editor-area">
 			<TableEditor
 				rows={tableStore.tableData.rows}
+				selectedCells={tableStore.selectedCells}
+				onSelectionChange={handleSelectionChange}
 				onCellChange={handleCellChange}
 				onAddRow={handleAddRow}
 				onAddColumn={handleAddColumn}
@@ -161,6 +212,7 @@
 				onCellUpdate={handleCellChange}
 				onColumnResize={handleColumnResize}
 				onRowResize={handleRowResize}
+				onCanvasResize={handleCanvasChange}
 			/>
 		</main>
 	</div>

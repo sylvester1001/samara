@@ -7,6 +7,7 @@ export interface Cell {
 	textColor?: string;
 	isBold?: boolean;
 	isItalic?: boolean;
+	isMerged?: boolean;
 }
 
 export interface TableData {
@@ -45,7 +46,8 @@ export const DEFAULT_CELL: Cell = {
 	content: '',
 	colspan: 1,
 	rowspan: 1,
-	align: 'center'
+	align: 'center',
+	isMerged: false
 };
 
 export const DEFAULT_BORDER_CONFIG: BorderConfig = {

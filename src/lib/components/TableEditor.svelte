@@ -3,6 +3,8 @@
 
 	interface Props {
 		rows: Cell[][];
+		selectedCells: { row: number; col: number }[];
+		onSelectionChange: (cells: { row: number; col: number }[]) => void;
 		onCellChange: (row: number, col: number, content: string) => void;
 		onAddRow: () => void;
 		onAddColumn: () => void;
@@ -10,10 +12,21 @@
 		onDeleteColumn: (index: number) => void;
 	}
 
-	let { rows, onCellChange, onAddRow, onAddColumn, onDeleteRow, onDeleteColumn }: Props = $props();
+	let {
+		rows,
+		selectedCells,
+		onSelectionChange,
+		onCellChange,
+		onAddRow,
+		onAddColumn,
+		onDeleteRow,
+		onDeleteColumn
+	}: Props = $props();
 
 	const rowCount = $derived(rows.length);
 	const colCount = $derived(rows[0]?.length || 0);
+	const selectedSet = $derived(new Set(selectedCells.map((cell) => `${cell.row}:${cell.col}`)));
+	let selectionAnchor = $state<{ row: number; col: number } | null>(null);
 
 	function handleCellInput(e: Event, rowIndex: number, colIndex: number) {
 		const target = e.target as HTMLInputElement;
@@ -21,8 +34,6 @@
 	}
 
 	function handleKeyDown(e: KeyboardEvent, rowIndex: number, colIndex: number) {
-		const target = e.target as HTMLInputElement;
-		
 		if (e.key === 'Tab') {
 			e.preventDefault();
 			const nextCol = e.shiftKey ? colIndex - 1 : colIndex + 1;
@@ -66,6 +77,49 @@
 			}
 		}
 	}
+
+	function buildRange(start: { row: number; col: number }, end: { row: number; col: number }) {
+		const minRow = Math.min(start.row, end.row);
+		const maxRow = Math.max(start.row, end.row);
+		const minCol = Math.min(start.col, end.col);
+		const maxCol = Math.max(start.col, end.col);
+		const cells: { row: number; col: number }[] = [];
+		for (let r = minRow; r <= maxRow; r++) {
+			for (let c = minCol; c <= maxCol; c++) {
+				cells.push({ row: r, col: c });
+			}
+		}
+		return cells;
+	}
+
+	function handleCellMouseDown(e: MouseEvent, rowIndex: number, colIndex: number) {
+		const key = `${rowIndex}:${colIndex}`;
+		if (e.shiftKey && selectionAnchor) {
+			onSelectionChange(buildRange(selectionAnchor, { row: rowIndex, col: colIndex }));
+			return;
+		}
+		if (e.metaKey || e.ctrlKey) {
+			const next = new Set(selectedSet);
+			if (next.has(key)) {
+				next.delete(key);
+			} else {
+				next.add(key);
+			}
+			onSelectionChange(
+				Array.from(next).map((item) => {
+					const [row, col] = item.split(':').map(Number);
+					return { row, col };
+				})
+			);
+			return;
+		}
+		selectionAnchor = { row: rowIndex, col: colIndex };
+		onSelectionChange([{ row: rowIndex, col: colIndex }]);
+	}
+
+	function isSelected(rowIndex: number, colIndex: number) {
+		return selectedSet.has(`${rowIndex}:${colIndex}`);
+	}
 </script>
 
 <div class="table-editor">
@@ -106,17 +160,32 @@
 							>x</button>
 						</td>
 						{#each row as cell, colIndex}
-							<td class="editor-cell">
-								<input
-									type="text"
-									class="cell-input"
-									value={cell.content}
-									data-row={rowIndex}
-									data-col={colIndex}
-									oninput={(e) => handleCellInput(e, rowIndex, colIndex)}
-									onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-								/>
-							</td>
+							{#if !cell.isMerged}
+								<td
+									class="editor-cell"
+									class:selected={isSelected(rowIndex, colIndex)}
+									class:text-left={cell.align === 'left'}
+									class:text-center={cell.align === 'center' || !cell.align}
+									class:text-right={cell.align === 'right' || cell.align === 'decimal'}
+									class:font-bold={cell.isBold}
+									class:italic={cell.isItalic}
+									style:background-color={cell.backgroundColor}
+									style:color={cell.textColor}
+									colspan={cell.colspan}
+									rowspan={cell.rowspan}
+									onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
+								>
+									<input
+										type="text"
+										class="cell-input"
+										value={cell.content}
+										data-row={rowIndex}
+										data-col={colIndex}
+										oninput={(e) => handleCellInput(e, rowIndex, colIndex)}
+										onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+									/>
+								</td>
+							{/if}
 						{/each}
 					</tr>
 				{/each}

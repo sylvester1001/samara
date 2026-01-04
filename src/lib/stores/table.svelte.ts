@@ -33,6 +33,8 @@ class TableStore {
 	tableStyle = $state<TableStyle>({ ...DEFAULT_TABLE_STYLE });
 	canvasConfig = $state<CanvasConfig>({ ...DEFAULT_CANVAS_CONFIG });
 	selectedCells = $state<{ row: number; col: number }[]>([]);
+	lockColumnResize = $state(false);
+	lockRowResize = $state(false);
 	history = $state<TableData[]>([]);
 	historyIndex = $state(-1);
 
@@ -73,12 +75,131 @@ class TableStore {
 		}
 	}
 
+	setSelectedCells(cells: { row: number; col: number }[]) {
+		this.selectedCells = cells;
+	}
+
+	clearSelection() {
+		this.selectedCells = [];
+	}
+
+	applyToSelectedCells(updates: Partial<Cell>) {
+		if (this.selectedCells.length === 0) return;
+		for (const { row, col } of this.selectedCells) {
+			const cell = this.tableData.rows[row]?.[col];
+			if (cell) {
+				this.tableData.rows[row][col] = { ...cell, ...updates };
+			}
+		}
+		this.saveHistory();
+	}
+
+	toggleSelectedCells(field: 'isBold' | 'isItalic') {
+		if (this.selectedCells.length === 0) return;
+		const shouldEnable = this.selectedCells.some(({ row, col }) => {
+			const cell = this.tableData.rows[row]?.[col];
+			return cell ? !cell[field] : false;
+		});
+		this.applyToSelectedCells({ [field]: shouldEnable } as Partial<Cell>);
+	}
+
+	private findMergeRoot(row: number, col: number) {
+		for (let r = 0; r < this.tableData.rows.length; r++) {
+			for (let c = 0; c < this.tableData.rows[r].length; c++) {
+				const cell = this.tableData.rows[r][c];
+				const rowspan = cell.rowspan ?? 1;
+				const colspan = cell.colspan ?? 1;
+				if (rowspan > 1 || colspan > 1) {
+					if (row >= r && row < r + rowspan && col >= c && col < c + colspan) {
+						return { row: r, col: c, cell };
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	mergeSelectedCells() {
+		if (this.selectedCells.length < 2) return;
+		const rows = this.selectedCells.map((cell) => cell.row);
+		const cols = this.selectedCells.map((cell) => cell.col);
+		const minRow = Math.min(...rows);
+		const maxRow = Math.max(...rows);
+		const minCol = Math.min(...cols);
+		const maxCol = Math.max(...cols);
+		const expectedCount = (maxRow - minRow + 1) * (maxCol - minCol + 1);
+		if (expectedCount !== this.selectedCells.length) return;
+
+		for (const { row, col } of this.selectedCells) {
+			const cell = this.tableData.rows[row]?.[col];
+			if (!cell) return;
+			if (cell.isMerged) return;
+			if ((cell.colspan ?? 1) > 1 || (cell.rowspan ?? 1) > 1) return;
+		}
+
+		const root = this.tableData.rows[minRow]?.[minCol];
+		if (!root) return;
+
+		root.colspan = maxCol - minCol + 1;
+		root.rowspan = maxRow - minRow + 1;
+		root.isMerged = false;
+
+		for (const { row, col } of this.selectedCells) {
+			if (row === minRow && col === minCol) continue;
+			const cell = this.tableData.rows[row]?.[col];
+			if (cell) {
+				cell.isMerged = true;
+				cell.colspan = 1;
+				cell.rowspan = 1;
+			}
+		}
+
+		this.selectedCells = [{ row: minRow, col: minCol }];
+		this.saveHistory();
+	}
+
+	unmergeSelectedCells() {
+		if (this.selectedCells.length === 0) return;
+
+		let target: { row: number; col: number; cell: Cell } | null = null;
+		for (const { row, col } of this.selectedCells) {
+			const cell = this.tableData.rows[row]?.[col];
+			if (!cell) continue;
+			if ((cell.colspan ?? 1) > 1 || (cell.rowspan ?? 1) > 1) {
+				target = { row, col, cell };
+				break;
+			}
+		}
+
+		if (!target) {
+			const probe = this.selectedCells[0];
+			target = this.findMergeRoot(probe.row, probe.col);
+		}
+
+		if (!target) return;
+
+		const rowspan = target.cell.rowspan ?? 1;
+		const colspan = target.cell.colspan ?? 1;
+		for (let r = target.row; r < target.row + rowspan; r++) {
+			for (let c = target.col; c < target.col + colspan; c++) {
+				const cell = this.tableData.rows[r]?.[c];
+				if (cell) {
+					cell.isMerged = false;
+					cell.rowspan = 1;
+					cell.colspan = 1;
+				}
+			}
+		}
+		this.saveHistory();
+	}
+
 	addRow(index?: number) {
 		const cols = this.tableData.rows[0]?.length || 4;
 		const newRow = Array(cols).fill(null).map(() => createCell());
 		const idx = index ?? this.tableData.rows.length;
+		const defaultHeight = this.lockRowResize ? this.tableData.rowHeights[0] ?? 32 : 32;
 		this.tableData.rows.splice(idx, 0, newRow);
-		this.tableData.rowHeights.splice(idx, 0, 32);
+		this.tableData.rowHeights.splice(idx, 0, defaultHeight);
 		this.saveHistory();
 	}
 
@@ -92,10 +213,11 @@ class TableStore {
 
 	addColumn(index?: number) {
 		const idx = index ?? (this.tableData.rows[0]?.length || 0);
+		const defaultWidth = this.lockColumnResize ? this.tableData.columnWidths[0] ?? 100 : 100;
 		this.tableData.rows.forEach((row, i) => {
 			row.splice(idx, 0, createCell(i === 0 ? `Col ${idx + 1}` : ''));
 		});
-		this.tableData.columnWidths.splice(idx, 0, 100);
+		this.tableData.columnWidths.splice(idx, 0, defaultWidth);
 		this.saveHistory();
 	}
 
@@ -109,13 +231,21 @@ class TableStore {
 
 	setColumnWidth(index: number, width: number) {
 		if (this.tableData.columnWidths[index] !== undefined) {
-			this.tableData.columnWidths[index] = width;
+			if (this.lockColumnResize) {
+				this.tableData.columnWidths = this.tableData.columnWidths.map(() => width);
+			} else {
+				this.tableData.columnWidths[index] = width;
+			}
 		}
 	}
 
 	setRowHeight(index: number, height: number) {
 		if (this.tableData.rowHeights[index] !== undefined) {
-			this.tableData.rowHeights[index] = height;
+			if (this.lockRowResize) {
+				this.tableData.rowHeights = this.tableData.rowHeights.map(() => height);
+			} else {
+				this.tableData.rowHeights[index] = height;
+			}
 		}
 	}
 
@@ -156,6 +286,7 @@ class TableStore {
 		this.tableData = createEmptyTable(rows, cols);
 		this.history = [];
 		this.historyIndex = -1;
+		this.selectedCells = [];
 		this.saveHistory();
 	}
 
@@ -170,6 +301,7 @@ class TableStore {
 		};
 		this.history = [];
 		this.historyIndex = -1;
+		this.selectedCells = [];
 		this.saveHistory();
 	}
 }
