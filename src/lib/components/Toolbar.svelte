@@ -94,12 +94,12 @@
 	<div class="toolbar-left">
 		<div class="toolbar-group">
 			<Button variant="outline" size="sm" onclick={onImport}>
-				<Upload class="w-4 h-4 mr-1" />
-				Import
+				<Upload class="toolbar-button-icon w-4 h-4" />
+				<span class="toolbar-main-label">Import</span>
 			</Button>
 			<Button variant="outline" size="sm" onclick={onNewTable}>
-				<FilePlus class="w-4 h-4 mr-1" />
-				New
+				<FilePlus class="toolbar-button-icon w-4 h-4" />
+				<span class="toolbar-main-label">New</span>
 			</Button>
 			<div class="toolbar-divider"></div>
 			<Button variant="ghost" size="icon" onclick={onUndo} disabled={!canUndo}>
@@ -110,9 +110,9 @@
 			</Button>
 		</div>
 
-		<div class="toolbar-group">
+		<div class="toolbar-group toolbar-preset-group">
 			<Select.Root type="single" value={preset} onValueChange={handlePresetChange}>
-				<Select.Trigger class="w-40 min-w-0">
+				<Select.Trigger class="toolbar-preset-trigger">
 					<span class="truncate">
 						{presetOptions.find(o => o.value === preset)?.label || 'Select style'}
 					</span>
@@ -174,12 +174,12 @@
 			<Popover.Root>
 				<Popover.Trigger>
 					{#snippet child({ props })}
-						<Button variant="outline" size="sm" {...props}>
-							<Wrench class="w-4 h-4 mr-1" />
-							Tools
-						</Button>
-					{/snippet}
-				</Popover.Trigger>
+					<Button variant="outline" size="sm" {...props}>
+						<Wrench class="toolbar-button-icon w-4 h-4" />
+						<span class="toolbar-main-label">Tools</span>
+					</Button>
+				{/snippet}
+			</Popover.Trigger>
 				<Popover.Content class="w-auto p-2">
 					<div class="flex items-center gap-1">
 						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('left'); }} disabled={!hasSelection} title="Align Left">
@@ -228,9 +228,9 @@
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
 					<Button size="sm" {...props}>
-						<Download class="w-4 h-4 mr-1" />
-						Export
-						<ChevronDown class="w-3 h-3 ml-1" />
+						<Download class="toolbar-button-icon w-4 h-4" />
+						<span class="toolbar-main-label">Export</span>
+						<ChevronDown class="toolbar-button-chevron w-3 h-3" />
 					</Button>
 				{/snippet}
 			</DropdownMenu.Trigger>

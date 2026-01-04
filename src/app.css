@@ -230,6 +230,29 @@ html, body {
   min-width: 0;
 }
 
+.toolbar-button-icon {
+  flex-shrink: 0;
+}
+
+.toolbar-button-chevron {
+  flex-shrink: 0;
+}
+
+.toolbar-main-label {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.toolbar-preset-group {
+  flex: 0 1 200px;
+  min-width: 120px;
+}
+
+.toolbar-preset-trigger {
+  width: 100%;
+  min-width: 0;
+}
+
 .toolbar-divider {
   width: 1px;
   height: 24px;
@@ -766,5 +789,32 @@ html, body {
   
   .toolbar-format-compact {
     display: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .toolbar-main-label {
+    display: none;
+  }
+
+  .toolbar-button-chevron {
+    display: none;
+  }
+}
+
+@media (max-width: 1060px) {
+  .toolbar-preset-group {
+    flex-basis: 150px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .toolbar-preset-group {
+    flex-basis: 120px;
+  }
+
+  .toolbar-preset-trigger {
+    padding-left: 8px;
+    padding-right: 8px;
   }
 }
