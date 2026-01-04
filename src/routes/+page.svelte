@@ -9,8 +9,35 @@
 	import { Table2 } from 'lucide-svelte';
 
 	let tableElement: HTMLElement;
+	let previewArea: HTMLElement;
 	let fileInput: HTMLInputElement;
 	let exportDpi = $state(300);
+	let isCentered = $state(true);
+
+	function checkCentered() {
+		if (previewArea) {
+			const contentHeight = previewArea.scrollHeight;
+			const containerHeight = previewArea.clientHeight;
+			isCentered = contentHeight <= containerHeight;
+		}
+	}
+
+	$effect(() => {
+		checkCentered();
+		// 监听 tableStore 变化
+		tableStore.tableData.rows;
+		tableStore.canvasConfig;
+	});
+
+	$effect(() => {
+		if (previewArea) {
+			const resizeObserver = new ResizeObserver(() => {
+				checkCentered();
+			});
+			resizeObserver.observe(previewArea);
+			return () => resizeObserver.disconnect();
+		}
+	});
 
 	function handleImportClick() {
 		fileInput?.click();
@@ -225,17 +252,19 @@
 					/>
 				</div>
 
-				<main class="preview-area" bind:this={tableElement}>
+				<main class="preview-area" class:centered={isCentered} bind:this={previewArea}>
 					<div class="preview-label">Preview</div>
-					<AcademicTable
-						tableData={tableStore.tableData}
-						tableStyle={tableStore.tableStyle}
-						canvasConfig={tableStore.canvasConfig}
-						onCellUpdate={handleCellChange}
-						onColumnResize={handleColumnResize}
-						onRowResize={handleRowResize}
-						onCanvasResize={handleCanvasChange}
-					/>
+					<div bind:this={tableElement}>
+						<AcademicTable
+							tableData={tableStore.tableData}
+							tableStyle={tableStore.tableStyle}
+							canvasConfig={tableStore.canvasConfig}
+							onCellUpdate={handleCellChange}
+							onColumnResize={handleColumnResize}
+							onRowResize={handleRowResize}
+							onCanvasResize={handleCanvasChange}
+						/>
+					</div>
 				</main>
 			</div>
 		</div>
