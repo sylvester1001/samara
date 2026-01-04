@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "AcademicTable",
+  "productName": "Tablix",
   "version": "0.1.0",
   "identifier": "com.tauri.dev",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "AcademicTable",
+        "title": "Tablix",
         "width": 1200,
         "height": 800,
         "minWidth": 1000,

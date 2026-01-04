@@ -123,7 +123,7 @@
 </script>
 
 <div class="flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden">
-	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a]">
+	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a] shrink-0 relative z-0">
 		<div class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</div>
 		<div class="flex gap-2">
 			<button class="px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={onAddRow} title="Add Row">+ Row</button>
@@ -131,7 +131,7 @@
 		</div>
 	</div>
 
-	<div class="flex-1 overflow-auto p-4">
+	<div class="flex-1 overflow-auto p-4 min-h-0 relative z-10">
 		<table class="border-collapse w-auto">
 			<thead>
 				<tr>
