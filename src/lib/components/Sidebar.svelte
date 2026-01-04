@@ -228,9 +228,9 @@
 
 			<div class="space-y-2">
 				<Label>Table Borders</Label>
-				<div class="border-grid">
-					<div class="border-field">
-						<span class="border-label">Top</span>
+				<div class="grid grid-cols-2 gap-3">
+					<div class="flex flex-col gap-1.5">
+						<span class="text-xs text-muted-foreground">Top</span>
 						<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
 							<Select.Content>
@@ -240,8 +240,8 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="border-field">
-						<span class="border-label">Bottom</span>
+					<div class="flex flex-col gap-1.5">
+						<span class="text-xs text-muted-foreground">Bottom</span>
 						<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
 							<Select.Content>
@@ -251,8 +251,8 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="border-field">
-						<span class="border-label">Header</span>
+					<div class="flex flex-col gap-1.5">
+						<span class="text-xs text-muted-foreground">Header</span>
 						<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
 							<Select.Content>
@@ -262,8 +262,8 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="border-field">
-						<span class="border-label">Vertical</span>
+					<div class="flex flex-col gap-1.5">
+						<span class="text-xs text-muted-foreground">Vertical</span>
 						<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
 							<Select.Content>
@@ -273,8 +273,8 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="border-field">
-						<span class="border-label">Horizontal</span>
+					<div class="flex flex-col gap-1.5">
+						<span class="text-xs text-muted-foreground">Horizontal</span>
 						<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
 							<Select.Content>
@@ -347,7 +347,7 @@
 				<Label>Background</Label>
 				<input
 					type="color"
-					class="color-input"
+					class="w-full h-9 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5"
 					value={canvasConfig.backgroundColor}
 					onchange={handleBgColorChange}
 				/>
@@ -360,20 +360,20 @@
 			<Card.Title class="text-sm">Resize Lock</Card.Title>
 		</Card.Header>
 		<Card.Content class="p-0 space-y-3">
-			<label class="toggle-row">
+			<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
 				<span>Lock Column Widths</span>
 				<input
 					type="checkbox"
-					class="toggle-input"
+					class="w-4 h-4 accent-primary cursor-pointer"
 					checked={lockColumnResize}
 					onchange={handleLockColumnChange}
 				/>
 			</label>
-			<label class="toggle-row">
+			<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
 				<span>Lock Row Heights</span>
 				<input
 					type="checkbox"
-					class="toggle-input"
+					class="w-4 h-4 accent-primary cursor-pointer"
 					checked={lockRowResize}
 					onchange={handleLockRowChange}
 				/>

@@ -90,18 +90,18 @@
 	}
 </script>
 
-<div class="toolbar">
-	<div class="toolbar-left">
-		<div class="toolbar-group">
+<div class="flex items-center h-16 px-4 py-2 border-b border-border bg-white dark:bg-[#09090b] dark:border-[#27272a] gap-4 overflow-hidden w-full box-border">
+	<div class="flex items-center gap-4 min-w-0 flex-1 overflow-hidden">
+		<div class="flex items-center gap-2 min-w-0">
 			<Button variant="outline" size="sm" onclick={onImport}>
-				<Upload class="toolbar-button-icon w-4 h-4" />
-				<span class="toolbar-main-label">Import</span>
+				<Upload class="shrink-0 w-4 h-4" />
+				<span class="hidden min-[1200px]:inline whitespace-nowrap">Import</span>
 			</Button>
 			<Button variant="outline" size="sm" onclick={onNewTable}>
-				<FilePlus class="toolbar-button-icon w-4 h-4" />
-				<span class="toolbar-main-label">New</span>
+				<FilePlus class="shrink-0 w-4 h-4" />
+				<span class="hidden min-[1200px]:inline whitespace-nowrap">New</span>
 			</Button>
-			<div class="toolbar-divider"></div>
+			<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
 			<Button variant="ghost" size="icon" onclick={onUndo} disabled={!canUndo}>
 				<Undo2 class="w-4 h-4" />
 			</Button>
@@ -110,10 +110,10 @@
 			</Button>
 		</div>
 
-		<div class="toolbar-group toolbar-preset-group">
+		<div class="flex items-center gap-2 min-w-0 flex-[0_0_200px] min-w-[200px]">
 			<Select.Root type="single" value={preset} onValueChange={handlePresetChange}>
-				<Select.Trigger class="toolbar-preset-trigger">
-					<span class="toolbar-preset-label">
+				<Select.Trigger class="w-full min-w-0">
+					<span class="whitespace-nowrap overflow-visible">
 						{presetOptions.find(o => o.value === preset)?.label || 'Select style'}
 					</span>
 				</Select.Trigger>
@@ -127,7 +127,7 @@
 	</div>
 
 	<!-- Format tools - visible when width >= 1460px -->
-	<div class="toolbar-format-full">
+	<div class="hidden min-[1460px]:flex items-center gap-2">
 		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('left')} disabled={!hasSelection} title="Align Left">
 			<AlignLeft class="w-4 h-4" />
 		</Button>
@@ -137,7 +137,7 @@
 		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('right')} disabled={!hasSelection} title="Align Right">
 			<AlignRight class="w-4 h-4" />
 		</Button>
-		<div class="toolbar-divider"></div>
+		<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
 		<Button variant="ghost" size="icon" onclick={onToggleBold} disabled={!hasSelection} title="Bold">
 			<Bold class="w-4 h-4" />
 		</Button>
@@ -146,19 +146,19 @@
 		</Button>
 		<input
 			type="color"
-			class="toolbar-color-input"
+			class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
 			disabled={!hasSelection}
 			title="Text Color"
 			onchange={handleTextColorChange}
 		/>
 		<input
 			type="color"
-			class="toolbar-color-input"
+			class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
 			disabled={!hasSelection}
 			title="Cell Background"
 			onchange={handleBackgroundColorChange}
 		/>
-		<div class="toolbar-divider"></div>
+		<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
 		<Button variant="outline" size="sm" onclick={onMergeCells} disabled={!hasSelection}>
 			<TableCellsMerge class="w-4 h-4 mr-1" />
 			Merge
@@ -168,15 +168,15 @@
 		</Button>
 	</div>
 
-	<div class="toolbar-right">
+	<div class="flex items-center gap-2 shrink-0">
 		<!-- Format tools popover - visible when width < 1460px -->
-		<div class="toolbar-format-compact">
+		<div class="flex min-[1460px]:hidden items-center">
 			<Popover.Root>
 				<Popover.Trigger>
 					{#snippet child({ props })}
 					<Button variant="outline" size="sm" {...props}>
-						<Wrench class="toolbar-button-icon w-4 h-4" />
-						<span class="toolbar-main-label">Tools</span>
+						<Wrench class="shrink-0 w-4 h-4" />
+						<span class="hidden min-[1200px]:inline whitespace-nowrap">Tools</span>
 					</Button>
 				{/snippet}
 			</Popover.Trigger>
@@ -191,7 +191,7 @@
 						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('right'); }} disabled={!hasSelection} title="Align Right">
 							<AlignRight class="w-4 h-4" />
 						</Button>
-						<div class="toolbar-divider"></div>
+						<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
 						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleBold?.(); }} disabled={!hasSelection} title="Bold">
 							<Bold class="w-4 h-4" />
 						</Button>
@@ -200,19 +200,19 @@
 						</Button>
 						<input
 							type="color"
-							class="toolbar-color-input"
+							class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
 							disabled={!hasSelection}
 							title="Text Color"
 							onchange={handleTextColorChange}
 						/>
 						<input
 							type="color"
-							class="toolbar-color-input"
+							class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
 							disabled={!hasSelection}
 							title="Cell Background"
 							onchange={handleBackgroundColorChange}
 						/>
-						<div class="toolbar-divider"></div>
+						<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
 						<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onMergeCells?.(); }} disabled={!hasSelection}>
 							<TableCellsMerge class="w-4 h-4 mr-1" />
 							Merge
@@ -228,9 +228,9 @@
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
 					<Button size="sm" {...props}>
-						<Download class="toolbar-button-icon w-4 h-4" />
-						<span class="toolbar-main-label">Export</span>
-						<ChevronDown class="toolbar-button-chevron w-3 h-3" />
+						<Download class="shrink-0 w-4 h-4" />
+						<span class="hidden min-[1200px]:inline whitespace-nowrap">Export</span>
+						<ChevronDown class="shrink-0 hidden min-[1200px]:block w-3 h-3" />
 					</Button>
 				{/snippet}
 			</DropdownMenu.Trigger>

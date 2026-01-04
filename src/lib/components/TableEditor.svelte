@@ -122,25 +122,25 @@
 	}
 </script>
 
-<div class="table-editor">
-	<div class="editor-toolbar">
-		<div class="size-info">{rowCount} x {colCount}</div>
-		<div class="toolbar-actions">
-			<button class="editor-btn" onclick={onAddRow} title="Add Row">+ Row</button>
-			<button class="editor-btn" onclick={onAddColumn} title="Add Column">+ Col</button>
+<div class="flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden">
+	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a]">
+		<div class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</div>
+		<div class="flex gap-2">
+			<button class="px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={onAddRow} title="Add Row">+ Row</button>
+			<button class="px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={onAddColumn} title="Add Column">+ Col</button>
 		</div>
 	</div>
 
-	<div class="editor-grid-wrapper">
-		<table class="editor-grid">
+	<div class="flex-1 overflow-auto p-4">
+		<table class="border-collapse w-auto">
 			<thead>
 				<tr>
-					<th class="corner-cell"></th>
+					<th class="w-10 min-w-10 bg-[#f4f4f5] dark:bg-[#27272a]"></th>
 					{#each rows[0] || [] as _, colIndex}
-						<th class="col-header">
-							<span class="col-label">{String.fromCharCode(65 + colIndex)}</span>
+						<th class="relative min-w-[100px] px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
+							<span class="block">{String.fromCharCode(65 + colIndex)}</span>
 							<button 
-								class="delete-btn" 
+								class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
 								onclick={() => onDeleteColumn(colIndex)}
 								title="Delete Column"
 							>x</button>
@@ -151,10 +151,10 @@
 			<tbody>
 				{#each rows as row, rowIndex}
 					<tr>
-						<td class="row-header">
-							<span class="row-label">{rowIndex + 1}</span>
+						<td class="relative w-10 min-w-10 px-2 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
+							<span class="block">{rowIndex + 1}</span>
 							<button 
-								class="delete-btn" 
+								class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
 								onclick={() => onDeleteRow(rowIndex)}
 								title="Delete Row"
 							>x</button>
@@ -162,8 +162,7 @@
 						{#each row as cell, colIndex}
 							{#if !cell.isMerged}
 								<td
-									class="editor-cell"
-									class:selected={isSelected(rowIndex, colIndex)}
+									class="p-0 border border-border dark:border-[#3f3f46] relative {isSelected(rowIndex, colIndex) ? 'shadow-[inset_0_0_0_2px_#2563eb] dark:shadow-[inset_0_0_0_2px_#60a5fa]' : ''}"
 									class:text-left={cell.align === 'left'}
 									class:text-center={cell.align === 'center' || !cell.align}
 									class:text-right={cell.align === 'right' || cell.align === 'decimal'}
@@ -177,7 +176,7 @@
 								>
 									<input
 										type="text"
-										class="cell-input"
+										class="w-full min-w-[100px] px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit focus:bg-blue-50 dark:focus:bg-[#1e3a5f]"
 										value={cell.content}
 										data-row={rowIndex}
 										data-col={colIndex}

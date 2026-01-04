@@ -12,32 +12,6 @@
 	let previewArea: HTMLElement;
 	let fileInput: HTMLInputElement;
 	let exportDpi = $state(300);
-	let isCentered = $state(true);
-
-	function checkCentered() {
-		if (previewArea) {
-			const contentHeight = previewArea.scrollHeight;
-			const containerHeight = previewArea.clientHeight;
-			isCentered = contentHeight <= containerHeight;
-		}
-	}
-
-	$effect(() => {
-		checkCentered();
-		// 监听 tableStore 变化
-		tableStore.tableData.rows;
-		tableStore.canvasConfig;
-	});
-
-	$effect(() => {
-		if (previewArea) {
-			const resizeObserver = new ResizeObserver(() => {
-				checkCentered();
-			});
-			resizeObserver.observe(previewArea);
-			return () => resizeObserver.disconnect();
-		}
-	});
 
 	function handleImportClick() {
 		fileInput?.click();
@@ -214,7 +188,7 @@
 	</AppSidebar.Root>
 
 	<AppSidebar.Inset>
-		<div class="app-layout">
+		<div class="flex flex-col flex-1 min-h-0 overflow-hidden">
 			<Toolbar
 				preset={tableStore.tableStyle.preset}
 				{canUndo}
@@ -238,8 +212,8 @@
 				onDpiChange={(value) => (exportDpi = value)}
 			/>
 
-			<div class="main-content">
-				<div class="editor-area">
+			<div class="flex flex-1 overflow-hidden min-h-0">
+				<div class="flex-1 p-4 overflow-auto min-h-0 bg-[#f4f4f5] dark:bg-[#0a0a0a] border-r border-border dark:border-[#27272a]">
 					<TableEditor
 						rows={tableStore.tableData.rows}
 						selectedCells={tableStore.selectedCells}
@@ -252,8 +226,8 @@
 					/>
 				</div>
 
-				<main class="preview-area" class:centered={isCentered} bind:this={previewArea}>
-					<div class="preview-label">Preview</div>
+				<main class="flex-1 overflow-auto min-h-0 bg-[#fafafa] dark:bg-[#18181b] pt-9 px-4 pb-4 relative flex flex-col items-center justify-start" bind:this={previewArea}>
+					<div class="absolute top-2 right-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Preview</div>
 					<div bind:this={tableElement}>
 						<AcademicTable
 							tableData={tableStore.tableData}
