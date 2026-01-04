@@ -244,13 +244,19 @@ html, body {
 }
 
 .toolbar-preset-group {
-  flex: 0 1 200px;
-  min-width: 120px;
+  flex: 0 0 200px;
+  min-width: 200px;
 }
 
 .toolbar-preset-trigger {
   width: 100%;
   min-width: 0;
+}
+
+.toolbar-preset-label {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .toolbar-divider {
@@ -799,22 +805,5 @@ html, body {
 
   .toolbar-button-chevron {
     display: none;
-  }
-}
-
-@media (max-width: 1060px) {
-  .toolbar-preset-group {
-    flex-basis: 150px;
-  }
-}
-
-@media (max-width: 1000px) {
-  .toolbar-preset-group {
-    flex-basis: 120px;
-  }
-
-  .toolbar-preset-trigger {
-    padding-left: 8px;
-    padding-right: 8px;
   }
 }

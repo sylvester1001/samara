@@ -113,7 +113,7 @@
 		<div class="toolbar-group toolbar-preset-group">
 			<Select.Root type="single" value={preset} onValueChange={handlePresetChange}>
 				<Select.Trigger class="toolbar-preset-trigger">
-					<span class="truncate">
+					<span class="toolbar-preset-label">
 						{presetOptions.find(o => o.value === preset)?.label || 'Select style'}
 					</span>
 				</Select.Trigger>
