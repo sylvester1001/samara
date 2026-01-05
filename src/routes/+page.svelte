@@ -5,6 +5,7 @@
 	import { tableStore } from '$lib/stores/table.svelte';
 	import { handleFileImport, handlePaste } from '$lib/utils/import';
 	import { exportAndDownloadPng, exportAndDownloadSvg } from '$lib/utils/export';
+	import { showExportToast } from '$lib/utils/notifications';
 	import type { TableStyle, CanvasConfig } from '$lib/types';
 	import { Table2 } from 'lucide-svelte';
 
@@ -122,6 +123,7 @@
 				pixelRatio,
 				backgroundColor: tableStore.canvasConfig.backgroundColor
 			});
+			showExportToast('table.png');
 		}
 	}
 
@@ -130,6 +132,7 @@
 			await exportAndDownloadSvg(tableElement, 'table.svg', {
 				backgroundColor: tableStore.canvasConfig.backgroundColor
 			});
+			showExportToast('table.svg');
 		}
 	}
 
