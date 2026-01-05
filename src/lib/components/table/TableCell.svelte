@@ -40,7 +40,7 @@
 	}
 </script>
 
-<div class="cell-content" ondblclick={startEdit}>
+<div class="cell-content" ondblclick={startEdit} role="textbox" aria-label="Table cell, double-click to edit" tabindex="0">
 	{#if editing}
 		<input
 			type="text"

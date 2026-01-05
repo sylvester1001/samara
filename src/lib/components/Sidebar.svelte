@@ -55,8 +55,18 @@
 	];
 
 	let canvasPreset = $state('auto');
-	let customWidth = $state(typeof canvasConfig.width === 'number' ? canvasConfig.width : 800);
-	let customHeight = $state(typeof canvasConfig.height === 'number' ? canvasConfig.height : 600);
+	let customWidth = $state(800);
+	let customHeight = $state(600);
+
+	// Initialize custom dimensions from canvasConfig
+	$effect(() => {
+		if (typeof canvasConfig.width === 'number') {
+			customWidth = canvasConfig.width;
+		}
+		if (typeof canvasConfig.height === 'number') {
+			customHeight = canvasConfig.height;
+		}
+	});
 
 	const presetSizes: Record<string, { width: number; height: number }> = {
 		ppt: { width: 1920, height: 1080 },
@@ -92,12 +102,6 @@
 
 	$effect(() => {
 		canvasPreset = inferPreset(canvasConfig);
-		if (typeof canvasConfig.width === 'number') {
-			customWidth = canvasConfig.width;
-		}
-		if (typeof canvasConfig.height === 'number') {
-			customHeight = canvasConfig.height;
-		}
 	});
 
 	function handleCanvasPresetChange(value: string | undefined) {

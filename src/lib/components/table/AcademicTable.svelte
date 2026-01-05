@@ -295,8 +295,12 @@
 		{/each}
 	</div>
 
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="canvas-resizer nw" onmousedown={(e) => handleCanvasResizeStart(e, 'nw')}></div>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="canvas-resizer ne" onmousedown={(e) => handleCanvasResizeStart(e, 'ne')}></div>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="canvas-resizer sw" onmousedown={(e) => handleCanvasResizeStart(e, 'sw')}></div>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="canvas-resizer se" onmousedown={(e) => handleCanvasResizeStart(e, 'se')}></div>
 </div>
