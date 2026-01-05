@@ -3,7 +3,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { Undo2, Redo2, Upload, FilePlus, Download, AlignLeft, TextAlignCenter, AlignRight, Bold, Italic, TableCellsMerge, ChevronDown, Wrench } from 'lucide-svelte';
+	import { ArrowRightFromLine, PencilLine, Import, Undo2, Redo2, Upload, FilePlus, Download, TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge, ChevronDown, Wrench } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
 
 	interface Props {
@@ -94,7 +94,7 @@
 	<div class="flex items-center gap-4 min-w-0 flex-1 overflow-hidden">
 		<div class="flex items-center gap-2 min-w-0">
 			<Button variant="outline" size="sm" onclick={onImport}>
-				<Upload class="shrink-0 w-4 h-4" />
+				<Download class="shrink-0 w-4 h-4" />
 				<span class="hidden min-[1200px]:inline whitespace-nowrap">Import</span>
 			</Button>
 			<Button variant="outline" size="sm" onclick={onNewTable}>
@@ -129,13 +129,13 @@
 	<!-- Format tools - visible when width >= 1460px -->
 	<div class="hidden min-[1460px]:flex items-center gap-2">
 		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('left')} disabled={!hasSelection} title="Align Left">
-			<AlignLeft class="w-4 h-4" />
+			<TextAlignStart class="w-4 h-4" />
 		</Button>
 		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('center')} disabled={!hasSelection} title="Align Center">
 			<TextAlignCenter class="w-4 h-4" />
 		</Button>
 		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('right')} disabled={!hasSelection} title="Align Right">
-			<AlignRight class="w-4 h-4" />
+			<TextAlignEnd class="w-4 h-4" />
 		</Button>
 		<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
 		<Button variant="ghost" size="icon" onclick={onToggleBold} disabled={!hasSelection} title="Bold">
@@ -175,7 +175,7 @@
 				<Popover.Trigger>
 					{#snippet child({ props })}
 					<Button variant="outline" size="sm" {...props}>
-						<Wrench class="shrink-0 w-4 h-4" />
+						<PencilLine class="shrink-0 w-4 h-4" />
 						<span class="hidden min-[1200px]:inline whitespace-nowrap">Tools</span>
 					</Button>
 				{/snippet}
@@ -183,13 +183,13 @@
 				<Popover.Content class="w-auto p-2">
 					<div class="flex items-center gap-1">
 						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('left'); }} disabled={!hasSelection} title="Align Left">
-							<AlignLeft class="w-4 h-4" />
+							<TextAlignStart class="w-4 h-4" />
 						</Button>
 						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('center'); }} disabled={!hasSelection} title="Align Center">
 							<TextAlignCenter class="w-4 h-4" />
 						</Button>
 						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('right'); }} disabled={!hasSelection} title="Align Right">
-							<AlignRight class="w-4 h-4" />
+							<TextAlignEnd class="w-4 h-4" />
 						</Button>
 						<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
 						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleBold?.(); }} disabled={!hasSelection} title="Bold">
@@ -228,7 +228,7 @@
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
 					<Button size="sm" {...props}>
-						<Download class="shrink-0 w-4 h-4" />
+						<ArrowRightFromLine  class="shrink-0 w-4 h-4" />
 						<span class="hidden min-[1200px]:inline whitespace-nowrap">Export</span>
 						<ChevronDown class="shrink-0 hidden min-[1200px]:block w-3 h-3" />
 					</Button>
