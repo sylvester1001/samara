@@ -29,6 +29,12 @@
 		thick: 2,
 		double: 3
 	};
+	const borderStyleMap: Record<string, string> = {
+		none: 'none',
+		thin: 'solid',
+		thick: 'solid',
+		double: 'double'
+	};
     const paddingMap: Record<string, number> = {
 		compact: 4,
 		normal: 8,
@@ -208,6 +214,11 @@
 				style:--border-header="{borderWidthMap[tableStyle.borders.headerBottom]}px"
 				style:--border-vertical="{borderWidthMap[tableStyle.borders.vertical]}px"
 				style:--border-horizontal="{borderWidthMap[tableStyle.borders.horizontal]}px"
+				style:--border-top-style={borderStyleMap[tableStyle.borders.top]}
+				style:--border-bottom-style={borderStyleMap[tableStyle.borders.bottom]}
+				style:--border-header-style={borderStyleMap[tableStyle.borders.headerBottom]}
+				style:--border-vertical-style={borderStyleMap[tableStyle.borders.vertical]}
+				style:--border-horizontal-style={borderStyleMap[tableStyle.borders.horizontal]}
 			>
 				<colgroup>
 					{#each tableData.columnWidths as width}

@@ -164,12 +164,12 @@ html, body {
 
 /* Booktabs preset - three-line table */
 .academic-table.preset-booktabs {
-  border-top: var(--border-top) solid black;
-  border-bottom: var(--border-bottom) solid black;
+  border-top: var(--border-top) var(--border-top-style, solid) black;
+  border-bottom: var(--border-bottom) var(--border-bottom-style, solid) black;
 }
 
 .academic-table.preset-booktabs thead tr {
-  border-bottom: var(--border-header) solid black;
+  border-bottom: var(--border-header) var(--border-header-style, solid) black;
 }
 
 .academic-table.preset-booktabs th,
@@ -180,12 +180,12 @@ html, body {
 
 /* Bordered preset */
 .academic-table.preset-bordered {
-  border: var(--border-top) solid black;
+  border: var(--border-top) var(--border-top-style, solid) black;
 }
 
 .academic-table.preset-bordered th,
 .academic-table.preset-bordered td {
-  border: var(--border-horizontal) solid black;
+  border: var(--border-horizontal) var(--border-horizontal-style, solid) black;
 }
 
 /* Minimal preset */
