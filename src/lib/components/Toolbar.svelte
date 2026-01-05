@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { ArrowRightFromLine, PencilLine, Import, Undo2, Redo2, Upload, FilePlus, Download, TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge, ChevronDown, Wrench } from 'lucide-svelte';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import { ArrowRightFromLine, PencilLine, Undo2, Redo2, FilePlus, Download, TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
 
 	interface Props {
@@ -65,6 +65,9 @@
 		{ value: 600, label: '600 DPI' }
 	];
 
+	let exportFormat = $state<'png' | 'svg'>('png');
+	let exportPopoverOpen = $state(false);
+
 	function handlePresetChange(value: string | undefined) {
 		if (value) {
 			onPresetChange?.(value as TableStyle['preset']);
@@ -87,6 +90,15 @@
 	function handleBackgroundColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		onBackgroundColorChange?.(target.value);
+	}
+
+	function handleExport() {
+		if (exportFormat === 'png') {
+			onExportPng?.();
+		} else {
+			onExportSvg?.();
+		}
+		exportPopoverOpen = false;
 	}
 </script>
 
@@ -224,37 +236,60 @@
 				</Popover.Content>
 			</Popover.Root>
 		</div>
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger>
+		<Popover.Root bind:open={exportPopoverOpen}>
+			<Popover.Trigger>
 				{#snippet child({ props })}
 					<Button size="sm" {...props}>
-						<ArrowRightFromLine  class="shrink-0 w-4 h-4" />
+						<ArrowRightFromLine class="shrink-0 w-4 h-4" />
 						<span class="hidden min-[1200px]:inline whitespace-nowrap">Export</span>
-						<ChevronDown class="shrink-0 hidden min-[1200px]:block w-3 h-3" />
 					</Button>
 				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end" class="w-48">
-				<DropdownMenu.Sub>
-					<DropdownMenu.SubTrigger>Resolution</DropdownMenu.SubTrigger>
-					<DropdownMenu.SubContent>
-						<DropdownMenu.RadioGroup value={String(dpi)} onValueChange={handleDpiChange}>
-							{#each dpiOptions as option}
-								<DropdownMenu.RadioItem value={String(option.value)}>
-									{option.label}
-								</DropdownMenu.RadioItem>
-							{/each}
-						</DropdownMenu.RadioGroup>
-					</DropdownMenu.SubContent>
-				</DropdownMenu.Sub>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Item onclick={onExportPng}>
-					Export as PNG
-				</DropdownMenu.Item>
-				<DropdownMenu.Item onclick={onExportSvg}>
-					Export as SVG
-				</DropdownMenu.Item>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+			</Popover.Trigger>
+			<Popover.Content align="end" class="w-64">
+				<div class="grid gap-4">
+					<div class="grid gap-3">
+						<div class="grid grid-cols-3 items-center gap-4">
+							<Label>Format</Label>
+							<div class="col-span-2 flex gap-1">
+								<Button 
+									size="sm" 
+									variant={exportFormat === 'png' ? 'default' : 'outline'}
+									onclick={() => exportFormat = 'png'}
+									class="flex-1 h-8"
+								>
+									PNG
+								</Button>
+								<Button 
+									size="sm" 
+									variant={exportFormat === 'svg' ? 'default' : 'outline'}
+									onclick={() => exportFormat = 'svg'}
+									class="flex-1 h-8"
+								>
+									SVG
+								</Button>
+							</div>
+						</div>
+						{#if exportFormat === 'png'}
+							<div class="grid grid-cols-3 items-center gap-4">
+								<Label>DPI</Label>
+								<Select.Root type="single" value={String(dpi)} onValueChange={handleDpiChange}>
+									<Select.Trigger class="col-span-2 h-8">
+										{dpiOptions.find(o => o.value === dpi)?.label || 'Select DPI'}
+									</Select.Trigger>
+									<Select.Content>
+										{#each dpiOptions as option}
+											<Select.Item value={String(option.value)}>{option.label}</Select.Item>
+										{/each}
+									</Select.Content>
+								</Select.Root>
+							</div>
+						{/if}
+					</div>
+					<div class="flex justify-end">
+						<Button size="sm" onclick={handleExport}>Export</Button>
+					</div>
+				</div>
+			</Popover.Content>
+		</Popover.Root>
 	</div>
 </div>
