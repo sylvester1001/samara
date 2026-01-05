@@ -174,10 +174,12 @@
 						{#each row as cell, colIndex}
 							{#if !cell.isMerged}
 								<td
-									class="p-0 border border-border dark:border-[#3f3f46] relative {isSelected(rowIndex, colIndex) ? 'shadow-[inset_0_0_0_2px_#2563eb] dark:shadow-[inset_0_0_0_2px_#60a5fa]' : ''}"
+									class="p-0 border border-border dark:border-[#3f3f46] relative"
+									class:bg-blue-50={isSelected(rowIndex, colIndex)}
+									class:dark:bg-[#1e3a5f]={isSelected(rowIndex, colIndex)}
 									class:font-bold={cell.isBold}
 									class:italic={cell.isItalic}
-									style:background-color={cell.backgroundColor}
+									style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
 									style:color={cell.textColor}
 									colspan={cell.colspan}
 									rowspan={cell.rowspan}
@@ -186,7 +188,7 @@
 								>
 									<input
 										type="text"
-										class="w-full min-w-[100px] px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit focus:bg-blue-50 dark:focus:bg-[#1e3a5f]"
+										class="w-full min-w-[100px] px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit"
 										class:text-left={cell.align === 'left'}
 										class:text-center={cell.align === 'center' || !cell.align}
 										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
