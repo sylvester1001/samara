@@ -27,6 +27,7 @@
 	const colCount = $derived(rows[0]?.length || 0);
 	const selectedSet = $derived(new Set(selectedCells.map((cell) => `${cell.row}:${cell.col}`)));
 	let selectionAnchor = $state<{ row: number; col: number } | null>(null);
+	let isDragging = $state(false);
 
 	function handleCellInput(e: Event, rowIndex: number, colIndex: number) {
 		const target = e.target as HTMLInputElement;
@@ -114,7 +115,18 @@
 			return;
 		}
 		selectionAnchor = { row: rowIndex, col: colIndex };
+		isDragging = true;
 		onSelectionChange([{ row: rowIndex, col: colIndex }]);
+	}
+
+	function handleCellMouseEnter(rowIndex: number, colIndex: number) {
+		if (isDragging && selectionAnchor) {
+			onSelectionChange(buildRange(selectionAnchor, { row: rowIndex, col: colIndex }));
+		}
+	}
+
+	function handleMouseUp() {
+		isDragging = false;
 	}
 
 	function isSelected(rowIndex: number, colIndex: number) {
@@ -122,7 +134,7 @@
 	}
 </script>
 
-<div class="flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden">
+<div class="flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
 	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a] shrink-0 relative z-0">
 		<div class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</div>
 		<div class="flex gap-2">
@@ -170,6 +182,7 @@
 									colspan={cell.colspan}
 									rowspan={cell.rowspan}
 									onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
+									onmouseenter={() => handleCellMouseEnter(rowIndex, colIndex)}
 								>
 									<input
 										type="text"
