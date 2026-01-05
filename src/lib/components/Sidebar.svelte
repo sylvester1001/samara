@@ -53,6 +53,11 @@
 		{ value: 'thick', label: 'Thick' },
 		{ value: 'double', label: 'Double' }
 	];
+	const doubleBorderOptions: { value: BorderStyle; label: string }[] = [
+		...borderOptions,
+		{ value: 'thick-thin', label: 'Thick-Thin' },
+		{ value: 'thin-thick', label: 'Thin-Thick' }
+	];
 
 	let canvasPreset = $state('auto');
 	let customWidth = $state(800);
@@ -154,7 +159,7 @@
 	}
 
 	function getBorderLabel(value: BorderStyle) {
-		return borderOptions.find((option) => option.value === value)?.label ?? value;
+		return doubleBorderOptions.find((option) => option.value === value)?.label ?? value;
 	}
 
 	function handleLockColumnChange(e: Event) {
@@ -238,7 +243,7 @@
 						<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
 							<Select.Content>
-								{#each borderOptions as option}
+								{#each doubleBorderOptions as option}
 									<Select.Item value={option.value}>{option.label}</Select.Item>
 								{/each}
 							</Select.Content>
@@ -249,7 +254,7 @@
 						<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
 							<Select.Content>
-								{#each borderOptions as option}
+								{#each doubleBorderOptions as option}
 									<Select.Item value={option.value}>{option.label}</Select.Item>
 								{/each}
 							</Select.Content>

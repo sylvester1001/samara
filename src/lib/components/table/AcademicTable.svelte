@@ -27,13 +27,17 @@
 		none: 0,
 		thin: 1,
 		thick: 2,
-		double: 3
+		double: 3,
+		'thick-thin': 3,
+		'thin-thick': 3
 	};
 	const borderStyleMap: Record<string, string> = {
 		none: 'none',
 		thin: 'solid',
 		thick: 'solid',
-		double: 'double'
+		double: 'double',
+		'thick-thin': 'double',
+		'thin-thick': 'double'
 	};
     const paddingMap: Record<string, number> = {
 		compact: 4,
@@ -45,7 +49,22 @@
 	const cellPadding = $derived(
 		typeof tableStyle.padding === 'number' ? tableStyle.padding : paddingMap[tableStyle.padding]
 	);
-	const tableClass = $derived(`academic-table preset-${tableStyle.preset}`);
+	const tableClass = $derived.by(() => {
+		const classes = ['academic-table', `preset-${tableStyle.preset}`];
+		if (tableStyle.preset === 'booktabs') {
+			if (tableStyle.borders.top === 'thick-thin') {
+				classes.push('border-top-thick-thin');
+			} else if (tableStyle.borders.top === 'thin-thick') {
+				classes.push('border-top-thin-thick');
+			}
+			if (tableStyle.borders.bottom === 'thick-thin') {
+				classes.push('border-bottom-thick-thin');
+			} else if (tableStyle.borders.bottom === 'thin-thick') {
+				classes.push('border-bottom-thin-thick');
+			}
+		}
+		return classes.join(' ');
+	});
 	// 1. 创建一个状态数组来直接绑定每一行在浏览器中的真实渲染高度
 	let domRowHeights: number[] = $state([]);
 

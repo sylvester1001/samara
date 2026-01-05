@@ -16,7 +16,7 @@ export interface TableData {
 	rowHeights: number[];
 }
 
-export type BorderStyle = 'none' | 'thin' | 'thick' | 'double';
+export type BorderStyle = 'none' | 'thin' | 'thick' | 'double' | 'thick-thin' | 'thin-thick';
 
 export interface BorderConfig {
 	top: BorderStyle;

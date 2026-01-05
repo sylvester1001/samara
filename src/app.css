@@ -164,8 +164,74 @@ html, body {
 
 /* Booktabs preset - three-line table */
 .academic-table.preset-booktabs {
+  position: relative;
+  --double-line-size: 4px;
+  z-index: 0;
   border-top: var(--border-top) var(--border-top-style, solid) black;
   border-bottom: var(--border-bottom) var(--border-bottom-style, solid) black;
+}
+
+.academic-table.preset-booktabs.border-top-thick-thin,
+.academic-table.preset-booktabs.border-top-thin-thick {
+  border-top: none;
+}
+
+.academic-table.preset-booktabs.border-bottom-thick-thin,
+.academic-table.preset-booktabs.border-bottom-thin-thick {
+  border-bottom: none;
+}
+
+/* Asymmetric double lines (thick-thin / thin-thick) */
+.academic-table.preset-booktabs.border-top-thick-thin::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--double-line-size);
+  border-top: 2px solid black;
+  border-bottom: 1px solid black;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.academic-table.preset-booktabs.border-top-thin-thick::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--double-line-size);
+  border-top: 1px solid black;
+  border-bottom: 2px solid black;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.academic-table.preset-booktabs.border-bottom-thick-thin::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--double-line-size);
+  border-top: 1px solid black;
+  border-bottom: 2px solid black;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.academic-table.preset-booktabs.border-bottom-thin-thick::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--double-line-size);
+  border-top: 2px solid black;
+  border-bottom: 1px solid black;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .academic-table.preset-booktabs thead tr {
