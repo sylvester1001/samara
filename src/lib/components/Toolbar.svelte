@@ -67,6 +67,8 @@
 
 	let exportFormat = $state<'png' | 'svg'>('png');
 	let exportPopoverOpen = $state(false);
+	let exportPending = $state(false);
+	let exportFallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
 	function handlePresetChange(value: string | undefined) {
 		if (value) {
@@ -92,13 +94,44 @@
 		onBackgroundColorChange?.(target.value);
 	}
 
-	function handleExport() {
+	function runExport() {
 		if (exportFormat === 'png') {
 			onExportPng?.();
 		} else {
 			onExportSvg?.();
 		}
+	}
+
+	function scheduleExportFallback() {
+		if (exportFallbackTimer) {
+			clearTimeout(exportFallbackTimer);
+		}
+		exportFallbackTimer = setTimeout(() => {
+			if (!exportPending) return;
+			exportPending = false;
+			exportFallbackTimer = null;
+			runExport();
+		}, 250);
+	}
+
+	function handleExportPopoverAnimationEnd(event: AnimationEvent) {
+		if (!exportPending) return;
+		if (event.target !== event.currentTarget) return;
+		const target = event.currentTarget as HTMLElement | null;
+		if (!target || target.getAttribute('data-state') !== 'closed') return;
+		exportPending = false;
+		if (exportFallbackTimer) {
+			clearTimeout(exportFallbackTimer);
+			exportFallbackTimer = null;
+		}
+		runExport();
+	}
+
+	function handleExport() {
+		if (exportPending) return;
+		exportPending = true;
 		exportPopoverOpen = false;
+		scheduleExportFallback();
 	}
 </script>
 
@@ -245,7 +278,7 @@
 					</Button>
 				{/snippet}
 			</Popover.Trigger>
-			<Popover.Content align="end" class="w-64">
+			<Popover.Content align="end" class="w-64" on:animationend={handleExportPopoverAnimationEnd}>
 				<div class="grid gap-4">
 					<div class="grid gap-3">
 						<div class="grid grid-cols-3 items-center gap-4">
