@@ -1,12 +1,13 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import * as ToggleGroup from '$lib/components/ui/toggle-group/index.js';
 	import { Slider } from '$lib/components/ui/slider/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
-	import type { TableStyle, CanvasConfig, BorderStyle, TableData, RuleSegment, SegmentTrim, SegmentStyle } from '$lib/types';
+	import type { TableStyle, CanvasConfig, BorderStyle, TableData, RuleSegment, SegmentStyle } from '$lib/types';
 
 	interface Props {
 		tableStyle: TableStyle;
@@ -77,11 +78,6 @@
 		{ value: 'thin-thick', label: 'Thin-Thick' }
 	];
 
-	const segmentStyleOptions: { value: SegmentStyle; label: string }[] = [
-		{ value: 'thin', label: 'Thin' },
-		{ value: 'thick', label: 'Thick' },
-		{ value: 'double', label: 'Double' }
-	];
 	const headerRowOptions = $derived.by(() => {
 		const max = Math.max(1, maxHeaderRows);
 		return Array.from({ length: max }, (_, index) => {
@@ -408,14 +404,11 @@
 
 				<div class="space-y-3">
 					<Label>Line Style</Label>
-					<Select.Root type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)}>
-						<Select.Trigger class="w-full">{segmentStyleOptions.find(o => o.value === segmentStyle)?.label || 'Thin'}</Select.Trigger>
-						<Select.Content>
-							{#each segmentStyleOptions as option}
-								<Select.Item value={option.value}>{option.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+					<ToggleGroup.Root variant="outline" type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)} class="w-full">
+						<ToggleGroup.Item value="thin" aria-label="Thin" class="flex-1">Thin</ToggleGroup.Item>
+						<ToggleGroup.Item value="thick" aria-label="Thick" class="flex-1">Thick</ToggleGroup.Item>
+						<ToggleGroup.Item value="double" aria-label="Double" class="flex-1">Double</ToggleGroup.Item>
+					</ToggleGroup.Root>
 				</div>
 
 				<div class="flex items-center justify-between">
