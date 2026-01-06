@@ -336,8 +336,8 @@
 									class:italic={cell.isItalic}
 									style:background-color={cell.backgroundColor}
 									style:color={cell.textColor}
-									colspan={cell.colspan}
-									rowspan={cell.rowspan}
+									colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
+									rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
 								>
 									<TableCell
 										{cell}
@@ -368,8 +368,8 @@
 									class:italic={cell.isItalic}
 									style:background-color={cell.backgroundColor}
 									style:color={cell.textColor}
-									colspan={cell.colspan}
-									rowspan={cell.rowspan}
+									colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
+									rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
 								>
 									<TableCell
 										{cell}

@@ -181,8 +181,8 @@
 									class:italic={cell.isItalic}
 									style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
 									style:color={cell.textColor}
-									colspan={cell.colspan}
-									rowspan={cell.rowspan}
+									colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
+									rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
 									onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
 									onmouseenter={() => handleCellMouseEnter(rowIndex, colIndex)}
 								>
