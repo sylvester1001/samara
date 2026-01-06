@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Toolbar, EditToolbar, AcademicTable, TableEditor } from '$lib/components';
 	import SettingsSidebar from '$lib/components/Sidebar.svelte';
+	import { Badge } from '$lib/components/ui/badge/index.js';
 	import * as AppSidebar from '$lib/components/ui/sidebar/index.js';
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import { tableStore } from '$lib/stores/table.svelte';
@@ -263,18 +264,22 @@
 				</Resizable.Pane>
 				<Resizable.Handle />
 				<Resizable.Pane defaultSize={54} minSize={30} class="min-w-[360px] min-h-0">
-					<main class="h-full overflow-auto min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] pt-9 px-4 pb-4 relative flex flex-col items-start justify-start" bind:this={previewArea}>
-						<div class="absolute top-2 right-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Preview</div>
-						<div bind:this={tableElement} class="w-fit mx-auto">
-							<AcademicTable
-								tableData={tableStore.tableData}
-								tableStyle={tableStore.tableStyle}
-								canvasConfig={tableStore.canvasConfig}
-								onCellUpdate={handleCellChange}
-								onColumnResize={handleColumnResize}
-								onRowResize={handleRowResize}
-								onCanvasResize={handleCanvasChange}
-							/>
+					<main class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative">
+						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide">
+							Preview
+						</Badge>
+						<div class="h-full w-full overflow-auto pt-9 px-4 pb-4 flex flex-col items-start justify-start" bind:this={previewArea}>
+							<div bind:this={tableElement} class="w-fit mx-auto">
+								<AcademicTable
+									tableData={tableStore.tableData}
+									tableStyle={tableStore.tableStyle}
+									canvasConfig={tableStore.canvasConfig}
+									onCellUpdate={handleCellChange}
+									onColumnResize={handleColumnResize}
+									onRowResize={handleRowResize}
+									onCanvasResize={handleCanvasChange}
+								/>
+							</div>
 						</div>
 					</main>
 				</Resizable.Pane>
