@@ -198,6 +198,9 @@
 				canvasConfig={tableStore.canvasConfig}
 				tableData={tableStore.tableData}
 				selectedCells={tableStore.selectedCells}
+				headerRows={tableStore.tableData.headerRows}
+				maxHeaderRows={tableStore.tableData.rows.length}
+				onHeaderRowsChange={handleHeaderRowsChange}
 				onStyleChange={handleStyleChange}
 				onCanvasChange={handleCanvasChange}
 				lockColumnResize={tableStore.lockColumnResize}
@@ -232,9 +235,6 @@
 				onBackgroundColorChange={handleBackgroundColorChange}
 				onMergeCells={handleMergeCells}
 				onUnmergeCells={handleUnmergeCells}
-				headerRows={tableStore.tableData.headerRows}
-				maxHeaderRows={tableStore.tableData.rows.length}
-				onHeaderRowsChange={handleHeaderRowsChange}
 				dpi={exportDpi}
 				onDpiChange={(value) => (exportDpi = value)}
 			/>

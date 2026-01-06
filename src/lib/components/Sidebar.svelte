@@ -12,6 +12,9 @@
 		canvasConfig: CanvasConfig;
 		tableData: TableData;
 		selectedCells: { row: number; col: number }[];
+		headerRows: number;
+		maxHeaderRows: number;
+		onHeaderRowsChange?: (count: number) => void;
 		onStyleChange?: (style: Partial<TableStyle>) => void;
 		onCanvasChange?: (config: Partial<CanvasConfig>) => void;
 		lockColumnResize?: boolean;
@@ -28,6 +31,9 @@
 		canvasConfig,
 		tableData,
 		selectedCells,
+		headerRows = 1,
+		maxHeaderRows = 1,
+		onHeaderRowsChange,
 		onStyleChange,
 		onCanvasChange,
 		lockColumnResize = false,
@@ -78,11 +84,17 @@
 		{ value: 'thick', label: 'Thick' },
 		{ value: 'double', label: 'Double' }
 	];
+	const headerRowOptions = $derived.by(() => {
+		const max = Math.max(1, maxHeaderRows);
+		return Array.from({ length: max }, (_, index) => {
+			const value = index + 1;
+			return { value: String(value), label: `${value} Row${value === 1 ? '' : 's'}` };
+		});
+	});
 
 	let canvasPreset = $state('auto');
 	let customWidth = $state(800);
 	let customHeight = $state(600);
-	let segmentRow = $state(1);
 	let segmentStartCol = $state(1);
 	let segmentEndCol = $state(1);
 	let segmentTrimLeft = $state<SegmentTrim>('none');
@@ -118,6 +130,14 @@
 		}
 	}
 
+	function handleHeaderRowsChange(value: string | undefined) {
+		if (!value) return;
+		const parsed = parseInt(value);
+		if (!Number.isNaN(parsed)) {
+			onHeaderRowsChange?.(parsed);
+		}
+	}
+
 	function handleFontSizeChange(value: number) {
 		onStyleChange?.({ fontSize: value });
 	}
@@ -140,7 +160,6 @@
 	$effect(() => {
 		const maxRow = Math.max(1, tableData.rows.length);
 		const maxCol = Math.max(1, tableData.columnWidths.length);
-		segmentRow = Math.min(Math.max(1, segmentRow), maxRow);
 		segmentStartCol = Math.min(Math.max(1, segmentStartCol), maxCol);
 		segmentEndCol = Math.min(Math.max(1, segmentEndCol), maxCol);
 		if (segmentStartCol > segmentEndCol) {
@@ -224,12 +243,6 @@
 		onLockRowResizeChange?.(target.checked);
 	}
 
-	function handleSegmentRowChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		segmentRow = parseInt(target.value) || 1;
-		segmentSource = 'manual';
-	}
-
 	function handleSegmentStartColChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		segmentStartCol = parseInt(target.value) || 1;
@@ -302,23 +315,24 @@
 	function applySelectionToSegment() {
 		const range = getSelectionRange();
 		if (!range) return;
-		segmentRow = range.row;
 		segmentStartCol = range.startCol;
 		segmentEndCol = range.endCol;
 		segmentSource = 'selection';
 	}
 
 	function handleAddSegment() {
-		let nextRow = segmentRow;
+		const selectionRange = getSelectionRange();
+		let nextRow = selectionRange ? selectionRange.row : 1;
 		let nextStartCol = segmentStartCol;
 		let nextEndCol = segmentEndCol;
 		if (segmentSource === 'selection') {
-			const range = getSelectionRange();
-			if (range) {
-				nextRow = range.row;
-				nextStartCol = range.startCol;
-				nextEndCol = range.endCol;
+			if (selectionRange) {
+				nextRow = selectionRange.row;
+				nextStartCol = selectionRange.startCol;
+				nextEndCol = selectionRange.endCol;
 			}
+		} else if (selectionRange) {
+			nextRow = selectionRange.row;
 		}
 		onAddSegment?.({
 			atRow: nextRow - 1,
@@ -340,8 +354,9 @@
 		return `Selection: R${rowMin}-${rowMax}, C${colMin}-${colMax}`;
 	});
 	const segmentModeLabel = $derived.by(() => {
-		if (segmentSource === 'selection' && selectedCells.length) return 'Add uses selection';
-		return 'Add uses inputs';
+		if (!selectedCells.length) return 'Add uses row 1 + input columns';
+		if (segmentSource === 'selection') return 'Add uses selection range';
+		return 'Add uses selection row + input columns';
 	});
 </script>
 
@@ -401,6 +416,20 @@
 					</Select.Trigger>
 					<Select.Content>
 						{#each paddingOptions as option}
+							<Select.Item value={option.value}>{option.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
+
+			<div class="space-y-2">
+				<Label>Header Rows</Label>
+				<Select.Root type="single" value={String(headerRows)} onValueChange={handleHeaderRowsChange}>
+					<Select.Trigger class="w-full">
+						{headerRowOptions.find(o => o.value === String(headerRows))?.label || `${headerRows} Rows`}
+					</Select.Trigger>
+					<Select.Content>
+						{#each headerRowOptions as option}
 							<Select.Item value={option.value}>{option.label}</Select.Item>
 						{/each}
 					</Select.Content>
@@ -475,17 +504,6 @@
 			<Card.Title class="text-sm">Segments</Card.Title>
 		</Card.Header>
 		<Card.Content class="p-0 space-y-4">
-			<div class="space-y-2">
-				<Label>Line Below Row</Label>
-				<Input
-					type="number"
-					value={segmentRow}
-					min={1}
-					max={tableData.rows.length}
-					onchange={handleSegmentRowChange}
-				/>
-			</div>
-
 			<div class="space-y-2">
 				<Label>Columns</Label>
 				<div class="grid grid-cols-2 gap-2">
