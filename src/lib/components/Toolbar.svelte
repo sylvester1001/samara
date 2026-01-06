@@ -27,7 +27,7 @@
 	}: Props = $props();
 
 	const presetOptions = [
-		{ value: 'booktabs', label: 'Three-line Table' },
+		{ value: 'booktabs', label: 'Booktabs' },
 		{ value: 'bordered', label: 'Bordered' },
 		{ value: 'minimal', label: 'Minimal' }
 	];
