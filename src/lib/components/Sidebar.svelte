@@ -462,7 +462,7 @@
 		</Card.Content>
 	</Card.Root>
 
-	<Card.Root class="p-4 gap-3">
+	<Card.Root class="p-4 gap-1">
 		<Card.Header class="p-0 pb-2">
 			<Card.Title class="text-sm">Table Style</Card.Title>
 		</Card.Header>
@@ -586,7 +586,7 @@
 		</Card.Content>
 	</Card.Root>
 
-	<Card.Root class="p-4 gap-3">
+	<Card.Root class="p-4 gap-1">
 		<Card.Header class="p-0 pb-2">
 			<Card.Title class="text-sm">Canvas</Card.Title>
 		</Card.Header>
