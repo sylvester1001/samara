@@ -10,7 +10,11 @@
 	import { exportAndDownloadPng, exportAndDownloadSvg } from '$lib/utils/export';
 	import { showExportToast } from '$lib/utils/notifications';
 	import type { TableStyle, CanvasConfig, RuleSegment } from '$lib/types';
-	import { Table2 } from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import { Table2, ArrowRightFromLine, Code } from 'lucide-svelte';
 
 	let tableElement: HTMLElement;
 	let fileInput: HTMLInputElement;
@@ -167,6 +171,71 @@
 	const canUndo = $derived(tableStore.historyIndex > 0);
 	const canRedo = $derived(tableStore.historyIndex < tableStore.history.length - 1);
 	const hasSelection = $derived(tableStore.selectedCells.length > 0);
+
+	const dpiOptions = [
+		{ value: 96, label: '96 DPI' },
+		{ value: 150, label: '150 DPI' },
+		{ value: 300, label: '300 DPI' },
+		{ value: 600, label: '600 DPI' }
+	];
+
+	let exportFormat = $state<'png' | 'svg'>('png');
+	let exportPopoverOpen = $state(false);
+	let exportPending = $state(false);
+	let exportFallbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function handleDpiChange(value: string | undefined) {
+		if (!value) return;
+		const parsed = parseInt(value);
+		if (!Number.isNaN(parsed)) {
+			exportDpi = parsed;
+		}
+	}
+
+	function runExport() {
+		if (exportFormat === 'png') {
+			handleExportPng();
+		} else {
+			handleExportSvg();
+		}
+	}
+
+	function scheduleExportFallback() {
+		if (exportFallbackTimer) {
+			clearTimeout(exportFallbackTimer);
+		}
+		exportFallbackTimer = setTimeout(() => {
+			if (!exportPending) return;
+			exportPending = false;
+			exportFallbackTimer = null;
+			runExport();
+		}, 250);
+	}
+
+	function handleExportPopoverAnimationEnd(event: AnimationEvent) {
+		if (!exportPending) return;
+		if (event.target !== event.currentTarget) return;
+		const target = event.currentTarget as HTMLElement | null;
+		if (!target || target.getAttribute('data-state') !== 'closed') return;
+		exportPending = false;
+		if (exportFallbackTimer) {
+			clearTimeout(exportFallbackTimer);
+			exportFallbackTimer = null;
+		}
+		runExport();
+	}
+
+	function handleExport() {
+		if (exportPending) return;
+		exportPending = true;
+		exportPopoverOpen = false;
+		scheduleExportFallback();
+	}
+
+	function handleExportLatex() {
+		// TODO: implement latex export
+		console.log('Export LaTeX not implemented yet');
+	}
 </script>
 
 <svelte:window onpaste={handleGlobalPaste} />
@@ -227,10 +296,6 @@
 				onUndo={handleUndo}
 				onRedo={handleRedo}
 				onPresetChange={handlePresetChange}
-				onExportPng={handleExportPng}
-				onExportSvg={handleExportSvg}
-				dpi={exportDpi}
-				onDpiChange={(value) => (exportDpi = value)}
 			/>
 
 			<Resizable.PaneGroup direction="horizontal" class="flex flex-1 overflow-hidden min-h-0 min-w-0">
@@ -264,11 +329,11 @@
 				</Resizable.Pane>
 				<Resizable.Handle />
 				<Resizable.Pane defaultSize={54} minSize={30} class="min-w-[360px] min-h-0">
-					<main class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative">
+					<main class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative flex flex-col">
 						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10">
 							Preview
 						</Badge>
-						<ScrollArea class="h-full w-full pt-9 px-4 pb-4" orientation="both">
+						<ScrollArea class="flex-1 w-full pt-9 px-4 pb-16" orientation="both">
 							<div class="flex flex-col items-start justify-start">
 								<div bind:this={tableElement} class="w-fit mx-auto">
 									<AcademicTable
@@ -283,6 +348,67 @@
 								</div>
 							</div>
 						</ScrollArea>
+						<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6">
+							<Popover.Root bind:open={exportPopoverOpen}>
+								<Popover.Trigger>
+									{#snippet child({ props })}
+										<Button variant="default" class="w-[140px] shadow-md" {...props}>
+											<ArrowRightFromLine class="w-4 h-4 mr-1" />
+											Export Image
+										</Button>
+									{/snippet}
+								</Popover.Trigger>
+								<Popover.Content align="center" class="w-64" onanimationend={handleExportPopoverAnimationEnd}>
+									<div class="grid gap-4">
+										<div class="grid gap-3">
+											<div class="grid grid-cols-3 items-center gap-4">
+												<Label>Format</Label>
+												<div class="col-span-2 flex gap-1">
+													<Button 
+														size="sm" 
+														variant={exportFormat === 'png' ? 'default' : 'outline'}
+														onclick={() => exportFormat = 'png'}
+														class="flex-1 h-8"
+													>
+														PNG
+													</Button>
+													<Button 
+														size="sm" 
+														variant={exportFormat === 'svg' ? 'default' : 'outline'}
+														onclick={() => exportFormat = 'svg'}
+														class="flex-1 h-8"
+													>
+														SVG
+													</Button>
+												</div>
+											</div>
+											{#if exportFormat === 'png'}
+												<div class="grid grid-cols-3 items-center gap-4">
+													<Label>DPI</Label>
+													<Select.Root type="single" value={String(exportDpi)} onValueChange={handleDpiChange}>
+														<Select.Trigger class="col-span-2 h-8">
+															{dpiOptions.find(o => o.value === exportDpi)?.label || 'Select DPI'}
+														</Select.Trigger>
+														<Select.Content>
+															{#each dpiOptions as option}
+																<Select.Item value={String(option.value)}>{option.label}</Select.Item>
+															{/each}
+														</Select.Content>
+													</Select.Root>
+												</div>
+											{/if}
+										</div>
+										<div class="flex justify-end">
+											<Button onclick={handleExport}>Export</Button>
+										</div>
+									</div>
+								</Popover.Content>
+							</Popover.Root>
+							<Button variant="outline" class="w-[140px] shadow-md bg-white dark:bg-[#18181b]" onclick={handleExportLatex}>
+								<Code class="w-4 h-4 mr-1" />
+								Export LaTeX
+							</Button>
+						</div>
 					</main>
 				</Resizable.Pane>
 			</Resizable.PaneGroup>
