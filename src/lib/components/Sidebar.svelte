@@ -95,12 +95,12 @@
 	let canvasPreset = $state('auto');
 	let customWidth = $state(800);
 	let customHeight = $state(600);
+	let segmentRow = $state(1);
 	let segmentStartCol = $state(1);
 	let segmentEndCol = $state(1);
 	let segmentTrimLeft = $state<SegmentTrim>('none');
 	let segmentTrimRight = $state<SegmentTrim>('none');
 	let segmentStyle = $state<SegmentStyle>('thin');
-	let segmentSource = $state<'selection' | 'manual'>('manual');
 	let lastSelectionKey = $state('');
 
 	// Initialize custom dimensions from canvasConfig
@@ -160,6 +160,7 @@
 	$effect(() => {
 		const maxRow = Math.max(1, tableData.rows.length);
 		const maxCol = Math.max(1, tableData.columnWidths.length);
+		segmentRow = Math.min(Math.max(1, segmentRow), maxRow);
 		segmentStartCol = Math.min(Math.max(1, segmentStartCol), maxCol);
 		segmentEndCol = Math.min(Math.max(1, segmentEndCol), maxCol);
 		if (segmentStartCol > segmentEndCol) {
@@ -176,7 +177,14 @@
 			.join('|');
 		if (key !== lastSelectionKey) {
 			lastSelectionKey = key;
-			segmentSource = selectedCells.length ? 'selection' : 'manual';
+			if (selectedCells.length) {
+				const range = getSelectionRange();
+				if (range) {
+					segmentRow = range.row;
+					segmentStartCol = range.startCol;
+					segmentEndCol = range.endCol;
+				}
+			}
 		}
 	});
 
@@ -246,13 +254,16 @@
 	function handleSegmentStartColChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		segmentStartCol = parseInt(target.value) || 1;
-		segmentSource = 'manual';
 	}
 
 	function handleSegmentEndColChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		segmentEndCol = parseInt(target.value) || 1;
-		segmentSource = 'manual';
+	}
+
+	function handleSegmentRowChange(e: Event) {
+		const target = e.target as HTMLInputElement;
+		segmentRow = parseInt(target.value) || 1;
 	}
 
 	function getCellRange(row: number, col: number) {
@@ -312,28 +323,10 @@
 		};
 	}
 
-	function applySelectionToSegment() {
-		const range = getSelectionRange();
-		if (!range) return;
-		segmentStartCol = range.startCol;
-		segmentEndCol = range.endCol;
-		segmentSource = 'selection';
-	}
-
 	function handleAddSegment() {
-		const selectionRange = getSelectionRange();
-		let nextRow = selectionRange ? selectionRange.row : 1;
-		let nextStartCol = segmentStartCol;
-		let nextEndCol = segmentEndCol;
-		if (segmentSource === 'selection') {
-			if (selectionRange) {
-				nextRow = selectionRange.row;
-				nextStartCol = selectionRange.startCol;
-				nextEndCol = selectionRange.endCol;
-			}
-		} else if (selectionRange) {
-			nextRow = selectionRange.row;
-		}
+		const nextRow = segmentRow;
+		const nextStartCol = segmentStartCol;
+		const nextEndCol = segmentEndCol;
 		onAddSegment?.({
 			atRow: nextRow - 1,
 			startCol: nextStartCol - 1,
@@ -343,21 +336,6 @@
 			style: segmentStyle
 		});
 	}
-
-	const selectionSummary = $derived.by(() => {
-		const bounds = getSelectionBounds();
-		if (!bounds) return 'No selection';
-		const rowMin = bounds.rowStart + 1;
-		const rowMax = bounds.rowEnd + 1;
-		const colMin = bounds.colStart + 1;
-		const colMax = bounds.colEnd + 1;
-		return `Selection: R${rowMin}-${rowMax}, C${colMin}-${colMax}`;
-	});
-	const segmentModeLabel = $derived.by(() => {
-		if (!selectedCells.length) return 'Add uses row 1 + input columns';
-		if (segmentSource === 'selection') return 'Add uses selection range';
-		return 'Add uses selection row + input columns';
-	});
 </script>
 
 <div class="settings-panel space-y-4">
@@ -383,31 +361,40 @@
 			<div class="space-y-4">
 				<Label>Segments</Label>
 				<div class="space-y-3">
-					<div class="grid grid-cols-2 gap-3">
-						<Input
-							type="number"
-							value={segmentStartCol}
-							min={1}
-							max={tableData.columnWidths.length}
-							onchange={handleSegmentStartColChange}
-							placeholder="Start"
-						/>
-						<Input
-							type="number"
-							value={segmentEndCol}
-							min={1}
-							max={tableData.columnWidths.length}
-							onchange={handleSegmentEndColChange}
-							placeholder="End"
-						/>
+					<div class="grid grid-cols-[1fr_2fr] gap-3">
+						<div class="flex flex-col gap-1.5">
+							<span class="text-xs text-muted-foreground">Row</span>
+							<Input
+								type="number"
+								value={segmentRow}
+								min={1}
+								max={tableData.rows.length}
+								onchange={handleSegmentRowChange}
+							/>
+						</div>
+						<div class="grid grid-cols-2 gap-3">
+							<div class="flex flex-col gap-1.5">
+								<span class="text-xs text-muted-foreground">Col Start</span>
+								<Input
+									type="number"
+									value={segmentStartCol}
+									min={1}
+									max={tableData.columnWidths.length}
+									onchange={handleSegmentStartColChange}
+								/>
+							</div>
+							<div class="flex flex-col gap-1.5">
+								<span class="text-xs text-muted-foreground">Col End</span>
+								<Input
+									type="number"
+									value={segmentEndCol}
+									min={1}
+									max={tableData.columnWidths.length}
+									onchange={handleSegmentEndColChange}
+								/>
+							</div>
+						</div>
 					</div>
-					<div class="flex items-center justify-between gap-2">
-						<Button size="sm" variant="outline" onclick={applySelectionToSegment} disabled={!selectedCells.length}>
-							Use Selection
-						</Button>
-						<span class="text-xs text-muted-foreground">{selectionSummary}</span>
-					</div>
-					<div class="text-xs text-muted-foreground">{segmentModeLabel}</div>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
