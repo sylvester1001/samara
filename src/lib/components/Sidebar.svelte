@@ -342,7 +342,7 @@
 				</Select.Root>
 			</div>
 
-			<div class="space-y-4">
+			<div class="space-y-4 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Segments</Label>
 				<div class="space-y-3">
 					<div class="grid grid-cols-[1fr_2fr] gap-3">
@@ -459,33 +459,35 @@
 						{/each}
 					</Select.Content>
 				</Select.Root>
+				<div class="space-y-2">
+					<span class="text-xs text-muted-foreground">Font Size: {tableStyle.fontSize}pt</span>
+					<Slider
+						type="single"
+						value={tableStyle.fontSize}
+						min={8}
+						max={16}
+						step={1}
+						onValueChange={handleFontSizeChange}
+					/>
+				</div>
 			</div>
 
-			<div class="space-y-3">
-				<Label>Font Size: {tableStyle.fontSize}pt</Label>
-				<Slider
-					type="single"
-					value={tableStyle.fontSize}
-					min={8}
-					max={16}
-					step={1}
-					onValueChange={handleFontSizeChange}
-				/>
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Scale</Label>
+				<div class="space-y-2">
+					<span class="text-xs text-muted-foreground">{Math.round(tableStyle.scale * 100)}%</span>
+					<Slider
+						type="single"
+						value={tableStyle.scale * 100}
+						min={50}
+						max={150}
+						step={5}
+						onValueChange={handleScaleChange}
+					/>
+				</div>
 			</div>
 
-			<div class="space-y-3">
-				<Label>Scale: {Math.round(tableStyle.scale * 100)}%</Label>
-				<Slider
-					type="single"
-					value={tableStyle.scale * 100}
-					min={50}
-					max={150}
-					step={5}
-					onValueChange={handleScaleChange}
-				/>
-			</div>
-
-			<div class="space-y-3">
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Cell Padding</Label>
 				<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
 					<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
@@ -494,7 +496,7 @@
 				</ToggleGroup.Root>
 			</div>
 
-			<div class="space-y-3">
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Table Borders</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex flex-col gap-2">
@@ -599,19 +601,22 @@
 				</div>
 			{/if}
 
-			<div class="space-y-3">
-				<Label>Padding: {canvasConfig.padding}px</Label>
-				<Slider
-					type="single"
-					value={canvasConfig.padding}
-					min={0}
-					max={60}
-					step={4}
-					onValueChange={handlePaddingValueChange}
-				/>
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Padding</Label>
+				<div class="space-y-2">
+					<span class="text-xs text-muted-foreground">{canvasConfig.padding}px</span>
+					<Slider
+						type="single"
+						value={canvasConfig.padding}
+						min={0}
+						max={60}
+						step={4}
+						onValueChange={handlePaddingValueChange}
+					/>
+				</div>
 			</div>
 
-			<div class="space-y-3">
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Background</Label>
 				<input
 					type="color"
