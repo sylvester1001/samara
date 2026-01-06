@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Toolbar, AcademicTable, TableEditor } from '$lib/components';
+	import { Toolbar, EditToolbar, AcademicTable, TableEditor } from '$lib/components';
 	import SettingsSidebar from '$lib/components/Sidebar.svelte';
 	import * as AppSidebar from '$lib/components/ui/sidebar/index.js';
 	import { tableStore } from '$lib/stores/table.svelte';
@@ -216,41 +216,47 @@
 
 	<AppSidebar.Inset>
 		<div class="flex flex-col flex-1 min-h-0 overflow-hidden">
-			<Toolbar
-				preset={tableStore.tableStyle.preset}
-				{canUndo}
-				{canRedo}
-				{hasSelection}
-				onImport={handleImportClick}
-				onNewTable={handleNewTable}
-				onUndo={handleUndo}
-				onRedo={handleRedo}
-				onPresetChange={handlePresetChange}
-				onExportPng={handleExportPng}
-				onExportSvg={handleExportSvg}
-				onAlignChange={handleAlignChange}
-				onToggleBold={handleToggleBold}
-				onToggleItalic={handleToggleItalic}
-				onTextColorChange={handleTextColorChange}
-				onBackgroundColorChange={handleBackgroundColorChange}
-				onMergeCells={handleMergeCells}
-				onUnmergeCells={handleUnmergeCells}
-				dpi={exportDpi}
-				onDpiChange={(value) => (exportDpi = value)}
-			/>
+				<Toolbar
+					preset={tableStore.tableStyle.preset}
+					{canUndo}
+					{canRedo}
+					onImport={handleImportClick}
+					onNewTable={handleNewTable}
+					onUndo={handleUndo}
+					onRedo={handleRedo}
+					onPresetChange={handlePresetChange}
+					onExportPng={handleExportPng}
+					onExportSvg={handleExportSvg}
+					dpi={exportDpi}
+					onDpiChange={(value) => (exportDpi = value)}
+				/>
 
 			<div class="flex flex-1 overflow-hidden min-h-0 min-w-0">
-				<div class="flex-1 p-4 min-h-0 min-w-0 bg-[#f4f4f5] dark:bg-[#0a0a0a] border-r border-border dark:border-[#27272a]">
-					<TableEditor
-						rows={tableStore.tableData.rows}
-						selectedCells={tableStore.selectedCells}
-						onSelectionChange={handleSelectionChange}
-						onCellChange={handleCellChange}
-						onAddRow={handleAddRow}
-						onAddColumn={handleAddColumn}
-						onDeleteRow={handleDeleteRow}
-						onDeleteColumn={handleDeleteColumn}
-					/>
+				<div class="flex-1 p-4 min-h-0 min-w-0 bg-[#f4f4f5] dark:bg-[#0a0a0a] border-r border-border dark:border-[#27272a] flex flex-col">
+					<div class="mb-3 shrink-0">
+						<EditToolbar
+							{hasSelection}
+							onAlignChange={handleAlignChange}
+							onToggleBold={handleToggleBold}
+							onToggleItalic={handleToggleItalic}
+							onTextColorChange={handleTextColorChange}
+							onBackgroundColorChange={handleBackgroundColorChange}
+							onMergeCells={handleMergeCells}
+							onUnmergeCells={handleUnmergeCells}
+						/>
+					</div>
+					<div class="flex-1 min-h-0">
+						<TableEditor
+							rows={tableStore.tableData.rows}
+							selectedCells={tableStore.selectedCells}
+							onSelectionChange={handleSelectionChange}
+							onCellChange={handleCellChange}
+							onAddRow={handleAddRow}
+							onAddColumn={handleAddColumn}
+							onDeleteRow={handleDeleteRow}
+							onDeleteColumn={handleDeleteColumn}
+						/>
+					</div>
 				</div>
 
 				<main class="flex-1 overflow-auto min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] pt-9 px-4 pb-4 relative flex flex-col items-center justify-start" bind:this={previewArea}>

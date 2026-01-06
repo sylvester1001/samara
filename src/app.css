@@ -130,9 +130,11 @@ html, body {
 
 /* Academic table */
 .canvas-wrapper {
-  display: inline-block;
+  display: flex;
   min-width: 200px;
   position: relative;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .table-container {

@@ -3,7 +3,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { ArrowRightFromLine, PencilLine, Undo2, Redo2, FilePlus, Download, TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge } from 'lucide-svelte';
+	import { ArrowRightFromLine, Undo2, Redo2, FilePlus, Download } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
 
 	interface Props {
@@ -17,14 +17,6 @@
 		onPresetChange?: (preset: TableStyle['preset']) => void;
 		canUndo?: boolean;
 		canRedo?: boolean;
-		hasSelection?: boolean;
-		onAlignChange?: (align: 'left' | 'center' | 'right') => void;
-		onToggleBold?: () => void;
-		onToggleItalic?: () => void;
-		onTextColorChange?: (color: string) => void;
-		onBackgroundColorChange?: (color: string) => void;
-		onMergeCells?: () => void;
-		onUnmergeCells?: () => void;
 		dpi?: number;
 		onDpiChange?: (dpi: number) => void;
 	}
@@ -40,14 +32,6 @@
 		onPresetChange,
 		canUndo = false,
 		canRedo = false,
-		hasSelection = false,
-		onAlignChange,
-		onToggleBold,
-		onToggleItalic,
-		onTextColorChange,
-		onBackgroundColorChange,
-		onMergeCells,
-		onUnmergeCells,
 		dpi = 300,
 		onDpiChange
 	}: Props = $props();
@@ -82,16 +66,6 @@
 		if (!Number.isNaN(parsed)) {
 			onDpiChange?.(parsed);
 		}
-	}
-
-	function handleTextColorChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		onTextColorChange?.(target.value);
-	}
-
-	function handleBackgroundColorChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		onBackgroundColorChange?.(target.value);
 	}
 
 	function runExport() {
@@ -171,104 +145,7 @@
 		</div>
 	</div>
 
-	<!-- Format tools - visible when width >= 1460px -->
-	<div class="hidden min-[1460px]:flex items-center gap-2">
-		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('left')} disabled={!hasSelection} title="Align Left">
-			<TextAlignStart class="w-4 h-4" />
-		</Button>
-		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('center')} disabled={!hasSelection} title="Align Center">
-			<TextAlignCenter class="w-4 h-4" />
-		</Button>
-		<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('right')} disabled={!hasSelection} title="Align Right">
-			<TextAlignEnd class="w-4 h-4" />
-		</Button>
-		<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
-		<Button variant="ghost" size="icon" onclick={onToggleBold} disabled={!hasSelection} title="Bold">
-			<Bold class="w-4 h-4" />
-		</Button>
-		<Button variant="ghost" size="icon" onclick={onToggleItalic} disabled={!hasSelection} title="Italic">
-			<Italic class="w-4 h-4" />
-		</Button>
-		<input
-			type="color"
-			class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
-			disabled={!hasSelection}
-			title="Text Color"
-			onchange={handleTextColorChange}
-		/>
-		<input
-			type="color"
-			class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
-			disabled={!hasSelection}
-			title="Cell Background"
-			onchange={handleBackgroundColorChange}
-		/>
-		<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
-		<Button variant="outline" size="sm" onclick={onMergeCells} disabled={!hasSelection}>
-			<TableCellsMerge class="w-4 h-4 mr-1" />
-			Merge
-		</Button>
-		<Button variant="outline" size="sm" onclick={onUnmergeCells} disabled={!hasSelection}>
-			Unmerge
-		</Button>
-	</div>
-
 	<div class="flex items-center gap-2 shrink-0">
-		<!-- Format tools popover - visible when width < 1460px -->
-		<div class="flex min-[1460px]:hidden items-center">
-			<Popover.Root>
-				<Popover.Trigger>
-					{#snippet child({ props })}
-					<Button variant="outline" size="sm" {...props}>
-						<PencilLine class="shrink-0 w-4 h-4" />
-						<span class="hidden min-[1200px]:inline whitespace-nowrap">Tools</span>
-					</Button>
-				{/snippet}
-			</Popover.Trigger>
-				<Popover.Content class="w-auto p-2">
-					<div class="flex items-center gap-1">
-						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('left'); }} disabled={!hasSelection} title="Align Left">
-							<TextAlignStart class="w-4 h-4" />
-						</Button>
-						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('center'); }} disabled={!hasSelection} title="Align Center">
-							<TextAlignCenter class="w-4 h-4" />
-						</Button>
-						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onAlignChange?.('right'); }} disabled={!hasSelection} title="Align Right">
-							<TextAlignEnd class="w-4 h-4" />
-						</Button>
-						<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
-						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleBold?.(); }} disabled={!hasSelection} title="Bold">
-							<Bold class="w-4 h-4" />
-						</Button>
-						<Button variant="ghost" size="icon" onclick={(e) => { e.stopPropagation(); onToggleItalic?.(); }} disabled={!hasSelection} title="Italic">
-							<Italic class="w-4 h-4" />
-						</Button>
-						<input
-							type="color"
-							class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
-							disabled={!hasSelection}
-							title="Text Color"
-							onchange={handleTextColorChange}
-						/>
-						<input
-							type="color"
-							class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
-							disabled={!hasSelection}
-							title="Cell Background"
-							onchange={handleBackgroundColorChange}
-						/>
-						<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
-						<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onMergeCells?.(); }} disabled={!hasSelection}>
-							<TableCellsMerge class="w-4 h-4 mr-1" />
-							Merge
-						</Button>
-						<Button variant="outline" size="sm" onclick={(e) => { e.stopPropagation(); onUnmergeCells?.(); }} disabled={!hasSelection}>
-							Unmerge
-						</Button>
-					</div>
-				</Popover.Content>
-			</Popover.Root>
-		</div>
 		<Popover.Root bind:open={exportPopoverOpen}>
 			<Popover.Trigger>
 				{#snippet child({ props })}
