@@ -242,14 +242,60 @@
 		segmentSource = 'manual';
 	}
 
-	function getSelectionRange() {
+	function getCellRange(row: number, col: number) {
+		const cell = tableData.rows[row]?.[col];
+		if (cell && !cell.isMerged) {
+			const rowspan = cell.rowspan ?? 1;
+			const colspan = cell.colspan ?? 1;
+			return {
+				rowStart: row,
+				rowEnd: row + rowspan - 1,
+				colStart: col,
+				colEnd: col + colspan - 1
+			};
+		}
+		for (let r = 0; r < tableData.rows.length; r++) {
+			for (let c = 0; c < tableData.rows[r].length; c++) {
+				const candidate = tableData.rows[r][c];
+				const rowspan = candidate.rowspan ?? 1;
+				const colspan = candidate.colspan ?? 1;
+				if (rowspan <= 1 && colspan <= 1) continue;
+				if (row >= r && row < r + rowspan && col >= c && col < c + colspan) {
+					return {
+						rowStart: r,
+						rowEnd: r + rowspan - 1,
+						colStart: c,
+						colEnd: c + colspan - 1
+					};
+				}
+			}
+		}
+		return { rowStart: row, rowEnd: row, colStart: col, colEnd: col };
+	}
+
+	function getSelectionBounds() {
 		if (!selectedCells.length) return null;
-		const rows = selectedCells.map((cell) => cell.row);
-		const cols = selectedCells.map((cell) => cell.col);
+		let rowStart = Number.POSITIVE_INFINITY;
+		let rowEnd = -Infinity;
+		let colStart = Number.POSITIVE_INFINITY;
+		let colEnd = -Infinity;
+		for (const cell of selectedCells) {
+			const range = getCellRange(cell.row, cell.col);
+			rowStart = Math.min(rowStart, range.rowStart);
+			rowEnd = Math.max(rowEnd, range.rowEnd);
+			colStart = Math.min(colStart, range.colStart);
+			colEnd = Math.max(colEnd, range.colEnd);
+		}
+		return { rowStart, rowEnd, colStart, colEnd };
+	}
+
+	function getSelectionRange() {
+		const bounds = getSelectionBounds();
+		if (!bounds) return null;
 		return {
-			row: Math.max(...rows) + 1,
-			startCol: Math.min(...cols) + 1,
-			endCol: Math.max(...cols) + 1
+			row: bounds.rowEnd + 1,
+			startCol: bounds.colStart + 1,
+			endCol: bounds.colEnd + 1
 		};
 	}
 
@@ -285,13 +331,12 @@
 	}
 
 	const selectionSummary = $derived.by(() => {
-		if (!selectedCells.length) return 'No selection';
-		const rows = selectedCells.map((cell) => cell.row + 1);
-		const cols = selectedCells.map((cell) => cell.col + 1);
-		const rowMin = Math.min(...rows);
-		const rowMax = Math.max(...rows);
-		const colMin = Math.min(...cols);
-		const colMax = Math.max(...cols);
+		const bounds = getSelectionBounds();
+		if (!bounds) return 'No selection';
+		const rowMin = bounds.rowStart + 1;
+		const rowMax = bounds.rowEnd + 1;
+		const colMin = bounds.colStart + 1;
+		const colMax = bounds.colEnd + 1;
 		return `Selection: R${rowMin}-${rowMax}, C${colMin}-${colMax}`;
 	});
 	const segmentModeLabel = $derived.by(() => {
