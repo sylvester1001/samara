@@ -92,8 +92,8 @@
 	let segmentRow = $state(1);
 	let segmentStartCol = $state(1);
 	let segmentEndCol = $state(1);
-	let segmentTrimLeft = $state(false);
-	let segmentTrimRight = $state(false);
+	let segmentTrimLeft = $state(true);
+	let segmentTrimRight = $state(true);
 	let segmentStyle = $state<SegmentStyle>('thin');
 	let lastSelectionKey = $state('');
 
@@ -233,16 +233,6 @@
 
 	function getBorderLabel(value: BorderStyle) {
 		return doubleBorderOptions.find((option) => option.value === value)?.label ?? value;
-	}
-
-	function handleLockColumnChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		onLockColumnResizeChange?.(target.checked);
-	}
-
-	function handleLockRowChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		onLockRowResizeChange?.(target.checked);
 	}
 
 	function handleSegmentStartColChange(e: Event) {
@@ -438,25 +428,15 @@
 
 			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Resize Lock</Label>
-				<div class="space-y-4">
-					<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
-						<span>Lock Column Widths</span>
-						<input
-							type="checkbox"
-							class="w-4 h-4 accent-primary cursor-pointer"
-							checked={lockColumnResize}
-							onchange={handleLockColumnChange}
-						/>
-					</label>
-					<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
-						<span>Lock Row Heights</span>
-						<input
-							type="checkbox"
-							class="w-4 h-4 accent-primary cursor-pointer"
-							checked={lockRowResize}
-							onchange={handleLockRowChange}
-						/>
-					</label>
+				<div class="grid grid-cols-2 gap-4">
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-muted-foreground">Column Widths</span>
+						<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
+					</div>
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-muted-foreground">Row Heights</span>
+						<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
+					</div>
 				</div>
 			</div>
 		</Card.Content>
