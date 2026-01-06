@@ -2,6 +2,7 @@
 	import { Toolbar, EditToolbar, AcademicTable, TableEditor } from '$lib/components';
 	import SettingsSidebar from '$lib/components/Sidebar.svelte';
 	import * as AppSidebar from '$lib/components/ui/sidebar/index.js';
+	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import { tableStore } from '$lib/stores/table.svelte';
 	import { handleFileImport, handlePaste } from '$lib/utils/import';
 	import { exportAndDownloadPng, exportAndDownloadSvg } from '$lib/utils/export';
@@ -216,64 +217,68 @@
 
 	<AppSidebar.Inset>
 		<div class="flex flex-col flex-1 min-h-0 overflow-hidden">
-				<Toolbar
-					preset={tableStore.tableStyle.preset}
-					{canUndo}
-					{canRedo}
-					onImport={handleImportClick}
-					onNewTable={handleNewTable}
-					onUndo={handleUndo}
-					onRedo={handleRedo}
-					onPresetChange={handlePresetChange}
-					onExportPng={handleExportPng}
-					onExportSvg={handleExportSvg}
-					dpi={exportDpi}
-					onDpiChange={(value) => (exportDpi = value)}
-				/>
+			<Toolbar
+				preset={tableStore.tableStyle.preset}
+				{canUndo}
+				{canRedo}
+				onImport={handleImportClick}
+				onNewTable={handleNewTable}
+				onUndo={handleUndo}
+				onRedo={handleRedo}
+				onPresetChange={handlePresetChange}
+				onExportPng={handleExportPng}
+				onExportSvg={handleExportSvg}
+				dpi={exportDpi}
+				onDpiChange={(value) => (exportDpi = value)}
+			/>
 
-			<div class="flex flex-1 overflow-hidden min-h-0 min-w-0">
-				<div class="flex-1 p-4 min-h-0 min-w-0 bg-[#f4f4f5] dark:bg-[#0a0a0a] border-r border-border dark:border-[#27272a] flex flex-col">
-					<div class="mb-3 shrink-0">
-						<EditToolbar
-							{hasSelection}
-							onAlignChange={handleAlignChange}
-							onToggleBold={handleToggleBold}
-							onToggleItalic={handleToggleItalic}
-							onTextColorChange={handleTextColorChange}
-							onBackgroundColorChange={handleBackgroundColorChange}
-							onMergeCells={handleMergeCells}
-							onUnmergeCells={handleUnmergeCells}
-						/>
+			<Resizable.PaneGroup direction="horizontal" class="flex flex-1 overflow-hidden min-h-0 min-w-0">
+				<Resizable.Pane defaultSize={46} minSize={30} class="min-w-[360px] min-h-0">
+					<div class="p-4 min-h-0 min-w-0 bg-[#f4f4f5] dark:bg-[#0a0a0a] flex flex-col h-full">
+						<div class="mb-3 shrink-0">
+							<EditToolbar
+								{hasSelection}
+								onAlignChange={handleAlignChange}
+								onToggleBold={handleToggleBold}
+								onToggleItalic={handleToggleItalic}
+								onTextColorChange={handleTextColorChange}
+								onBackgroundColorChange={handleBackgroundColorChange}
+								onMergeCells={handleMergeCells}
+								onUnmergeCells={handleUnmergeCells}
+							/>
+						</div>
+						<div class="flex-1 min-h-0">
+							<TableEditor
+								rows={tableStore.tableData.rows}
+								selectedCells={tableStore.selectedCells}
+								onSelectionChange={handleSelectionChange}
+								onCellChange={handleCellChange}
+								onAddRow={handleAddRow}
+								onAddColumn={handleAddColumn}
+								onDeleteRow={handleDeleteRow}
+								onDeleteColumn={handleDeleteColumn}
+							/>
+						</div>
 					</div>
-					<div class="flex-1 min-h-0">
-						<TableEditor
-							rows={tableStore.tableData.rows}
-							selectedCells={tableStore.selectedCells}
-							onSelectionChange={handleSelectionChange}
-							onCellChange={handleCellChange}
-							onAddRow={handleAddRow}
-							onAddColumn={handleAddColumn}
-							onDeleteRow={handleDeleteRow}
-							onDeleteColumn={handleDeleteColumn}
-						/>
-					</div>
-				</div>
-
-				<main class="flex-1 overflow-auto min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] pt-9 px-4 pb-4 relative flex flex-col items-start justify-start" bind:this={previewArea}>
-					<div class="absolute top-2 right-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Preview</div>
-					<div bind:this={tableElement} class="w-fit mx-auto">
-						<AcademicTable
-							tableData={tableStore.tableData}
-							tableStyle={tableStore.tableStyle}
-							canvasConfig={tableStore.canvasConfig}
-							onCellUpdate={handleCellChange}
-							onColumnResize={handleColumnResize}
-							onRowResize={handleRowResize}
-							onCanvasResize={handleCanvasChange}
-						/>
-					</div>
-				</main>
-			</div>
+				</Resizable.Pane>
+				<Resizable.Handle />
+				<Resizable.Pane defaultSize={54} minSize={30} class="min-w-[360px] min-h-0">
+					<main class="h-full overflow-auto min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] pt-9 px-4 pb-4 relative flex flex-col items-start justify-start" bind:this={previewArea}>
+						<div class="absolute top-2 right-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Preview</div>
+						<div bind:this={tableElement} class="w-fit mx-auto">
+							<AcademicTable
+								tableData={tableStore.tableData}
+								tableStyle={tableStore.tableStyle}
+								canvasConfig={tableStore.canvasConfig}
+								onCellUpdate={handleCellChange}
+								onColumnResize={handleColumnResize}
+								onRowResize={handleRowResize}
+								onCanvasResize={handleCanvasChange}
+							/>
+						</div>
+					</main>
+				</Resizable.Pane>
+			</Resizable.PaneGroup>
 		</div>
 	</AppSidebar.Inset>
 </AppSidebar.Provider>
