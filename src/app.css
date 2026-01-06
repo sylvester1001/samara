@@ -166,6 +166,7 @@ html, body {
 .academic-table.preset-booktabs {
   position: relative;
   --double-line-size: 4px;
+  --double-line-offset: calc(var(--double-line-size) - 1px);
   z-index: 0;
   border-top: var(--border-top) var(--border-top-style, solid) black;
   border-bottom: var(--border-bottom) var(--border-bottom-style, solid) black;
@@ -232,6 +233,20 @@ html, body {
   border-bottom: 1px solid black;
   pointer-events: none;
   z-index: 1;
+}
+
+.academic-table.preset-booktabs.border-top-thick-thin thead th,
+.academic-table.preset-booktabs.border-top-thick-thin thead td,
+.academic-table.preset-booktabs.border-top-thin-thick thead th,
+.academic-table.preset-booktabs.border-top-thin-thick thead td {
+  padding-top: calc(var(--cell-padding, 8px) + var(--double-line-offset));
+}
+
+.academic-table.preset-booktabs.border-bottom-thick-thin tbody tr:last-child td,
+.academic-table.preset-booktabs.border-bottom-thick-thin tbody tr:last-child th,
+.academic-table.preset-booktabs.border-bottom-thin-thick tbody tr:last-child td,
+.academic-table.preset-booktabs.border-bottom-thin-thick tbody tr:last-child th {
+  padding-bottom: calc(var(--cell-padding, 8px) + var(--double-line-offset));
 }
 
 .academic-table.preset-booktabs thead tr {
