@@ -249,7 +249,7 @@ html, body {
   padding-bottom: calc(var(--cell-padding, 8px) + var(--double-line-offset));
 }
 
-.academic-table.preset-booktabs thead tr {
+.academic-table.preset-booktabs thead tr:last-child {
   border-bottom: var(--border-header) var(--border-header-style, solid) black;
 }
 

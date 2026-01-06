@@ -116,6 +116,10 @@
 		tableStore.unmergeSelectedCells();
 	}
 
+	function handleHeaderRowsChange(count: number) {
+		tableStore.setHeaderRows(count);
+	}
+
 	async function handleExportPng() {
 		if (tableElement) {
 			const pixelRatio = Math.max(1, exportDpi / 96);
@@ -211,6 +215,9 @@
 				onBackgroundColorChange={handleBackgroundColorChange}
 				onMergeCells={handleMergeCells}
 				onUnmergeCells={handleUnmergeCells}
+				headerRows={tableStore.tableData.headerRows}
+				maxHeaderRows={tableStore.tableData.rows.length}
+				onHeaderRowsChange={handleHeaderRowsChange}
 				dpi={exportDpi}
 				onDpiChange={(value) => (exportDpi = value)}
 			/>

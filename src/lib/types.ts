@@ -14,9 +14,23 @@ export interface TableData {
 	rows: Cell[][];
 	columnWidths: number[];
 	rowHeights: number[];
+	headerRows: number;
+	segments: RuleSegment[];
 }
 
 export type BorderStyle = 'none' | 'thin' | 'thick' | 'double' | 'thick-thin' | 'thin-thick';
+
+export type SegmentTrim = 'none' | 'short';
+export type SegmentStyle = 'thin' | 'thick' | 'double';
+
+export interface RuleSegment {
+	atRow: number;
+	startCol: number;
+	endCol: number;
+	trimLeft?: SegmentTrim;
+	trimRight?: SegmentTrim;
+	style?: SegmentStyle;
+}
 
 export interface BorderConfig {
 	top: BorderStyle;

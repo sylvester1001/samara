@@ -25,6 +25,9 @@
 		onBackgroundColorChange?: (color: string) => void;
 		onMergeCells?: () => void;
 		onUnmergeCells?: () => void;
+		headerRows?: number;
+		maxHeaderRows?: number;
+		onHeaderRowsChange?: (count: number) => void;
 		dpi?: number;
 		onDpiChange?: (dpi: number) => void;
 	}
@@ -48,6 +51,9 @@
 		onBackgroundColorChange,
 		onMergeCells,
 		onUnmergeCells,
+		headerRows = 1,
+		maxHeaderRows = 1,
+		onHeaderRowsChange,
 		dpi = 300,
 		onDpiChange
 	}: Props = $props();
@@ -65,6 +71,14 @@
 		{ value: 600, label: '600 DPI' }
 	];
 
+	const headerRowOptions = $derived.by(() => {
+		const max = Math.max(1, maxHeaderRows);
+		return Array.from({ length: max }, (_, index) => {
+			const value = index + 1;
+			return { value: String(value), label: `${value} Row${value === 1 ? '' : 's'}` };
+		});
+	});
+
 	let exportFormat = $state<'png' | 'svg'>('png');
 	let exportPopoverOpen = $state(false);
 	let exportPending = $state(false);
@@ -81,6 +95,14 @@
 		const parsed = parseInt(value);
 		if (!Number.isNaN(parsed)) {
 			onDpiChange?.(parsed);
+		}
+	}
+
+	function handleHeaderRowsChange(value: string | undefined) {
+		if (!value) return;
+		const parsed = parseInt(value);
+		if (!Number.isNaN(parsed)) {
+			onHeaderRowsChange?.(parsed);
 		}
 	}
 
@@ -164,6 +186,20 @@
 				</Select.Trigger>
 				<Select.Content>
 					{#each presetOptions as option}
+						<Select.Item value={option.value}>{option.label}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
+		<div class="flex items-center gap-2 min-w-0 flex-[0_0_160px] min-w-[160px]">
+			<Select.Root type="single" value={String(headerRows)} onValueChange={handleHeaderRowsChange}>
+				<Select.Trigger class="w-full min-w-0">
+					<span class="whitespace-nowrap overflow-visible">
+						Header: {headerRowOptions.find(o => o.value === String(headerRows))?.label || `${headerRows} Rows`}
+					</span>
+				</Select.Trigger>
+				<Select.Content>
+					{#each headerRowOptions as option}
 						<Select.Item value={option.value}>{option.label}</Select.Item>
 					{/each}
 				</Select.Content>

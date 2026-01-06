@@ -65,6 +65,10 @@
 		}
 		return classes.join(' ');
 	});
+	const headerRowCount = $derived.by(() => {
+		const requested = tableData.headerRows ?? 1;
+		return Math.min(Math.max(1, requested), tableData.rows.length);
+	});
 	// 1. 创建一个状态数组来直接绑定每一行在浏览器中的真实渲染高度
 	let domRowHeights: number[] = $state([]);
 
@@ -246,12 +250,12 @@
 				</colgroup>
 			
 			<thead>
-				{#if tableData.rows[0]}
+				{#each tableData.rows.slice(0, headerRowCount) as row, rowIndex}
 					<tr 
-						style:height="{tableData.rowHeights[0] || 32}px"
-						bind:clientHeight={domRowHeights[0]} 
+						style:height="{tableData.rowHeights[rowIndex] || 32}px"
+						bind:clientHeight={domRowHeights[rowIndex]} 
 					>
-						{#each tableData.rows[0] as cell, colIndex}
+						{#each row as cell, colIndex}
 							{#if !cell.isMerged}
 								<th
 									class="table-cell"
@@ -268,20 +272,20 @@
 									<TableCell
 										{cell}
 										isHeader={true}
-										onupdate={(content) => onCellUpdate?.(0, colIndex, content)}
+										onupdate={(content) => onCellUpdate?.(rowIndex, colIndex, content)}
 									/>
 								</th>
 							{/if}
 						{/each}
 					</tr>
-				{/if}
+				{/each}
 			</thead>
 
 			<tbody>
-				{#each tableData.rows.slice(1) as row, rowIndex}
+				{#each tableData.rows.slice(headerRowCount) as row, rowIndex}
 					<tr 
-						style:height="{tableData.rowHeights[rowIndex + 1] || 32}px"
-						bind:clientHeight={domRowHeights[rowIndex + 1]}
+						style:height="{tableData.rowHeights[rowIndex + headerRowCount] || 32}px"
+						bind:clientHeight={domRowHeights[rowIndex + headerRowCount]}
 					>
 						{#each row as cell, colIndex}
 							{#if !cell.isMerged}
@@ -299,7 +303,7 @@
 								>
 									<TableCell
 										{cell}
-										onupdate={(content) => onCellUpdate?.(rowIndex + 1, colIndex, content)}
+										onupdate={(content) => onCellUpdate?.(rowIndex + headerRowCount, colIndex, content)}
 									/>
 								</td>
 							{/if}

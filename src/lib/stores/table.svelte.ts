@@ -24,7 +24,9 @@ function createEmptyTable(rows: number, cols: number): TableData {
 	return {
 		rows: tableRows,
 		columnWidths: Array(cols).fill(100),
-		rowHeights: Array(rows).fill(32)
+		rowHeights: Array(rows).fill(32),
+		headerRows: 1,
+		segments: []
 	};
 }
 
@@ -65,6 +67,13 @@ class TableStore {
 
 	setTableData(data: TableData) {
 		this.tableData = data;
+		this.saveHistory();
+	}
+
+	setHeaderRows(count: number) {
+		const maxRows = this.tableData.rows.length || 1;
+		const next = Math.min(Math.max(1, count), maxRows);
+		this.tableData.headerRows = next;
 		this.saveHistory();
 	}
 
@@ -207,6 +216,10 @@ class TableStore {
 		if (this.tableData.rows.length > 1) {
 			this.tableData.rows.splice(index, 1);
 			this.tableData.rowHeights.splice(index, 1);
+			this.tableData.headerRows = Math.min(
+				Math.max(1, this.tableData.headerRows),
+				this.tableData.rows.length
+			);
 			this.saveHistory();
 		}
 	}
@@ -297,7 +310,9 @@ class TableStore {
 		this.tableData = {
 			rows,
 			columnWidths: Array(data[0]?.length || 1).fill(100),
-			rowHeights: Array(data.length).fill(32)
+			rowHeights: Array(data.length).fill(32),
+			headerRows: 1,
+			segments: []
 		};
 		this.history = [];
 		this.historyIndex = -1;
