@@ -259,9 +259,9 @@
 					</div>
 				</div>
 
-				<main class="flex-1 overflow-auto min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] pt-9 px-4 pb-4 relative flex flex-col items-center justify-start" bind:this={previewArea}>
+				<main class="flex-1 overflow-auto min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] pt-9 px-4 pb-4 relative flex flex-col items-start justify-start" bind:this={previewArea}>
 					<div class="absolute top-2 right-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Preview</div>
-					<div bind:this={tableElement}>
+					<div bind:this={tableElement} class="w-fit mx-auto">
 						<AcademicTable
 							tableData={tableStore.tableData}
 							tableStyle={tableStore.tableStyle}
