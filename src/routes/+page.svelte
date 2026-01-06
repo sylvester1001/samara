@@ -333,7 +333,7 @@
 						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10">
 							Preview
 						</Badge>
-						<ScrollArea class="flex-1 w-full pt-9 px-4 pb-16" orientation="both">
+						<ScrollArea class="flex-1 w-full pt-12 px-4 pb-16" orientation="both">
 							<div class="min-w-full flex justify-center">
 								<div bind:this={tableElement} class="w-fit">
 									<AcademicTable
