@@ -487,20 +487,11 @@
 
 			<div class="space-y-3">
 				<Label>Cell Padding</Label>
-				<Select.Root 
-					type="single" 
-					value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} 
-					onValueChange={handlePaddingChange}
-				>
-					<Select.Trigger class="w-full">
-						{paddingOptions.find(o => o.value === (typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'))?.label || 'Normal'}
-					</Select.Trigger>
-					<Select.Content>
-						{#each paddingOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+				<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
+					<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
+					<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1">Normal</ToggleGroup.Item>
+					<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1">Loose</ToggleGroup.Item>
+				</ToggleGroup.Root>
 			</div>
 
 			<div class="space-y-3">
