@@ -6,7 +6,7 @@
 	import { handleFileImport, handlePaste } from '$lib/utils/import';
 	import { exportAndDownloadPng, exportAndDownloadSvg } from '$lib/utils/export';
 	import { showExportToast } from '$lib/utils/notifications';
-	import type { TableStyle, CanvasConfig } from '$lib/types';
+	import type { TableStyle, CanvasConfig, RuleSegment } from '$lib/types';
 	import { Table2 } from 'lucide-svelte';
 
 	let tableElement: HTMLElement;
@@ -120,6 +120,18 @@
 		tableStore.setHeaderRows(count);
 	}
 
+	function handleAddSegment(segment: RuleSegment) {
+		tableStore.addSegment(segment);
+	}
+
+	function handleRemoveSegment(index: number) {
+		tableStore.removeSegment(index);
+	}
+
+	function handleClearSegments() {
+		tableStore.clearSegments();
+	}
+
 	async function handleExportPng() {
 		if (tableElement) {
 			const pixelRatio = Math.max(1, exportDpi / 96);
@@ -184,12 +196,17 @@
 			<SettingsSidebar
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}
+				tableData={tableStore.tableData}
+				selectedCells={tableStore.selectedCells}
 				onStyleChange={handleStyleChange}
 				onCanvasChange={handleCanvasChange}
 				lockColumnResize={tableStore.lockColumnResize}
 				lockRowResize={tableStore.lockRowResize}
 				onLockColumnResizeChange={(value) => (tableStore.lockColumnResize = value)}
 				onLockRowResizeChange={(value) => (tableStore.lockRowResize = value)}
+				onAddSegment={handleAddSegment}
+				onRemoveSegment={handleRemoveSegment}
+				onClearSegments={handleClearSegments}
 			/>
 		</AppSidebar.Content>
 	</AppSidebar.Root>

@@ -142,6 +142,7 @@ html, body {
 
 .table-scale {
   transform-origin: top left;
+  position: relative;
 }
 
 .academic-table {
@@ -156,6 +157,19 @@ html, body {
   position: relative;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+.segment-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.segment-line {
+  position: absolute;
+  height: 0;
+  border-top: var(--segment-width, 1px) var(--segment-style, solid) black;
 }
 
 .resizable-cell {

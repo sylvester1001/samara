@@ -3,6 +3,7 @@ import {
 	type TableStyle,
 	type CanvasConfig,
 	type Cell,
+	type RuleSegment,
 	DEFAULT_CELL,
 	DEFAULT_TABLE_STYLE,
 	DEFAULT_CANVAS_CONFIG
@@ -66,7 +67,11 @@ class TableStore {
 	}
 
 	setTableData(data: TableData) {
-		this.tableData = data;
+		this.tableData = {
+			...data,
+			headerRows: data.headerRows ?? 1,
+			segments: data.segments ?? []
+		};
 		this.saveHistory();
 	}
 
@@ -209,6 +214,10 @@ class TableStore {
 		const defaultHeight = this.lockRowResize ? this.tableData.rowHeights[0] ?? 32 : 32;
 		this.tableData.rows.splice(idx, 0, newRow);
 		this.tableData.rowHeights.splice(idx, 0, defaultHeight);
+		this.tableData.segments = this.tableData.segments.map((segment) => ({
+			...segment,
+			atRow: segment.atRow >= idx ? segment.atRow + 1 : segment.atRow
+		}));
 		this.saveHistory();
 	}
 
@@ -220,6 +229,11 @@ class TableStore {
 				Math.max(1, this.tableData.headerRows),
 				this.tableData.rows.length
 			);
+			const maxRow = this.tableData.rows.length - 1;
+			this.tableData.segments = this.tableData.segments.map((segment) => {
+				const shifted = segment.atRow >= index ? segment.atRow - 1 : segment.atRow;
+				return { ...segment, atRow: Math.min(Math.max(0, shifted), maxRow) };
+			});
 			this.saveHistory();
 		}
 	}
@@ -231,6 +245,22 @@ class TableStore {
 			row.splice(idx, 0, createCell(i === 0 ? `Col ${idx + 1}` : ''));
 		});
 		this.tableData.columnWidths.splice(idx, 0, defaultWidth);
+		this.tableData.segments = this.tableData.segments.map((segment) => {
+			if (segment.startCol >= idx) {
+				return {
+					...segment,
+					startCol: segment.startCol + 1,
+					endCol: segment.endCol + 1
+				};
+			}
+			if (segment.endCol >= idx) {
+				return {
+					...segment,
+					endCol: segment.endCol + 1
+				};
+			}
+			return segment;
+		});
 		this.saveHistory();
 	}
 
@@ -238,8 +268,59 @@ class TableStore {
 		if (this.tableData.columnWidths.length > 1) {
 			this.tableData.rows.forEach((row) => row.splice(index, 1));
 			this.tableData.columnWidths.splice(index, 1);
+			this.tableData.segments = this.tableData.segments
+				.map((segment) => {
+					if (index < segment.startCol) {
+						return {
+							...segment,
+							startCol: segment.startCol - 1,
+							endCol: segment.endCol - 1
+						};
+					}
+					if (index <= segment.endCol) {
+						return {
+							...segment,
+							endCol: segment.endCol - 1
+						};
+					}
+					return segment;
+				})
+				.filter((segment) => segment.endCol >= segment.startCol);
 			this.saveHistory();
 		}
+	}
+
+	addSegment(segment: RuleSegment) {
+		const rowCount = this.tableData.rows.length;
+		const colCount = this.tableData.columnWidths.length;
+		if (rowCount === 0 || colCount === 0) return;
+
+		const startCol = Math.max(0, Math.min(segment.startCol, colCount - 1));
+		const endCol = Math.max(startCol, Math.min(segment.endCol, colCount - 1));
+		const atRow = Math.max(0, Math.min(segment.atRow, rowCount - 1));
+
+		this.tableData.segments = [
+			...this.tableData.segments,
+			{
+				...segment,
+				atRow,
+				startCol,
+				endCol
+			}
+		];
+		this.saveHistory();
+	}
+
+	removeSegment(index: number) {
+		if (index < 0 || index >= this.tableData.segments.length) return;
+		this.tableData.segments = this.tableData.segments.filter((_, i) => i !== index);
+		this.saveHistory();
+	}
+
+	clearSegments() {
+		if (this.tableData.segments.length === 0) return;
+		this.tableData.segments = [];
+		this.saveHistory();
 	}
 
 	setColumnWidth(index: number, width: number) {

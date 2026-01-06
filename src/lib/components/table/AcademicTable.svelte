@@ -39,11 +39,22 @@
 		'thick-thin': 'double',
 		'thin-thick': 'double'
 	};
+	const segmentWidthMap: Record<string, number> = {
+		thin: 1,
+		thick: 2,
+		double: 3
+	};
+	const segmentStyleMap: Record<string, string> = {
+		thin: 'solid',
+		thick: 'solid',
+		double: 'double'
+	};
     const paddingMap: Record<string, number> = {
 		compact: 4,
 		normal: 8,
 		loose: 16
 	};
+	const segmentTrimPx = 8;
 
 	const fontFamily = $derived(fontFamilyMap[tableStyle.fontFamily]);
 	const cellPadding = $derived(
@@ -131,12 +142,59 @@
 		}
 		return positions;
 	});
+	const colOffsets = $derived.by(() => {
+		const offsets: number[] = [0];
+		let currentLeft = 0;
+		for (const width of tableData.columnWidths) {
+			currentLeft += width;
+			offsets.push(currentLeft);
+		}
+		return offsets;
+	});
 	const scaledRowResizerPositions = $derived.by(() =>
 		rowResizerPositions.map((pos) => pos * tableStyle.scale)
 	);
 	const scaledColResizerPositions = $derived.by(() =>
 		colResizerPositions.map((pos) => pos * tableStyle.scale)
 	);
+	const segmentLines = $derived.by(() => {
+		const lines: {
+			id: number;
+			left: number;
+			top: number;
+			width: number;
+			borderWidth: number;
+			borderStyle: string;
+		}[] = [];
+		const rowCount = tableData.rows.length;
+		const colCount = tableData.columnWidths.length;
+		if (rowCount === 0 || colCount === 0) return lines;
+
+		const segments = tableData.segments ?? [];
+		for (let i = 0; i < segments.length; i++) {
+			const segment = segments[i];
+			const atRow = Math.max(0, Math.min(segment.atRow, rowCount - 1));
+			const startCol = Math.max(0, Math.min(segment.startCol, colCount - 1));
+			const endCol = Math.max(startCol, Math.min(segment.endCol, colCount - 1));
+			const left = colOffsets[startCol] ?? 0;
+			const right = colOffsets[endCol + 1] ?? left;
+			const trimLeft = segment.trimLeft === 'short' ? segmentTrimPx : 0;
+			const trimRight = segment.trimRight === 'short' ? segmentTrimPx : 0;
+			const width = Math.max(0, right - left - trimLeft - trimRight);
+			if (width <= 0) continue;
+			const top = rowResizerPositions[atRow] ?? 0;
+			const styleKey = segment.style ?? 'thin';
+			lines.push({
+				id: i,
+				left: left + trimLeft,
+				top,
+				width,
+				borderWidth: segmentWidthMap[styleKey] ?? 1,
+				borderStyle: segmentStyleMap[styleKey] ?? 'solid'
+			});
+		}
+		return lines;
+	});
 
 	function handleColumnResize(colIndex: number, delta: number) {
 		const currentWidth = tableData.columnWidths[colIndex] || 100;
@@ -225,6 +283,18 @@
 >
 	<div class="table-container" style:width="{scaledTableWidth}px" style:height="{scaledTableHeight}px">
 		<div class="table-scale" style:transform="scale({tableStyle.scale})">
+			<div class="segment-layer">
+				{#each segmentLines as segment}
+					<div
+						class="segment-line"
+						style:left="{segment.left}px"
+						style:top="{segment.top}px"
+						style:width="{segment.width}px"
+						style:--segment-width="{segment.borderWidth}px"
+						style:--segment-style={segment.borderStyle}
+					></div>
+				{/each}
+			</div>
 			<table
 				class={tableClass}
 				style:width="{tableWidth}px"
