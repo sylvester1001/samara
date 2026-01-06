@@ -4,6 +4,7 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import * as AppSidebar from '$lib/components/ui/sidebar/index.js';
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import { tableStore } from '$lib/stores/table.svelte';
 	import { handleFileImport, handlePaste } from '$lib/utils/import';
 	import { exportAndDownloadPng, exportAndDownloadSvg } from '$lib/utils/export';
@@ -12,7 +13,6 @@
 	import { Table2 } from 'lucide-svelte';
 
 	let tableElement: HTMLElement;
-	let previewArea: HTMLElement;
 	let fileInput: HTMLInputElement;
 	let exportDpi = $state(300);
 
@@ -265,22 +265,24 @@
 				<Resizable.Handle />
 				<Resizable.Pane defaultSize={54} minSize={30} class="min-w-[360px] min-h-0">
 					<main class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative">
-						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide">
+						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10">
 							Preview
 						</Badge>
-						<div class="h-full w-full overflow-auto pt-9 px-4 pb-4 flex flex-col items-start justify-start" bind:this={previewArea}>
-							<div bind:this={tableElement} class="w-fit mx-auto">
-								<AcademicTable
-									tableData={tableStore.tableData}
-									tableStyle={tableStore.tableStyle}
-									canvasConfig={tableStore.canvasConfig}
-									onCellUpdate={handleCellChange}
-									onColumnResize={handleColumnResize}
-									onRowResize={handleRowResize}
-									onCanvasResize={handleCanvasChange}
-								/>
+						<ScrollArea class="h-full w-full pt-9 px-4 pb-4" orientation="both">
+							<div class="flex flex-col items-start justify-start">
+								<div bind:this={tableElement} class="w-fit mx-auto">
+									<AcademicTable
+										tableData={tableStore.tableData}
+										tableStyle={tableStore.tableStyle}
+										canvasConfig={tableStore.canvasConfig}
+										onCellUpdate={handleCellChange}
+										onColumnResize={handleColumnResize}
+										onRowResize={handleRowResize}
+										onCanvasResize={handleCanvasChange}
+									/>
+								</div>
 							</div>
-						</div>
+						</ScrollArea>
 					</main>
 				</Resizable.Pane>
 			</Resizable.PaneGroup>

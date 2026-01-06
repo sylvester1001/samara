@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import type { Cell } from '$lib/types';
 
 	interface Props {
@@ -143,7 +144,8 @@
 		</div>
 	</div>
 
-	<div class="flex-1 overflow-auto p-4 min-h-0 relative z-10">
+	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both">
+		<div class="p-4">
 		<table class="border-collapse w-auto">
 			<thead>
 				<tr>
@@ -205,5 +207,6 @@
 				{/each}
 			</tbody>
 		</table>
-	</div>
+		</div>
+	</ScrollArea>
 </div>
