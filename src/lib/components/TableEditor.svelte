@@ -134,7 +134,7 @@
 	}
 </script>
 
-<div class="flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
+<div class="table-editor flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
 	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a] shrink-0 relative z-0">
 		<div class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</div>
 		<div class="flex gap-2">

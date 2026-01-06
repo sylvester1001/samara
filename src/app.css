@@ -126,6 +126,7 @@
 html, body {
   height: 100%;
   overflow: hidden;
+  user-select: none;
 }
 
 /* Academic table */
@@ -151,6 +152,7 @@ html, body {
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
+  user-select: text;
 }
 
 .academic-table th,
@@ -296,6 +298,7 @@ html, body {
 .cell-content {
   min-height: 1em;
   cursor: default;
+  user-select: text;
 }
 
 .cell-content .cell-input {
@@ -307,6 +310,17 @@ html, body {
   outline: none;
   padding: 0;
   margin: 0;
+  user-select: text;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  user-select: text;
+}
+
+.table-editor {
+  user-select: text;
 }
 
 .katex-error {

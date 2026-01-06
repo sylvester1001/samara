@@ -360,13 +360,150 @@
 	});
 </script>
 
-<div class="settings-panel">
-	<Card.Root class="p-4">
-		<Card.Header class="p-0 pb-4">
+<div class="settings-panel space-y-4">
+	<Card.Root class="p-4 gap-1">
+		<Card.Header class="p-0 pb-2">
+			<Card.Title class="text-sm">Structure</Card.Title>
+		</Card.Header>
+		<Card.Content class="p-0 space-y-5">
+			<div class="space-y-3">
+				<Label>Header Rows</Label>
+				<Select.Root type="single" value={String(headerRows)} onValueChange={handleHeaderRowsChange}>
+					<Select.Trigger class="w-full">
+						{headerRowOptions.find(o => o.value === String(headerRows))?.label || `${headerRows} Rows`}
+					</Select.Trigger>
+					<Select.Content>
+						{#each headerRowOptions as option}
+							<Select.Item value={option.value}>{option.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
+
+			<div class="space-y-4">
+				<Label>Segments</Label>
+				<div class="space-y-3">
+					<div class="grid grid-cols-2 gap-3">
+						<Input
+							type="number"
+							value={segmentStartCol}
+							min={1}
+							max={tableData.columnWidths.length}
+							onchange={handleSegmentStartColChange}
+							placeholder="Start"
+						/>
+						<Input
+							type="number"
+							value={segmentEndCol}
+							min={1}
+							max={tableData.columnWidths.length}
+							onchange={handleSegmentEndColChange}
+							placeholder="End"
+						/>
+					</div>
+					<div class="flex items-center justify-between gap-2">
+						<Button size="sm" variant="outline" onclick={applySelectionToSegment} disabled={!selectedCells.length}>
+							Use Selection
+						</Button>
+						<span class="text-xs text-muted-foreground">{selectionSummary}</span>
+					</div>
+					<div class="text-xs text-muted-foreground">{segmentModeLabel}</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div class="flex flex-col gap-2">
+						<span class="text-xs text-muted-foreground">Trim Left</span>
+						<Select.Root type="single" value={segmentTrimLeft} onValueChange={(v) => v && (segmentTrimLeft = v as SegmentTrim)}>
+							<Select.Trigger class="w-full">{segmentTrimOptions.find(o => o.value === segmentTrimLeft)?.label || 'None'}</Select.Trigger>
+							<Select.Content>
+								{#each segmentTrimOptions as option}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+					<div class="flex flex-col gap-2">
+						<span class="text-xs text-muted-foreground">Trim Right</span>
+						<Select.Root type="single" value={segmentTrimRight} onValueChange={(v) => v && (segmentTrimRight = v as SegmentTrim)}>
+							<Select.Trigger class="w-full">{segmentTrimOptions.find(o => o.value === segmentTrimRight)?.label || 'None'}</Select.Trigger>
+							<Select.Content>
+								{#each segmentTrimOptions as option}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+				</div>
+
+				<div class="space-y-3">
+					<Label>Line Style</Label>
+					<Select.Root type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)}>
+						<Select.Trigger class="w-full">{segmentStyleOptions.find(o => o.value === segmentStyle)?.label || 'Thin'}</Select.Trigger>
+						<Select.Content>
+							{#each segmentStyleOptions as option}
+								<Select.Item value={option.value}>{option.label}</Select.Item>
+							{/each}
+						</Select.Content>
+					</Select.Root>
+				</div>
+
+				<div class="flex items-center justify-between">
+					<Button size="sm" onclick={handleAddSegment} disabled={!tableData.columnWidths.length}>
+						Add Segment
+					</Button>
+					<Button size="sm" variant="ghost" onclick={onClearSegments} disabled={!tableData.segments.length}>
+						Clear All
+					</Button>
+				</div>
+
+				{#if tableData.segments.length}
+					<div class="space-y-3">
+						{#each tableData.segments as segment, index}
+							<div class="flex items-center justify-between text-xs rounded-md border border-border dark:border-[#27272a] px-2.5 py-2.5">
+								<span>
+									Row {segment.atRow + 1}, Col {segment.startCol + 1}-{segment.endCol + 1}
+								</span>
+								<Button size="sm" variant="ghost" onclick={() => onRemoveSegment?.(index)}>
+									Remove
+								</Button>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Resize Lock</Label>
+				<div class="space-y-4">
+					<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
+						<span>Lock Column Widths</span>
+						<input
+							type="checkbox"
+							class="w-4 h-4 accent-primary cursor-pointer"
+							checked={lockColumnResize}
+							onchange={handleLockColumnChange}
+						/>
+					</label>
+					<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
+						<span>Lock Row Heights</span>
+						<input
+							type="checkbox"
+							class="w-4 h-4 accent-primary cursor-pointer"
+							checked={lockRowResize}
+							onchange={handleLockRowChange}
+						/>
+					</label>
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
+
+	<Card.Root class="p-4 gap-3">
+		<Card.Header class="p-0 pb-2">
 			<Card.Title class="text-sm">Table Style</Card.Title>
 		</Card.Header>
-		<Card.Content class="p-0 space-y-4">
-			<div class="space-y-2">
+		<Card.Content class="p-0 space-y-5">
+			<div class="space-y-3">
 				<Label>Font</Label>
 				<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
 					<Select.Trigger class="w-full">
@@ -380,7 +517,7 @@
 				</Select.Root>
 			</div>
 
-			<div class="space-y-2">
+			<div class="space-y-3">
 				<Label>Font Size: {tableStyle.fontSize}pt</Label>
 				<Slider
 					type="single"
@@ -392,7 +529,7 @@
 				/>
 			</div>
 
-			<div class="space-y-2">
+			<div class="space-y-3">
 				<Label>Scale: {Math.round(tableStyle.scale * 100)}%</Label>
 				<Slider
 					type="single"
@@ -404,7 +541,7 @@
 				/>
 			</div>
 
-			<div class="space-y-2">
+			<div class="space-y-3">
 				<Label>Cell Padding</Label>
 				<Select.Root 
 					type="single" 
@@ -422,24 +559,10 @@
 				</Select.Root>
 			</div>
 
-			<div class="space-y-2">
-				<Label>Header Rows</Label>
-				<Select.Root type="single" value={String(headerRows)} onValueChange={handleHeaderRowsChange}>
-					<Select.Trigger class="w-full">
-						{headerRowOptions.find(o => o.value === String(headerRows))?.label || `${headerRows} Rows`}
-					</Select.Trigger>
-					<Select.Content>
-						{#each headerRowOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-			</div>
-
-			<div class="space-y-2">
+			<div class="space-y-3">
 				<Label>Table Borders</Label>
-				<div class="grid grid-cols-2 gap-3">
-					<div class="flex flex-col gap-1.5">
+				<div class="grid grid-cols-2 gap-4">
+					<div class="flex flex-col gap-2">
 						<span class="text-xs text-muted-foreground">Top</span>
 						<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
@@ -450,7 +573,7 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="flex flex-col gap-1.5">
+					<div class="flex flex-col gap-2">
 						<span class="text-xs text-muted-foreground">Bottom</span>
 						<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
@@ -461,7 +584,7 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="flex flex-col gap-1.5">
+					<div class="flex flex-col gap-2">
 						<span class="text-xs text-muted-foreground">Header</span>
 						<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
@@ -472,7 +595,7 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="flex flex-col gap-1.5">
+					<div class="flex flex-col gap-2">
 						<span class="text-xs text-muted-foreground">Vertical</span>
 						<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
@@ -483,7 +606,7 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="flex flex-col gap-1.5">
+					<div class="flex flex-col gap-2">
 						<span class="text-xs text-muted-foreground">Horizontal</span>
 						<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
@@ -499,109 +622,12 @@
 		</Card.Content>
 	</Card.Root>
 
-	<Card.Root class="p-4 mt-4">
-		<Card.Header class="p-0 pb-4">
-			<Card.Title class="text-sm">Segments</Card.Title>
-		</Card.Header>
-		<Card.Content class="p-0 space-y-4">
-			<div class="space-y-2">
-				<Label>Columns</Label>
-				<div class="grid grid-cols-2 gap-2">
-					<Input
-						type="number"
-						value={segmentStartCol}
-						min={1}
-						max={tableData.columnWidths.length}
-						onchange={handleSegmentStartColChange}
-						placeholder="Start"
-					/>
-					<Input
-						type="number"
-						value={segmentEndCol}
-						min={1}
-						max={tableData.columnWidths.length}
-						onchange={handleSegmentEndColChange}
-						placeholder="End"
-					/>
-				</div>
-				<div class="flex items-center justify-between gap-2">
-					<Button size="sm" variant="outline" onclick={applySelectionToSegment} disabled={!selectedCells.length}>
-						Use Selection
-					</Button>
-					<span class="text-xs text-muted-foreground">{selectionSummary}</span>
-				</div>
-				<div class="text-xs text-muted-foreground">{segmentModeLabel}</div>
-			</div>
-
-			<div class="grid grid-cols-2 gap-3">
-				<div class="flex flex-col gap-1.5">
-					<span class="text-xs text-muted-foreground">Trim Left</span>
-					<Select.Root type="single" value={segmentTrimLeft} onValueChange={(v) => v && (segmentTrimLeft = v as SegmentTrim)}>
-						<Select.Trigger class="w-full">{segmentTrimOptions.find(o => o.value === segmentTrimLeft)?.label || 'None'}</Select.Trigger>
-						<Select.Content>
-							{#each segmentTrimOptions as option}
-								<Select.Item value={option.value}>{option.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
-				</div>
-				<div class="flex flex-col gap-1.5">
-					<span class="text-xs text-muted-foreground">Trim Right</span>
-					<Select.Root type="single" value={segmentTrimRight} onValueChange={(v) => v && (segmentTrimRight = v as SegmentTrim)}>
-						<Select.Trigger class="w-full">{segmentTrimOptions.find(o => o.value === segmentTrimRight)?.label || 'None'}</Select.Trigger>
-						<Select.Content>
-							{#each segmentTrimOptions as option}
-								<Select.Item value={option.value}>{option.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
-				</div>
-			</div>
-
-			<div class="space-y-2">
-				<Label>Line Style</Label>
-				<Select.Root type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)}>
-					<Select.Trigger class="w-full">{segmentStyleOptions.find(o => o.value === segmentStyle)?.label || 'Thin'}</Select.Trigger>
-					<Select.Content>
-						{#each segmentStyleOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-			</div>
-
-			<div class="flex items-center justify-between">
-				<Button size="sm" onclick={handleAddSegment} disabled={!tableData.columnWidths.length}>
-					Add Segment
-				</Button>
-				<Button size="sm" variant="ghost" onclick={onClearSegments} disabled={!tableData.segments.length}>
-					Clear All
-				</Button>
-			</div>
-
-			{#if tableData.segments.length}
-				<div class="space-y-2">
-					{#each tableData.segments as segment, index}
-						<div class="flex items-center justify-between text-xs rounded-md border border-border dark:border-[#27272a] px-2.5 py-2">
-							<span>
-								Row {segment.atRow + 1}, Col {segment.startCol + 1}-{segment.endCol + 1}
-							</span>
-							<Button size="sm" variant="ghost" onclick={() => onRemoveSegment?.(index)}>
-								Remove
-							</Button>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</Card.Content>
-	</Card.Root>
-
-	<Card.Root class="p-4 mt-4">
-		<Card.Header class="p-0 pb-4">
+	<Card.Root class="p-4 gap-3">
+		<Card.Header class="p-0 pb-2">
 			<Card.Title class="text-sm">Canvas</Card.Title>
 		</Card.Header>
-		<Card.Content class="p-0 space-y-4">
-			<div class="space-y-2">
+		<Card.Content class="p-0 space-y-5">
+			<div class="space-y-3">
 				<Label>Size Preset</Label>
 				<Select.Root type="single" value={canvasPreset} onValueChange={handleCanvasPresetChange}>
 					<Select.Trigger class="w-full">
@@ -616,7 +642,7 @@
 			</div>
 
 			{#if canvasPreset === 'custom'}
-				<div class="space-y-2">
+				<div class="space-y-3">
 					<Label>Custom Width (px)</Label>
 					<Input
 						type="number"
@@ -626,7 +652,7 @@
 						max={4000}
 					/>
 				</div>
-				<div class="space-y-2">
+				<div class="space-y-3">
 					<Label>Custom Height (px)</Label>
 					<Input
 						type="number"
@@ -638,7 +664,7 @@
 				</div>
 			{/if}
 
-			<div class="space-y-2">
+			<div class="space-y-3">
 				<Label>Padding: {canvasConfig.padding}px</Label>
 				<Slider
 					type="single"
@@ -650,7 +676,7 @@
 				/>
 			</div>
 
-			<div class="space-y-2">
+			<div class="space-y-3">
 				<Label>Background</Label>
 				<input
 					type="color"
@@ -659,32 +685,6 @@
 					onchange={handleBgColorChange}
 				/>
 			</div>
-		</Card.Content>
-	</Card.Root>
-
-	<Card.Root class="p-4 mt-4">
-		<Card.Header class="p-0 pb-4">
-			<Card.Title class="text-sm">Resize Lock</Card.Title>
-		</Card.Header>
-		<Card.Content class="p-0 space-y-3">
-			<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
-				<span>Lock Column Widths</span>
-				<input
-					type="checkbox"
-					class="w-4 h-4 accent-primary cursor-pointer"
-					checked={lockColumnResize}
-					onchange={handleLockColumnChange}
-				/>
-			</label>
-			<label class="flex items-center justify-between text-[13px] text-foreground dark:text-muted-foreground cursor-pointer">
-				<span>Lock Row Heights</span>
-				<input
-					type="checkbox"
-					class="w-4 h-4 accent-primary cursor-pointer"
-					checked={lockRowResize}
-					onchange={handleLockRowChange}
-				/>
-			</label>
 		</Card.Content>
 	</Card.Root>
 </div>
