@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from "svelte/elements";
 	import { cn, type WithElementRef } from "$lib/utils.js";
+	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 
 	let {
 		ref = $bindable(null),
@@ -10,16 +11,19 @@
 	}: WithElementRef<HTMLAttributes<HTMLElement>> = $props();
 </script>
 
-<div
-	bind:this={ref}
-	data-slot="sidebar-content"
-	data-sidebar="content"
+<ScrollArea
 	class={cn(
-		"flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto group-data-[collapsible=icon]:overflow-hidden",
-		"scrollbar-none",
+		"flex min-h-0 flex-1 flex-col group-data-[collapsible=icon]:overflow-hidden",
 		className
 	)}
-	{...restProps}
 >
-	{@render children?.()}
-</div>
+	<div
+		bind:this={ref}
+		data-slot="sidebar-content"
+		data-sidebar="content"
+		class="flex flex-col gap-2"
+		{...restProps}
+	>
+		{@render children?.()}
+	</div>
+</ScrollArea>
