@@ -334,18 +334,16 @@
 							Preview
 						</Badge>
 						<ScrollArea class="flex-1 w-full pt-9 px-4 pb-16" orientation="both">
-							<div class="flex flex-col items-start justify-start">
-								<div bind:this={tableElement} class="w-fit mx-auto">
-									<AcademicTable
-										tableData={tableStore.tableData}
-										tableStyle={tableStore.tableStyle}
-										canvasConfig={tableStore.canvasConfig}
-										onCellUpdate={handleCellChange}
-										onColumnResize={handleColumnResize}
-										onRowResize={handleRowResize}
-										onCanvasResize={handleCanvasChange}
-									/>
-								</div>
+							<div bind:this={tableElement} class="w-fit">
+								<AcademicTable
+									tableData={tableStore.tableData}
+									tableStyle={tableStore.tableStyle}
+									canvasConfig={tableStore.canvasConfig}
+									onCellUpdate={handleCellChange}
+									onColumnResize={handleColumnResize}
+									onRowResize={handleRowResize}
+									onCanvasResize={handleCanvasChange}
+								/>
 							</div>
 						</ScrollArea>
 						<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6">

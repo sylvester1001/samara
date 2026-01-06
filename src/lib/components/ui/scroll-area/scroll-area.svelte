@@ -23,13 +23,13 @@
 <ScrollAreaPrimitive.Root
 	bind:ref
 	data-slot="scroll-area"
-	class={cn("relative", className)}
+	class={cn("relative overflow-hidden", className)}
 	{...restProps}
 >
 	<ScrollAreaPrimitive.Viewport
 		bind:ref={viewportRef}
 		data-slot="scroll-area-viewport"
-		class="ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1"
+		class="ring-ring/10 dark:ring-ring/20 dark:outline-ring/40 outline-ring/50 h-full w-full rounded-[inherit] transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1 [&>div]:!block"
 	>
 		{@render children?.()}
 	</ScrollAreaPrimitive.Viewport>
