@@ -5,6 +5,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { Switch } from '$lib/components/ui/switch/index.js';
 	import type { TableStyle, CanvasConfig, BorderStyle, TableData, RuleSegment, SegmentTrim, SegmentStyle } from '$lib/types';
 
 	interface Props {
@@ -75,10 +76,7 @@
 		{ value: 'thick-thin', label: 'Thick-Thin' },
 		{ value: 'thin-thick', label: 'Thin-Thick' }
 	];
-	const segmentTrimOptions: { value: SegmentTrim; label: string }[] = [
-		{ value: 'none', label: 'None' },
-		{ value: 'short', label: 'Short' }
-	];
+
 	const segmentStyleOptions: { value: SegmentStyle; label: string }[] = [
 		{ value: 'thin', label: 'Thin' },
 		{ value: 'thick', label: 'Thick' },
@@ -98,8 +96,8 @@
 	let segmentRow = $state(1);
 	let segmentStartCol = $state(1);
 	let segmentEndCol = $state(1);
-	let segmentTrimLeft = $state<SegmentTrim>('none');
-	let segmentTrimRight = $state<SegmentTrim>('none');
+	let segmentTrimLeft = $state(false);
+	let segmentTrimRight = $state(false);
 	let segmentStyle = $state<SegmentStyle>('thin');
 	let lastSelectionKey = $state('');
 
@@ -331,8 +329,8 @@
 			atRow: nextRow - 1,
 			startCol: nextStartCol - 1,
 			endCol: nextEndCol - 1,
-			trimLeft: segmentTrimLeft,
-			trimRight: segmentTrimRight,
+			trimLeft: segmentTrimLeft ? 'short' : 'none',
+			trimRight: segmentTrimRight ? 'short' : 'none',
 			style: segmentStyle
 		});
 	}
@@ -398,27 +396,13 @@
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
-					<div class="flex flex-col gap-2">
+					<div class="flex items-center justify-between">
 						<span class="text-xs text-muted-foreground">Trim Left</span>
-						<Select.Root type="single" value={segmentTrimLeft} onValueChange={(v) => v && (segmentTrimLeft = v as SegmentTrim)}>
-							<Select.Trigger class="w-full">{segmentTrimOptions.find(o => o.value === segmentTrimLeft)?.label || 'None'}</Select.Trigger>
-							<Select.Content>
-								{#each segmentTrimOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
+						<Switch checked={segmentTrimLeft} onCheckedChange={(v) => segmentTrimLeft = v} />
 					</div>
-					<div class="flex flex-col gap-2">
+					<div class="flex items-center justify-between">
 						<span class="text-xs text-muted-foreground">Trim Right</span>
-						<Select.Root type="single" value={segmentTrimRight} onValueChange={(v) => v && (segmentTrimRight = v as SegmentTrim)}>
-							<Select.Trigger class="w-full">{segmentTrimOptions.find(o => o.value === segmentTrimRight)?.label || 'None'}</Select.Trigger>
-							<Select.Content>
-								{#each segmentTrimOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
+						<Switch checked={segmentTrimRight} onCheckedChange={(v) => segmentTrimRight = v} />
 					</div>
 				</div>
 
