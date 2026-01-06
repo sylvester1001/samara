@@ -88,6 +88,8 @@
 	let segmentTrimLeft = $state<SegmentTrim>('none');
 	let segmentTrimRight = $state<SegmentTrim>('none');
 	let segmentStyle = $state<SegmentStyle>('thin');
+	let segmentSource = $state<'selection' | 'manual'>('manual');
+	let lastSelectionKey = $state('');
 
 	// Initialize custom dimensions from canvasConfig
 	$effect(() => {
@@ -145,6 +147,17 @@
 			const nextStart = segmentEndCol;
 			segmentEndCol = segmentStartCol;
 			segmentStartCol = nextStart;
+		}
+	});
+
+	$effect(() => {
+		const key = selectedCells
+			.map((cell) => `${cell.row}:${cell.col}`)
+			.sort()
+			.join('|');
+		if (key !== lastSelectionKey) {
+			lastSelectionKey = key;
+			segmentSource = selectedCells.length ? 'selection' : 'manual';
 		}
 	});
 
@@ -214,35 +227,57 @@
 	function handleSegmentRowChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		segmentRow = parseInt(target.value) || 1;
+		segmentSource = 'manual';
 	}
 
 	function handleSegmentStartColChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		segmentStartCol = parseInt(target.value) || 1;
+		segmentSource = 'manual';
 	}
 
 	function handleSegmentEndColChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		segmentEndCol = parseInt(target.value) || 1;
+		segmentSource = 'manual';
+	}
+
+	function getSelectionRange() {
+		if (!selectedCells.length) return null;
+		const rows = selectedCells.map((cell) => cell.row);
+		const cols = selectedCells.map((cell) => cell.col);
+		return {
+			row: Math.max(...rows) + 1,
+			startCol: Math.min(...cols) + 1,
+			endCol: Math.max(...cols) + 1
+		};
 	}
 
 	function applySelectionToSegment() {
-		if (!selectedCells.length) return;
-		const rows = selectedCells.map((cell) => cell.row);
-		const cols = selectedCells.map((cell) => cell.col);
-		const maxRow = Math.max(...rows);
-		const minCol = Math.min(...cols);
-		const maxCol = Math.max(...cols);
-		segmentRow = maxRow + 1;
-		segmentStartCol = minCol + 1;
-		segmentEndCol = maxCol + 1;
+		const range = getSelectionRange();
+		if (!range) return;
+		segmentRow = range.row;
+		segmentStartCol = range.startCol;
+		segmentEndCol = range.endCol;
+		segmentSource = 'selection';
 	}
 
 	function handleAddSegment() {
+		let nextRow = segmentRow;
+		let nextStartCol = segmentStartCol;
+		let nextEndCol = segmentEndCol;
+		if (segmentSource === 'selection') {
+			const range = getSelectionRange();
+			if (range) {
+				nextRow = range.row;
+				nextStartCol = range.startCol;
+				nextEndCol = range.endCol;
+			}
+		}
 		onAddSegment?.({
-			atRow: segmentRow - 1,
-			startCol: segmentStartCol - 1,
-			endCol: segmentEndCol - 1,
+			atRow: nextRow - 1,
+			startCol: nextStartCol - 1,
+			endCol: nextEndCol - 1,
 			trimLeft: segmentTrimLeft,
 			trimRight: segmentTrimRight,
 			style: segmentStyle
@@ -258,6 +293,10 @@
 		const colMin = Math.min(...cols);
 		const colMax = Math.max(...cols);
 		return `Selection: R${rowMin}-${rowMax}, C${colMin}-${colMax}`;
+	});
+	const segmentModeLabel = $derived.by(() => {
+		if (segmentSource === 'selection' && selectedCells.length) return 'Add uses selection';
+		return 'Add uses inputs';
 	});
 </script>
 
@@ -428,6 +467,7 @@
 					</Button>
 					<span class="text-xs text-muted-foreground">{selectionSummary}</span>
 				</div>
+				<div class="text-xs text-muted-foreground">{segmentModeLabel}</div>
 			</div>
 
 			<div class="grid grid-cols-2 gap-3">
