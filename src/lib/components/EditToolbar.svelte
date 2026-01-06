@@ -45,7 +45,7 @@
 	<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('right')} disabled={!hasSelection} title="Align Right">
 		<TextAlignEnd class="w-4 h-4" />
 	</Button>
-	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
+	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
 	<Button variant="ghost" size="icon" onclick={onToggleBold} disabled={!hasSelection} title="Bold">
 		<Bold class="w-4 h-4" />
 	</Button>
@@ -66,7 +66,7 @@
 		title="Cell Background"
 		onchange={handleBackgroundColorChange}
 	/>
-	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-1"></div>
+	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
 	<Button variant="outline" size="sm" onclick={onMergeCells} disabled={!hasSelection}>
 		<TableCellsMerge class="w-4 h-4 mr-1" />
 		Merge
