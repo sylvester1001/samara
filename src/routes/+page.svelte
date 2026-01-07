@@ -147,9 +147,7 @@
 			const pixelRatio = Math.max(1, exportDpi / 96);
 			await exportAndDownloadPng(tableElement, 'table.png', {
 				pixelRatio,
-				backgroundColor: tableStore.canvasConfig.backgroundColor,
-				bakeScale: true,
-				scale: tableStore.tableStyle.scale
+				backgroundColor: tableStore.canvasConfig.backgroundColor
 			});
 			showExportToast('table.png');
 		}
@@ -158,9 +156,7 @@
 	async function handleExportSvg() {
 		if (tableElement) {
 			await exportAndDownloadSvg(tableElement, 'table.svg', {
-				backgroundColor: tableStore.canvasConfig.backgroundColor,
-				bakeScale: true,
-				scale: tableStore.tableStyle.scale
+				backgroundColor: tableStore.canvasConfig.backgroundColor
 			});
 			showExportToast('table.svg');
 		}
