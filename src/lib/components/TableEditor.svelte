@@ -12,6 +12,7 @@
 		onAddColumn: () => void;
 		onDeleteRow: (index: number) => void;
 		onDeleteColumn: (index: number) => void;
+		onClearSelectedCells?: () => void;
 	}
 
 	let {
@@ -22,7 +23,8 @@
 		onAddRow,
 		onAddColumn,
 		onDeleteRow,
-		onDeleteColumn
+		onDeleteColumn,
+		onClearSelectedCells
 	}: Props = $props();
 
 	const rowCount = $derived(rows.length);
@@ -37,6 +39,13 @@
 	}
 
 	function handleKeyDown(e: KeyboardEvent, rowIndex: number, colIndex: number) {
+		// Handle delete/backspace for multi-cell selection
+		if ((e.key === 'Backspace' || e.key === 'Delete') && selectedCells.length > 1) {
+			e.preventDefault();
+			onClearSelectedCells?.();
+			return;
+		}
+
 		if (e.key === 'Tab') {
 			e.preventDefault();
 			const nextCol = e.shiftKey ? colIndex - 1 : colIndex + 1;

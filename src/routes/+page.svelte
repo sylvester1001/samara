@@ -172,6 +172,17 @@
 		}
 	}
 
+	function handleGlobalKeydown(e: KeyboardEvent) {
+		const target = e.target as HTMLElement;
+		const isEditing = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+		if (isEditing) return;
+
+		if ((e.key === 'Backspace' || e.key === 'Delete') && tableStore.selectedCells.length > 0) {
+			e.preventDefault();
+			tableStore.clearSelectedCellsContent();
+		}
+	}
+
 	const canUndo = $derived(tableStore.historyIndex > 0);
 	const canRedo = $derived(tableStore.historyIndex < tableStore.history.length - 1);
 	const hasSelection = $derived(tableStore.selectedCells.length > 0);
@@ -242,7 +253,7 @@
 	}
 </script>
 
-<svelte:window onpaste={handleGlobalPaste} />
+<svelte:window onpaste={handleGlobalPaste} onkeydown={handleGlobalKeydown} />
 
 <input
 	type="file"
@@ -327,6 +338,7 @@
 								onAddColumn={handleAddColumn}
 								onDeleteRow={handleDeleteRow}
 								onDeleteColumn={handleDeleteColumn}
+								onClearSelectedCells={() => tableStore.clearSelectedCellsContent()}
 							/>
 						</div>
 					</div>

@@ -108,6 +108,17 @@ class TableStore {
 		this.saveHistory();
 	}
 
+	clearSelectedCellsContent() {
+		if (this.selectedCells.length === 0) return;
+		for (const { row, col } of this.selectedCells) {
+			const cell = this.tableData.rows[row]?.[col];
+			if (cell) {
+				this.tableData.rows[row][col] = { ...cell, content: '' };
+			}
+		}
+		this.saveHistory();
+	}
+
 	toggleSelectedCells(field: 'isBold' | 'isItalic') {
 		if (this.selectedCells.length === 0) return;
 		const shouldEnable = this.selectedCells.some(({ row, col }) => {
