@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
-	import TableSizeSelector from './TableSizeSelector.svelte';
 	import { Plus } from 'lucide-svelte';
-	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
 	import type { Cell } from '$lib/types';
 
 	interface Props {
@@ -10,12 +8,11 @@
 		selectedCells: { row: number; col: number }[];
 		onSelectionChange: (cells: { row: number; col: number }[]) => void;
 		onCellChange: (row: number, col: number, content: string) => void;
-		onAddRow: (index?: number) => void;
-		onAddColumn: (index?: number) => void;
+		onAddRow: () => void;
+		onAddColumn: () => void;
 		onDeleteRow: (index: number) => void;
 		onDeleteColumn: (index: number) => void;
 		onClearSelectedCells?: () => void;
-		onResizeTable?: (rows: number, cols: number) => void;
 	}
 
 	let {
@@ -27,8 +24,7 @@
 		onAddColumn,
 		onDeleteRow,
 		onDeleteColumn,
-		onClearSelectedCells,
-		onResizeTable
+		onClearSelectedCells
 	}: Props = $props();
 
 	const rowCount = $derived(rows.length);
@@ -36,107 +32,10 @@
 	const selectedSet = $derived(new Set(selectedCells.map((cell) => `${cell.row}:${cell.col}`)));
 	let selectionAnchor = $state<{ row: number; col: number } | null>(null);
 	let isDragging = $state(false);
-	const inputPaddingXRem = 1.25;
-	let contextCell = $state<{ row: number; col: number } | null>(null);
 
-	const wideCharPattern =
-		/[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/;
-
-	function getDisplayLength(value: string) {
-		let length = 0;
-		for (const char of value) {
-			length += wideCharPattern.test(char) ? 2 : 1;
-		}
-		return length;
-	}
-
-	const columnCharWidths = $derived.by(() => {
-		const columns = rows[0]?.length || 0;
-		const widths = Array(columns).fill(1);
-		for (let r = 0; r < rows.length; r++) {
-			const row = rows[r] ?? [];
-			for (let c = 0; c < columns; c++) {
-				const cell = row[c];
-				if (!cell || cell.isMerged) continue;
-				const content = cell.content ?? '';
-				const length = Math.max(1, getDisplayLength(content));
-				const colspan = Math.max(1, cell.colspan ?? 1);
-				const perColumn = Math.ceil(length / colspan);
-				for (let span = 0; span < colspan && c + span < columns; span++) {
-					if (perColumn > widths[c + span]) {
-						widths[c + span] = perColumn;
-					}
-				}
-			}
-		}
-		return widths;
-	});
-
-	function getColumnWidthStyle(chars: number) {
-		return `calc(${chars}ch + ${inputPaddingXRem}rem)`;
-	}
-
-	const contextTarget = $derived.by(() => {
-		if (contextCell) return contextCell;
-		if (selectedCells.length > 0) return selectedCells[0];
-		return null;
-	});
-	const canInsertAtTarget = $derived(!!contextTarget);
-	const canDeleteRow = $derived(!!contextTarget && rowCount > 1);
-	const canDeleteColumn = $derived(!!contextTarget && colCount > 1);
-
-	function handleCellInput(value: string, rowIndex: number, colIndex: number) {
-		onCellChange(rowIndex, colIndex, value);
-	}
-
-	// Auto-resize textarea height (fallback for browsers without field-sizing support)
-	function autoResizeTextarea(e: Event) {
-		const textarea = e.target as HTMLTextAreaElement;
-		textarea.style.height = 'auto';
-		textarea.style.height = textarea.scrollHeight + 'px';
-	}
-
-	function handleContextMenu(e: MouseEvent) {
-		const target = (e.target as HTMLElement | null)?.closest('[data-row][data-col]');
-		if (!target) return;
-		const row = Number(target.getAttribute('data-row'));
-		const col = Number(target.getAttribute('data-col'));
-		if (Number.isNaN(row) || Number.isNaN(col)) return;
-		contextCell = { row, col };
-		const key = `${row}:${col}`;
-		if (!selectedSet.has(key)) {
-			onSelectionChange([{ row, col }]);
-		}
-	}
-
-	function handleInsertRowAbove() {
-		if (!contextTarget) return;
-		onAddRow(contextTarget.row);
-	}
-
-	function handleInsertRowBelow() {
-		if (!contextTarget) return;
-		onAddRow(contextTarget.row + 1);
-	}
-
-	function handleInsertColumnLeft() {
-		if (!contextTarget) return;
-		onAddColumn(contextTarget.col);
-	}
-
-	function handleInsertColumnRight() {
-		if (!contextTarget) return;
-		onAddColumn(contextTarget.col + 1);
-	}
-
-	function handleDeleteRowContext() {
-		if (!contextTarget) return;
-		onDeleteRow(contextTarget.row);
-	}
-
-	function handleDeleteColumnContext() {
-		if (!contextTarget) return;
-		onDeleteColumn(contextTarget.col);
+	function handleCellInput(e: Event, rowIndex: number, colIndex: number) {
+		const target = e.target as HTMLInputElement;
+		onCellChange(rowIndex, colIndex, target.value);
 	}
 
 	function handleKeyDown(e: KeyboardEvent, rowIndex: number, colIndex: number) {
@@ -159,52 +58,34 @@
 			
 			if (nextRow >= 0 && nextRow < rowCount) {
 				const nextInput = document.querySelector(
-					`textarea[data-row="${nextRow}"][data-col="${finalCol}"]`
-				) as HTMLTextAreaElement;
+					`[data-row="${nextRow}"][data-col="${finalCol}"]`
+				) as HTMLInputElement;
 				nextInput?.focus();
 			}
 		} else if (e.key === 'Enter') {
-			if (e.shiftKey) {
-				// Shift+Enter: jump to next row
-				e.preventDefault();
-				const nextRow = rowIndex + 1;
-				if (nextRow < rowCount) {
-					const nextInput = document.querySelector(
-						`textarea[data-row="${nextRow}"][data-col="${colIndex}"]`
-					) as HTMLTextAreaElement;
-					nextInput?.focus();
-				}
+			e.preventDefault();
+			const nextRow = rowIndex + 1;
+			if (nextRow < rowCount) {
+				const nextInput = document.querySelector(
+					`[data-row="${nextRow}"][data-col="${colIndex}"]`
+				) as HTMLInputElement;
+				nextInput?.focus();
 			}
-			// Plain Enter: allow default behavior (insert newline in textarea)
 		} else if (e.key === 'ArrowDown') {
-			// Only navigate if cursor is at the last line of textarea
-			const target = e.target as HTMLTextAreaElement;
-			const cursorPos = target.selectionStart;
-			const textAfterCursor = target.value.substring(cursorPos);
-			if (!textAfterCursor.includes('\n')) {
-				e.preventDefault();
-				const nextRow = rowIndex + 1;
-				if (nextRow < rowCount) {
-					const nextInput = document.querySelector(
-						`textarea[data-row="${nextRow}"][data-col="${colIndex}"]`
-					) as HTMLTextAreaElement;
-					nextInput?.focus();
-				}
+			const nextRow = rowIndex + 1;
+			if (nextRow < rowCount) {
+				const nextInput = document.querySelector(
+					`[data-row="${nextRow}"][data-col="${colIndex}"]`
+				) as HTMLInputElement;
+				nextInput?.focus();
 			}
 		} else if (e.key === 'ArrowUp') {
-			// Only navigate if cursor is at the first line of textarea
-			const target = e.target as HTMLTextAreaElement;
-			const cursorPos = target.selectionStart;
-			const textBeforeCursor = target.value.substring(0, cursorPos);
-			if (!textBeforeCursor.includes('\n')) {
-				e.preventDefault();
-				const prevRow = rowIndex - 1;
-				if (prevRow >= 0) {
-					const prevInput = document.querySelector(
-						`textarea[data-row="${prevRow}"][data-col="${colIndex}"]`
-					) as HTMLTextAreaElement;
-					prevInput?.focus();
-				}
+			const prevRow = rowIndex - 1;
+			if (prevRow >= 0) {
+				const prevInput = document.querySelector(
+					`[data-row="${prevRow}"][data-col="${colIndex}"]`
+				) as HTMLInputElement;
+				prevInput?.focus();
 			}
 		}
 	}
@@ -262,35 +143,17 @@
 	function isSelected(rowIndex: number, colIndex: number) {
 		return selectedSet.has(`${rowIndex}:${colIndex}`);
 	}
-
-	function handleEditorClick(e: MouseEvent) {
-		if (selectedCells.length === 0) return;
-		const target = e.target as HTMLElement;
-		// Only clear if clicking on the editor background, not on table cells, inputs, or color pickers
-		if (target.closest('table') || target.closest('button') || target.tagName === 'INPUT' || target.closest('[type="color"]')) {
-			return;
-		}
-		onSelectionChange([]);
-		selectionAnchor = null;
-	}
 </script>
 
-<div class="table-editor flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmousedown={handleEditorClick} onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
+<div class="table-editor flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
 	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a] shrink-0 relative z-0">
-		<div class="flex items-center gap-2">
-			<TableSizeSelector
-				currentRows={rowCount}
-				currentCols={colCount}
-				onSizeChange={(r, c) => onResizeTable?.(r, c)}
-			/>
-			<span class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</span>
-		</div>
+		<div class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</div>
 		<div class="flex gap-2">
-			<button class="flex items-center gap-1 px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={() => onAddRow()} title="Add Row">
+			<button class="flex items-center gap-1 px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={onAddRow} title="Add Row">
 				<Plus class="w-3.5 h-3.5" />
 				Row
 			</button>
-			<button class="flex items-center gap-1 px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={() => onAddColumn()} title="Add Column">
+			<button class="flex items-center gap-1 px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={onAddColumn} title="Add Column">
 				<Plus class="w-3.5 h-3.5" />
 				Col
 			</button>
@@ -299,113 +162,67 @@
 
 	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both">
 		<div class="p-4">
-			<ContextMenu.Root>
-				<ContextMenu.Trigger class="inline-block" oncontextmenu={handleContextMenu}>
-					<table class="border-collapse min-w-max table-auto">
-						<colgroup>
-							<col style="width: 2.5rem;" />
-							{#each columnCharWidths as width}
-								<col style:width={getColumnWidthStyle(width)} />
-							{/each}
-						</colgroup>
-						<thead>
-							<tr>
-								<th class="w-10 min-w-10 bg-[#f4f4f5] dark:bg-[#27272a]"></th>
-								{#each rows[0] || [] as _, colIndex}
-									<th class="relative px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
-										<span class="block">{String.fromCharCode(65 + colIndex)}</span>
-										<button 
-											class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
-											onclick={() => onDeleteColumn(colIndex)}
-											title="Delete Column"
-										>x</button>
-									</th>
-								{/each}
-							</tr>
-						</thead>
-						<tbody>
-							{#each rows as row, rowIndex}
-								<tr>
-									<td class="relative w-10 min-w-10 px-2 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
-										<span class="block">{rowIndex + 1}</span>
-										<button 
-											class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
-											onclick={() => onDeleteRow(rowIndex)}
-											title="Delete Row"
-										>x</button>
-									</td>
-									{#each row as cell, colIndex}
-										{#if !cell.isMerged}
-											<td
-												class="p-0 border border-border dark:border-[#3f3f46] relative align-middle"
-												class:bg-blue-50={isSelected(rowIndex, colIndex)}
-												class:dark:bg-[#1e3a5f]={isSelected(rowIndex, colIndex)}
-												class:font-bold={cell.isBold}
-												class:italic={cell.isItalic}
-												style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
-												style:color={cell.textColor}
-												colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
-												rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
-												data-row={rowIndex}
-												data-col={colIndex}
-												onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
-												onmouseenter={() => handleCellMouseEnter(rowIndex, colIndex)}
-											>
-												<textarea
-													rows="1"
-													class="w-full px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
-													style="field-sizing: content; vertical-align: middle; min-height: 1.5em;"
-													class:text-left={cell.align === 'left'}
-													class:text-center={cell.align === 'center' || !cell.align}
-													class:text-right={cell.align === 'right' || cell.align === 'decimal'}
-													data-row={rowIndex}
-													data-col={colIndex}
-													oninput={(e) => {
-														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex);
-														autoResizeTextarea(e);
-													}}
-													onfocus={autoResizeTextarea}
-													oncompositionupdate={(e) =>
-														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex)
-													}
-													onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-												>{cell.content}</textarea>
-											</td>
-										{/if}
-									{/each}
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</ContextMenu.Trigger>
-				<ContextMenu.Content class="w-56">
-					<ContextMenu.Sub>
-						<ContextMenu.SubTrigger inset>Insert</ContextMenu.SubTrigger>
-						<ContextMenu.SubContent class="w-56">
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertRowAbove}>
-								Insert Row Above
-							</ContextMenu.Item>
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertRowBelow}>
-								Insert Row Below
-							</ContextMenu.Item>
-							<ContextMenu.Separator />
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertColumnLeft}>
-								Insert Column Left
-							</ContextMenu.Item>
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertColumnRight}>
-								Insert Column Right
-							</ContextMenu.Item>
-						</ContextMenu.SubContent>
-					</ContextMenu.Sub>
-					<ContextMenu.Separator />
-					<ContextMenu.Item inset variant="destructive" disabled={!canDeleteRow} onclick={handleDeleteRowContext}>
-						Delete Row
-					</ContextMenu.Item>
-					<ContextMenu.Item inset variant="destructive" disabled={!canDeleteColumn} onclick={handleDeleteColumnContext}>
-						Delete Column
-					</ContextMenu.Item>
-				</ContextMenu.Content>
-			</ContextMenu.Root>
+		<table class="border-collapse w-auto">
+			<thead>
+				<tr>
+					<th class="w-10 min-w-10 bg-[#f4f4f5] dark:bg-[#27272a]"></th>
+					{#each rows[0] || [] as _, colIndex}
+						<th class="relative min-w-[100px] px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
+							<span class="block">{String.fromCharCode(65 + colIndex)}</span>
+							<button 
+								class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
+								onclick={() => onDeleteColumn(colIndex)}
+								title="Delete Column"
+							>x</button>
+						</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each rows as row, rowIndex}
+					<tr>
+						<td class="relative w-10 min-w-10 px-2 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
+							<span class="block">{rowIndex + 1}</span>
+							<button 
+								class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
+								onclick={() => onDeleteRow(rowIndex)}
+								title="Delete Row"
+							>x</button>
+						</td>
+						{#each row as cell, colIndex}
+							{#if !cell.isMerged}
+								<td
+									class="p-0 border border-border dark:border-[#3f3f46] relative"
+									class:bg-blue-50={isSelected(rowIndex, colIndex)}
+									class:dark:bg-[#1e3a5f]={isSelected(rowIndex, colIndex)}
+									class:font-bold={cell.isBold}
+									class:italic={cell.isItalic}
+									style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
+									style:color={cell.textColor}
+									colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
+									rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
+									onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
+									onmouseenter={() => handleCellMouseEnter(rowIndex, colIndex)}
+								>
+									<input
+										type="text"
+										class="w-full min-w-[100px] px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit"
+										class:text-left={cell.align === 'left'}
+										class:text-center={cell.align === 'center' || !cell.align}
+										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
+										value={cell.content}
+										data-row={rowIndex}
+										data-col={colIndex}
+										oninput={(e) => handleCellInput(e, rowIndex, colIndex)}
+										onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+									/>
+								</td>
+							{/if}
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 		</div>
 	</ScrollArea>
 </div>
