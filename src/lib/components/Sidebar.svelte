@@ -325,123 +325,6 @@
 <div class="settings-panel space-y-4">
 	<Card.Root class="p-4 gap-1">
 		<Card.Header class="p-0 pb-2">
-			<Card.Title class="text-sm">Structure</Card.Title>
-		</Card.Header>
-		<Card.Content class="p-0 space-y-5">
-			<div class="space-y-3">
-				<Label>Header Rows</Label>
-				<Select.Root type="single" value={String(headerRows)} onValueChange={handleHeaderRowsChange}>
-					<Select.Trigger class="w-full">
-						{headerRowOptions.find(o => o.value === String(headerRows))?.label || `${headerRows} Rows`}
-					</Select.Trigger>
-					<Select.Content>
-						{#each headerRowOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-			</div>
-
-			<div class="space-y-4 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Segments</Label>
-				<div class="space-y-3">
-					<div class="grid grid-cols-3 gap-3">
-						<div class="flex flex-col gap-1.5">
-							<span class="text-xs text-muted-foreground">Row</span>
-							<Input
-								type="number"
-								value={segmentRow}
-								min={1}
-								max={tableData.rows.length}
-								onchange={handleSegmentRowChange}
-							/>
-						</div>
-						<div class="flex flex-col gap-1.5">
-							<span class="text-xs text-muted-foreground">Col Start</span>
-							<Input
-								type="number"
-								value={segmentStartCol}
-								min={1}
-								max={tableData.columnWidths.length}
-								onchange={handleSegmentStartColChange}
-							/>
-						</div>
-						<div class="flex flex-col gap-1.5">
-							<span class="text-xs text-muted-foreground">Col End</span>
-							<Input
-								type="number"
-								value={segmentEndCol}
-								min={1}
-								max={tableData.columnWidths.length}
-								onchange={handleSegmentEndColChange}
-							/>
-						</div>
-					</div>
-				</div>
-
-				<div class="grid grid-cols-2 gap-4">
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Trim Left</span>
-						<Switch checked={segmentTrimLeft} onCheckedChange={(v) => segmentTrimLeft = v} />
-					</div>
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Trim Right</span>
-						<Switch checked={segmentTrimRight} onCheckedChange={(v) => segmentTrimRight = v} />
-					</div>
-				</div>
-
-				<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-					<Label>Line Style</Label>
-					<ToggleGroup.Root variant="outline" type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)} class="w-full">
-						<ToggleGroup.Item value="thin" aria-label="Thin" class="flex-1">Thin</ToggleGroup.Item>
-						<ToggleGroup.Item value="thick" aria-label="Thick" class="flex-1">Thick</ToggleGroup.Item>
-						<ToggleGroup.Item value="double" aria-label="Double" class="flex-1">Double</ToggleGroup.Item>
-					</ToggleGroup.Root>
-				</div>
-
-				<div class="flex items-center justify-between">
-					<Button size="sm" onclick={handleAddSegment} disabled={!tableData.columnWidths.length}>
-						Add Segment
-					</Button>
-					<Button size="sm" variant="ghost" onclick={onClearSegments} disabled={!tableData.segments.length}>
-						Clear All
-					</Button>
-				</div>
-
-				{#if tableData.segments.length}
-					<div class="space-y-3">
-						{#each tableData.segments as segment, index}
-							<div class="flex items-center justify-between text-xs rounded-md border border-border dark:border-[#27272a] px-2.5 py-2.5">
-								<span>
-									Row {segment.atRow + 1}, Col {segment.startCol + 1}-{segment.endCol + 1}
-								</span>
-								<Button size="sm" variant="ghost" onclick={() => onRemoveSegment?.(index)}>
-									Remove
-								</Button>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Resize Lock</Label>
-				<div class="grid grid-cols-2 gap-4">
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Column Widths</span>
-						<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
-					</div>
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Row Heights</span>
-						<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
-					</div>
-				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
-
-	<Card.Root class="p-4 gap-1">
-		<Card.Header class="p-0 pb-2">
 			<Card.Title class="text-sm">Table Style</Card.Title>
 		</Card.Header>
 		<Card.Content class="p-0 space-y-5">
@@ -551,6 +434,123 @@
 								{/each}
 							</Select.Content>
 						</Select.Root>
+					</div>
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
+
+	<Card.Root class="p-4 gap-1">
+		<Card.Header class="p-0 pb-2">
+			<Card.Title class="text-sm">Structure</Card.Title>
+		</Card.Header>
+		<Card.Content class="p-0 space-y-5">
+			<div class="space-y-3">
+				<Label>Header Rows</Label>
+				<Select.Root type="single" value={String(headerRows)} onValueChange={handleHeaderRowsChange}>
+					<Select.Trigger class="w-full">
+						{headerRowOptions.find(o => o.value === String(headerRows))?.label || `${headerRows} Rows`}
+					</Select.Trigger>
+					<Select.Content>
+						{#each headerRowOptions as option}
+							<Select.Item value={option.value}>{option.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
+
+			<div class="space-y-4 pt-4 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Segments</Label>
+				<div class="space-y-3">
+					<div class="grid grid-cols-3 gap-3">
+						<div class="flex flex-col gap-1.5">
+							<span class="text-xs text-muted-foreground">Row</span>
+							<Input
+								type="number"
+								value={segmentRow}
+								min={1}
+								max={tableData.rows.length}
+								onchange={handleSegmentRowChange}
+							/>
+						</div>
+						<div class="flex flex-col gap-1.5">
+							<span class="text-xs text-muted-foreground">Col Start</span>
+							<Input
+								type="number"
+								value={segmentStartCol}
+								min={1}
+								max={tableData.columnWidths.length}
+								onchange={handleSegmentStartColChange}
+							/>
+						</div>
+						<div class="flex flex-col gap-1.5">
+							<span class="text-xs text-muted-foreground">Col End</span>
+							<Input
+								type="number"
+								value={segmentEndCol}
+								min={1}
+								max={tableData.columnWidths.length}
+								onchange={handleSegmentEndColChange}
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-muted-foreground">Trim Left</span>
+						<Switch checked={segmentTrimLeft} onCheckedChange={(v) => segmentTrimLeft = v} />
+					</div>
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-muted-foreground">Trim Right</span>
+						<Switch checked={segmentTrimRight} onCheckedChange={(v) => segmentTrimRight = v} />
+					</div>
+				</div>
+
+				<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+					<Label>Line Style</Label>
+					<ToggleGroup.Root variant="outline" type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)} class="w-full">
+						<ToggleGroup.Item value="thin" aria-label="Thin" class="flex-1">Thin</ToggleGroup.Item>
+						<ToggleGroup.Item value="thick" aria-label="Thick" class="flex-1">Thick</ToggleGroup.Item>
+						<ToggleGroup.Item value="double" aria-label="Double" class="flex-1">Double</ToggleGroup.Item>
+					</ToggleGroup.Root>
+				</div>
+
+				<div class="flex items-center justify-between">
+					<Button size="sm" onclick={handleAddSegment} disabled={!tableData.columnWidths.length}>
+						Add Segment
+					</Button>
+					<Button size="sm" variant="ghost" onclick={onClearSegments} disabled={!tableData.segments.length}>
+						Clear All
+					</Button>
+				</div>
+
+				{#if tableData.segments.length}
+					<div class="space-y-3">
+						{#each tableData.segments as segment, index}
+							<div class="flex items-center justify-between text-xs rounded-md border border-border dark:border-[#27272a] px-2.5 py-2.5">
+								<span>
+									Row {segment.atRow + 1}, Col {segment.startCol + 1}-{segment.endCol + 1}
+								</span>
+								<Button size="sm" variant="ghost" onclick={() => onRemoveSegment?.(index)}>
+									Remove
+								</Button>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
+			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Resize Lock</Label>
+				<div class="grid grid-cols-2 gap-4">
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-muted-foreground">Column Widths</span>
+						<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
+					</div>
+					<div class="flex items-center justify-between">
+						<span class="text-xs text-muted-foreground">Row Heights</span>
+						<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
 					</div>
 				</div>
 			</div>
