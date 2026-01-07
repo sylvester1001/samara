@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
+	import AppTooltip from '$lib/components/AppTooltip.svelte';
 	import { TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge, TableCellsSplit } from 'lucide-svelte';
 
 	interface Props {
@@ -36,43 +37,85 @@
 </script>
 
 <div class="flex items-center gap-2 flex-wrap rounded-lg border border-border bg-white dark:bg-[#0a0a0a] px-3 py-2">
-	<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('left')} disabled={!hasSelection} title="Align Left">
-		<TextAlignStart class="w-4 h-4" />
-	</Button>
-	<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('center')} disabled={!hasSelection} title="Align Center">
-		<TextAlignCenter class="w-4 h-4" />
-	</Button>
-	<Button variant="ghost" size="icon" onclick={() => onAlignChange?.('right')} disabled={!hasSelection} title="Align Right">
-		<TextAlignEnd class="w-4 h-4" />
-	</Button>
+	<AppTooltip text="Align left" aria-label="Align left" onclick={() => onAlignChange?.('left')} disabled={!hasSelection}>
+		{#snippet children({ props })}
+			<Button variant="ghost" size="icon" {...props}>
+				<TextAlignStart class="w-4 h-4" />
+			</Button>
+		{/snippet}
+	</AppTooltip>
+	<AppTooltip text="Align center" aria-label="Align center" onclick={() => onAlignChange?.('center')} disabled={!hasSelection}>
+		{#snippet children({ props })}
+			<Button variant="ghost" size="icon" {...props}>
+				<TextAlignCenter class="w-4 h-4" />
+			</Button>
+		{/snippet}
+	</AppTooltip>
+	<AppTooltip text="Align right" aria-label="Align right" onclick={() => onAlignChange?.('right')} disabled={!hasSelection}>
+		{#snippet children({ props })}
+			<Button variant="ghost" size="icon" {...props}>
+				<TextAlignEnd class="w-4 h-4" />
+			</Button>
+		{/snippet}
+	</AppTooltip>
 	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
-	<Button variant="ghost" size="icon" onclick={onToggleBold} disabled={!hasSelection} title="Bold">
-		<Bold class="w-4 h-4" />
-	</Button>
-	<Button variant="ghost" size="icon" onclick={onToggleItalic} disabled={!hasSelection} title="Italic">
-		<Italic class="w-4 h-4" />
-	</Button>
-	<input
-		type="color"
-		class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
-		disabled={!hasSelection}
-		title="Text Color"
+	<AppTooltip text="Bold" aria-label="Bold" onclick={onToggleBold} disabled={!hasSelection}>
+		{#snippet children({ props })}
+			<Button variant="ghost" size="icon" {...props}>
+				<Bold class="w-4 h-4" />
+			</Button>
+		{/snippet}
+	</AppTooltip>
+	<AppTooltip text="Italic" aria-label="Italic" onclick={onToggleItalic} disabled={!hasSelection}>
+		{#snippet children({ props })}
+			<Button variant="ghost" size="icon" {...props}>
+				<Italic class="w-4 h-4" />
+			</Button>
+		{/snippet}
+	</AppTooltip>
+	<AppTooltip
+		text="Text color"
 		onchange={handleTextColorChange}
-	/>
-	<input
-		type="color"
-		class="w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]"
 		disabled={!hasSelection}
-		title="Cell Background"
+		childProps={{
+			type: 'color',
+			class: 'w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
+			'aria-label': 'Text color'
+		}}
+	>
+		{#snippet children({ props })}
+			<input {...props} />
+		{/snippet}
+	</AppTooltip>
+	<AppTooltip
+		text="Cell background"
 		onchange={handleBackgroundColorChange}
-	/>
+		disabled={!hasSelection}
+		childProps={{
+			type: 'color',
+			class: 'w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
+			'aria-label': 'Cell background'
+		}}
+	>
+		{#snippet children({ props })}
+			<input {...props} />
+		{/snippet}
+	</AppTooltip>
 	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
-	<Button variant="outline" size="sm" onclick={onMergeCells} disabled={!hasSelection}>
-		<TableCellsMerge />
-		<!-- Merge -->
-	</Button>
-	<Button variant="outline" size="sm" onclick={onUnmergeCells} disabled={!hasSelection}>
-		<TableCellsSplit />
-		<!-- Unmerge -->
-	</Button>
+	<AppTooltip text="Merge cells" aria-label="Merge cells" onclick={onMergeCells} disabled={!hasSelection}>
+		{#snippet children({ props })}
+			<Button variant="outline" size="sm" {...props}>
+				<TableCellsMerge />
+				<!-- Merge -->
+			</Button>
+		{/snippet}
+	</AppTooltip>
+	<AppTooltip text="Unmerge cells" aria-label="Unmerge cells" onclick={onUnmergeCells} disabled={!hasSelection}>
+		{#snippet children({ props })}
+			<Button variant="outline" size="sm" {...props}>
+				<TableCellsSplit />
+				<!-- Unmerge -->
+			</Button>
+		{/snippet}
+	</AppTooltip>
 </div>
