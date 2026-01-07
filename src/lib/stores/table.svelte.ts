@@ -400,6 +400,62 @@ class TableStore {
 		this.selectedCells = [];
 		this.saveHistory();
 	}
+
+	pasteAtSelection(data: string[][]) {
+		if (data.length === 0 || data[0].length === 0) return;
+
+		// Determine paste start position from selection, default to (0, 0)
+		let startRow = 0;
+		let startCol = 0;
+		if (this.selectedCells.length > 0) {
+			startRow = Math.min(...this.selectedCells.map((c) => c.row));
+			startCol = Math.min(...this.selectedCells.map((c) => c.col));
+		}
+
+		const pasteRows = data.length;
+		const pasteCols = data[0].length;
+		const requiredRows = startRow + pasteRows;
+		const requiredCols = startCol + pasteCols;
+
+		// Expand rows if needed
+		while (this.tableData.rows.length < requiredRows) {
+			const cols = this.tableData.columnWidths.length;
+			const newRow = Array(cols).fill(null).map(() => createCell());
+			this.tableData.rows.push(newRow);
+			this.tableData.rowHeights.push(32);
+		}
+
+		// Expand columns if needed
+		const currentCols = this.tableData.columnWidths.length;
+		if (currentCols < requiredCols) {
+			const colsToAdd = requiredCols - currentCols;
+			for (let i = 0; i < colsToAdd; i++) {
+				this.tableData.columnWidths.push(100);
+			}
+			for (const row of this.tableData.rows) {
+				for (let i = 0; i < colsToAdd; i++) {
+					row.push(createCell());
+				}
+			}
+		}
+
+		// Paste data at the target position
+		for (let r = 0; r < pasteRows; r++) {
+			for (let c = 0; c < pasteCols; c++) {
+				const targetRow = startRow + r;
+				const targetCol = startCol + c;
+				const content = data[r][c] ?? '';
+				if (this.tableData.rows[targetRow]?.[targetCol]) {
+					this.tableData.rows[targetRow][targetCol] = {
+						...this.tableData.rows[targetRow][targetCol],
+						content
+					};
+				}
+			}
+		}
+
+		this.saveHistory();
+	}
 }
 
 export const tableStore = new TableStore();
