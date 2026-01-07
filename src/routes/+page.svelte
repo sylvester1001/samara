@@ -74,12 +74,12 @@
 		tableStore.setRowHeight(rowIndex, height);
 	}
 
-	function handleAddRow() {
-		tableStore.addRow();
+	function handleAddRow(index?: number) {
+		tableStore.addRow(index);
 	}
 
-	function handleAddColumn() {
-		tableStore.addColumn();
+	function handleAddColumn(index?: number) {
+		tableStore.addColumn(index);
 	}
 
 	function handleDeleteRow(index: number) {
