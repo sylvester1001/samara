@@ -35,6 +35,7 @@
 	const selectedSet = $derived(new Set(selectedCells.map((cell) => `${cell.row}:${cell.col}`)));
 	let selectionAnchor = $state<{ row: number; col: number } | null>(null);
 	let isDragging = $state(false);
+	const inputPaddingXRem = 1.25;
 
 	const wideCharPattern =
 		/[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/;
@@ -45,6 +46,32 @@
 			length += wideCharPattern.test(char) ? 2 : 1;
 		}
 		return length;
+	}
+
+	const columnCharWidths = $derived.by(() => {
+		const columns = rows[0]?.length || 0;
+		const widths = Array(columns).fill(1);
+		for (let r = 0; r < rows.length; r++) {
+			const row = rows[r] ?? [];
+			for (let c = 0; c < columns; c++) {
+				const cell = row[c];
+				if (!cell || cell.isMerged) continue;
+				const content = cell.content ?? '';
+				const length = Math.max(1, getDisplayLength(content));
+				const colspan = Math.max(1, cell.colspan ?? 1);
+				const perColumn = Math.ceil(length / colspan);
+				for (let span = 0; span < colspan && c + span < columns; span++) {
+					if (perColumn > widths[c + span]) {
+						widths[c + span] = perColumn;
+					}
+				}
+			}
+		}
+		return widths;
+	});
+
+	function getColumnWidthStyle(chars: number) {
+		return `calc(${chars}ch + ${inputPaddingXRem}rem)`;
 	}
 
 	function handleCellInput(value: string, rowIndex: number, colIndex: number) {
@@ -182,7 +209,13 @@
 
 	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both">
 		<div class="p-4">
-		<table class="border-collapse w-auto">
+		<table class="border-collapse min-w-max table-auto">
+			<colgroup>
+				<col style="width: 2.5rem;" />
+				{#each columnCharWidths as width}
+					<col style:width={getColumnWidthStyle(width)} />
+				{/each}
+			</colgroup>
 			<thead>
 				<tr>
 					<th class="w-10 min-w-10 bg-[#f4f4f5] dark:bg-[#27272a]"></th>
@@ -226,12 +259,11 @@
 								>
 									<input
 										type="text"
-										class="px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit"
+										class="w-full px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit"
 										class:text-left={cell.align === 'left'}
 										class:text-center={cell.align === 'center' || !cell.align}
 										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
 										value={cell.content}
-										size={Math.max(1, getDisplayLength(cell.content))}
 										data-row={rowIndex}
 										data-col={colIndex}
 										oninput={(e) => handleCellInput((e.target as HTMLInputElement).value, rowIndex, colIndex)}
