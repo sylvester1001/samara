@@ -340,9 +340,10 @@
 						{/each}
 					</Select.Content>
 				</Select.Root>
-				<div class="space-y-2">
-					<span class="text-xs text-muted-foreground">Font Size: {tableStyle.fontSize}pt</span>
+				<div class="flex items-center gap-3">
+					<span class="text-xs text-muted-foreground shrink-0 w-8">Size</span>
 					<Slider
+						class="flex-1"
 						type="single"
 						value={tableStyle.fontSize}
 						min={8}
@@ -350,14 +351,16 @@
 						step={1}
 						onValueChange={handleFontSizeChange}
 					/>
+					<span class="text-xs text-muted-foreground shrink-0 w-8 text-right">{tableStyle.fontSize}pt</span>
 				</div>
 			</div>
 
 			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Scale</Label>
-				<div class="space-y-2">
-					<span class="text-xs text-muted-foreground">{Math.round(tableStyle.scale * 100)}%</span>
+				<Label>Spacing</Label>
+				<div class="flex items-center gap-3">
+					<span class="text-xs text-muted-foreground shrink-0 w-8">Scale</span>
 					<Slider
+						class="flex-1"
 						type="single"
 						value={tableStyle.scale * 100}
 						min={50}
@@ -365,16 +368,18 @@
 						step={5}
 						onValueChange={handleScaleChange}
 					/>
+					<span class="text-xs text-muted-foreground shrink-0 w-8 text-right">
+						{Math.round(tableStyle.scale * 100)}%
+					</span>
 				</div>
-			</div>
-
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Cell Padding</Label>
-				<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
-					<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
-					<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1">Normal</ToggleGroup.Item>
-					<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1">Loose</ToggleGroup.Item>
-				</ToggleGroup.Root>
+				<div class="space-y-2">
+					<span class="text-xs text-muted-foreground">Cell Padding</span>
+					<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
+						<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
+						<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1">Normal</ToggleGroup.Item>
+						<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1">Loose</ToggleGroup.Item>
+					</ToggleGroup.Root>
+				</div>
 			</div>
 
 			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
