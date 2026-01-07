@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge } from 'lucide-svelte';
+	import { TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge, TableCellsSplit } from 'lucide-svelte';
 
 	interface Props {
 		hasSelection?: boolean;
@@ -68,10 +68,11 @@
 	/>
 	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
 	<Button variant="outline" size="sm" onclick={onMergeCells} disabled={!hasSelection}>
-		<TableCellsMerge class="w-4 h-4 mr-1" />
-		Merge
+		<TableCellsMerge />
+		<!-- Merge -->
 	</Button>
 	<Button variant="outline" size="sm" onclick={onUnmergeCells} disabled={!hasSelection}>
-		Unmerge
+		<TableCellsSplit />
+		<!-- Unmerge -->
 	</Button>
 </div>
