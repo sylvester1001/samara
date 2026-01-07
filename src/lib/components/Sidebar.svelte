@@ -342,7 +342,7 @@
 				</Select.Root>
 			</div>
 
-			<div class="space-y-4 pt-3 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-4 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Segments</Label>
 				<div class="space-y-3">
 					<div class="grid grid-cols-3 gap-3">
@@ -390,7 +390,7 @@
 					</div>
 				</div>
 
-				<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 					<Label>Line Style</Label>
 					<ToggleGroup.Root variant="outline" type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)} class="w-full">
 						<ToggleGroup.Item value="thin" aria-label="Thin" class="flex-1">Thin</ToggleGroup.Item>
@@ -424,7 +424,7 @@
 				{/if}
 			</div>
 
-			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Resize Lock</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex items-center justify-between">
@@ -470,7 +470,7 @@
 				</div>
 			</div>
 
-			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Scale</Label>
 				<div class="space-y-2">
 					<span class="text-xs text-muted-foreground">{Math.round(tableStyle.scale * 100)}%</span>
@@ -485,7 +485,7 @@
 				</div>
 			</div>
 
-			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Cell Padding</Label>
 				<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
 					<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
@@ -494,7 +494,7 @@
 				</ToggleGroup.Root>
 			</div>
 
-			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Table Borders</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex flex-col gap-2">
@@ -599,7 +599,7 @@
 				</div>
 			{/if}
 
-			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Padding</Label>
 				<div class="space-y-2">
 					<span class="text-xs text-muted-foreground">{canvasConfig.padding}px</span>
@@ -614,7 +614,7 @@
 				</div>
 			</div>
 
-			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Background</Label>
 				<input
 					type="color"
