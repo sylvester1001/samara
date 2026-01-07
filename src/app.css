@@ -40,37 +40,37 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.269 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.551 0.027 264.364);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.439 0 0);
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 @theme inline {
@@ -123,68 +123,47 @@
 /* Computer Modern font */
 @import "computer-modern/cmu-serif.css";
 
-/* Inter font for UI */
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-
 html, body {
   height: 100%;
   overflow: hidden;
   user-select: none;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Academic table */
 .canvas-wrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
   min-width: 200px;
   position: relative;
-  border-radius: 4px;
-  transition: box-shadow 0.25s ease;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 8px;
 }
 
-.canvas-wrapper:hover {
-  box-shadow: 0 2px 16px rgba(99, 102, 241, 0.12);
+.table-container {
+  position: relative;
+  display: inline-block;
 }
 
-:global(.dark) .canvas-wrapper:hover {
-  box-shadow: 0 2px 16px rgba(129, 140, 248, 0.18);
-}
-
-/* Content container: holds double lines + table */
-.table-content {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+.table-scale {
+  transform-origin: top left;
   position: relative;
 }
 
-/* Table wrapper: for segment lines overlay */
-.table-wrapper {
+.academic-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  user-select: text;
+}
+
+.academic-table th,
+.academic-table td {
+  padding: var(--cell-padding, 8px) 12px;
   position: relative;
-  line-height: 0;
-  font-size: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-/* Resizers layer */
-.resizers-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.resizers-layer > * {
-  pointer-events: auto;
-}
-
-/* Segment lines */
 .segment-layer {
   position: absolute;
   inset: 0;
@@ -198,48 +177,84 @@ html, body {
   border-top: var(--segment-width, 1px) var(--segment-style, solid) black;
 }
 
-/* Double line elements */
-.double-line {
-  height: 5px;
-  flex-shrink: 0;
+.resizable-cell {
+  position: relative;
 }
 
-/* Top: thick-thin (2px line, 2px gap, 1px line) */
-.double-line-top.thick-thin {
-  background: linear-gradient(to bottom, black 0px, black 2px, transparent 2px, transparent 4px, black 4px, black 5px);
-}
-
-/* Bottom: thin-thick (1px line, 2px gap, 2px line) */
-.double-line-bottom.thin-thick {
-  background: linear-gradient(to bottom, black 0px, black 1px, transparent 1px, transparent 3px, black 3px, black 5px);
-}
-
-/* Base table styles */
-.academic-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  table-layout: fixed;
-  user-select: text;
-  font-size: initial;
-  line-height: normal;
-  color: #000000;
-  /* Disable anti-aliasing for sharper edges during export */
-  shape-rendering: crispEdges;
-}
-
-.academic-table th,
-.academic-table td {
-  padding: var(--cell-padding, 8px) 12px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  /* Ensure crisp rendering for cells */
-  shape-rendering: crispEdges;
-}
-
-/* Booktabs preset */
+/* Booktabs preset - three-line table */
 .academic-table.preset-booktabs {
+  position: relative;
+  --double-line-size: 4px;
+  --double-line-offset: calc(var(--double-line-size) - 1px);
+  z-index: 0;
   border-top: var(--border-top) var(--border-top-style, solid) black;
   border-bottom: var(--border-bottom) var(--border-bottom-style, solid) black;
+}
+
+.academic-table.preset-booktabs.border-top-thick-thin,
+.academic-table.preset-booktabs.border-top-thin-thick {
+  border-top: none;
+  overflow: visible;
+}
+
+.academic-table.preset-booktabs.border-bottom-thick-thin,
+.academic-table.preset-booktabs.border-bottom-thin-thick {
+  border-bottom: none;
+  overflow: visible;
+}
+
+/* Asymmetric double lines using box-shadow (thick-thin / thin-thick) */
+.academic-table.preset-booktabs.border-top-thick-thin {
+  box-shadow: inset 0 2px 0 0 black, inset 0 4px 0 0 white, inset 0 5px 0 0 black;
+}
+
+.academic-table.preset-booktabs.border-top-thin-thick {
+  box-shadow: inset 0 1px 0 0 black, inset 0 3px 0 0 white, inset 0 5px 0 0 black;
+}
+
+.academic-table.preset-booktabs.border-bottom-thick-thin {
+  box-shadow: inset 0 -1px 0 0 black, inset 0 -3px 0 0 white, inset 0 -5px 0 0 black;
+}
+
+.academic-table.preset-booktabs.border-bottom-thin-thick {
+  box-shadow: inset 0 -2px 0 0 black, inset 0 -4px 0 0 white, inset 0 -5px 0 0 black;
+}
+
+/* Combined top and bottom thick-thin */
+.academic-table.preset-booktabs.border-top-thick-thin.border-bottom-thick-thin {
+  box-shadow: inset 0 2px 0 0 black, inset 0 4px 0 0 white, inset 0 5px 0 0 black,
+              inset 0 -1px 0 0 black, inset 0 -3px 0 0 white, inset 0 -5px 0 0 black;
+}
+
+.academic-table.preset-booktabs.border-top-thick-thin.border-bottom-thin-thick {
+  box-shadow: inset 0 2px 0 0 black, inset 0 4px 0 0 white, inset 0 5px 0 0 black,
+              inset 0 -2px 0 0 black, inset 0 -4px 0 0 white, inset 0 -5px 0 0 black;
+}
+
+.academic-table.preset-booktabs.border-top-thin-thick.border-bottom-thick-thin {
+  box-shadow: inset 0 1px 0 0 black, inset 0 3px 0 0 white, inset 0 5px 0 0 black,
+              inset 0 -1px 0 0 black, inset 0 -3px 0 0 white, inset 0 -5px 0 0 black;
+}
+
+.academic-table.preset-booktabs.border-top-thin-thick.border-bottom-thin-thick {
+  box-shadow: inset 0 1px 0 0 black, inset 0 3px 0 0 white, inset 0 5px 0 0 black,
+              inset 0 -2px 0 0 black, inset 0 -4px 0 0 white, inset 0 -5px 0 0 black;
+}
+
+.academic-table.preset-booktabs.border-top-thick-thin thead tr:first-child th,
+.academic-table.preset-booktabs.border-top-thick-thin thead tr:first-child td,
+.academic-table.preset-booktabs.border-top-thin-thick thead tr:first-child th,
+.academic-table.preset-booktabs.border-top-thin-thick thead tr:first-child td {
+  padding-top: calc(var(--cell-padding, 8px) + var(--double-line-offset));
+  position: relative;
+  z-index: 2;
+}
+
+.academic-table.preset-booktabs.border-bottom-thick-thin tbody tr:last-child td,
+.academic-table.preset-booktabs.border-bottom-thick-thin tbody tr:last-child th,
+.academic-table.preset-booktabs.border-bottom-thin-thick tbody tr:last-child td,
+.academic-table.preset-booktabs.border-bottom-thin-thick tbody tr:last-child th {
+  padding-bottom: calc(var(--cell-padding, 8px) + var(--double-line-offset));
 }
 
 .academic-table.preset-booktabs thead tr:last-child {
@@ -259,7 +274,7 @@ html, body {
 
 .academic-table.preset-bordered th,
 .academic-table.preset-bordered td {
-  border: 1px solid black;
+  border: var(--border-horizontal) var(--border-horizontal-style, solid) black;
 }
 
 /* Minimal preset */
@@ -274,8 +289,6 @@ html, body {
   min-height: 1em;
   cursor: default;
   user-select: text;
-  white-space: pre-wrap;
-  word-wrap: break-word;
 }
 
 .cell-content .cell-input {
@@ -288,8 +301,6 @@ html, body {
   padding: 0;
   margin: 0;
   user-select: text;
-  white-space: pre-wrap;
-  word-wrap: break-word;
 }
 
 input,
@@ -424,14 +435,4 @@ textarea,
 :global(.dark) .canvas-resizer {
   background: #0a0a0a;
   border-color: #3f3f46;
-}
-
-/* Preview canvas dot pattern */
-.preview-canvas {
-  background-image: radial-gradient(circle, #d4d4d8 1px, transparent 1px);
-  background-size: 16px 16px;
-}
-
-:global(.dark) .preview-canvas {
-  background-image: radial-gradient(circle, #3f3f46 1px, transparent 1px);
 }
