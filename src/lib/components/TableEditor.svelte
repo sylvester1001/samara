@@ -36,9 +36,19 @@
 	let selectionAnchor = $state<{ row: number; col: number } | null>(null);
 	let isDragging = $state(false);
 
-	function handleCellInput(e: Event, rowIndex: number, colIndex: number) {
-		const target = e.target as HTMLInputElement;
-		onCellChange(rowIndex, colIndex, target.value);
+	const wideCharPattern =
+		/[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/;
+
+	function getDisplayLength(value: string) {
+		let length = 0;
+		for (const char of value) {
+			length += wideCharPattern.test(char) ? 2 : 1;
+		}
+		return length;
+	}
+
+	function handleCellInput(value: string, rowIndex: number, colIndex: number) {
+		onCellChange(rowIndex, colIndex, value);
 	}
 
 	function handleKeyDown(e: KeyboardEvent, rowIndex: number, colIndex: number) {
@@ -177,7 +187,7 @@
 				<tr>
 					<th class="w-10 min-w-10 bg-[#f4f4f5] dark:bg-[#27272a]"></th>
 					{#each rows[0] || [] as _, colIndex}
-						<th class="relative min-w-[100px] px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
+						<th class="relative px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
 							<span class="block">{String.fromCharCode(65 + colIndex)}</span>
 							<button 
 								class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
@@ -216,14 +226,18 @@
 								>
 									<input
 										type="text"
-										class="w-full min-w-[100px] px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit"
+										class="px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit"
 										class:text-left={cell.align === 'left'}
 										class:text-center={cell.align === 'center' || !cell.align}
 										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
 										value={cell.content}
+										size={Math.max(1, getDisplayLength(cell.content))}
 										data-row={rowIndex}
 										data-col={colIndex}
-										oninput={(e) => handleCellInput(e, rowIndex, colIndex)}
+										oninput={(e) => handleCellInput((e.target as HTMLInputElement).value, rowIndex, colIndex)}
+										oncompositionupdate={(e) =>
+											handleCellInput((e.target as HTMLInputElement).value, rowIndex, colIndex)
+										}
 										onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
 									/>
 								</td>
