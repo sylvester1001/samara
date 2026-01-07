@@ -395,6 +395,49 @@ class TableStore {
 		this.saveHistory();
 	}
 
+	resizeTable(newRows: number, newCols: number) {
+		const currentRows = this.tableData.rows.length;
+		const currentCols = this.tableData.columnWidths.length;
+
+		// Adjust columns
+		if (newCols > currentCols) {
+			const colsToAdd = newCols - currentCols;
+			for (let i = 0; i < colsToAdd; i++) {
+				this.tableData.columnWidths.push(100);
+			}
+			for (const row of this.tableData.rows) {
+				for (let i = 0; i < colsToAdd; i++) {
+					row.push(createCell());
+				}
+			}
+		} else if (newCols < currentCols) {
+			this.tableData.columnWidths = this.tableData.columnWidths.slice(0, newCols);
+			for (const row of this.tableData.rows) {
+				row.splice(newCols);
+			}
+		}
+
+		// Adjust rows
+		if (newRows > currentRows) {
+			const rowsToAdd = newRows - currentRows;
+			for (let i = 0; i < rowsToAdd; i++) {
+				const newRow = Array(newCols).fill(null).map(() => createCell());
+				this.tableData.rows.push(newRow);
+				this.tableData.rowHeights.push(32);
+			}
+		} else if (newRows < currentRows) {
+			this.tableData.rows = this.tableData.rows.slice(0, newRows);
+			this.tableData.rowHeights = this.tableData.rowHeights.slice(0, newRows);
+		}
+
+		// Adjust headerRows if needed
+		this.tableData.headerRows = Math.min(this.tableData.headerRows, newRows);
+
+		// Clear selection
+		this.selectedCells = [];
+		this.saveHistory();
+	}
+
 	importData(data: string[][]) {
 		const rows: Cell[][] = data.map((row, i) =>
 			row.map((content) => createCell(content))

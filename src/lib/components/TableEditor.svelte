@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+	import TableSizeSelector from './TableSizeSelector.svelte';
 	import { Plus } from 'lucide-svelte';
 	import type { Cell } from '$lib/types';
 
@@ -13,6 +14,7 @@
 		onDeleteRow: (index: number) => void;
 		onDeleteColumn: (index: number) => void;
 		onClearSelectedCells?: () => void;
+		onResizeTable?: (rows: number, cols: number) => void;
 	}
 
 	let {
@@ -24,7 +26,8 @@
 		onAddColumn,
 		onDeleteRow,
 		onDeleteColumn,
-		onClearSelectedCells
+		onClearSelectedCells,
+		onResizeTable
 	}: Props = $props();
 
 	const rowCount = $derived(rows.length);
@@ -147,7 +150,14 @@
 
 <div class="table-editor flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
 	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a] shrink-0 relative z-0">
-		<div class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</div>
+		<div class="flex items-center gap-2">
+			<TableSizeSelector
+				currentRows={rowCount}
+				currentCols={colCount}
+				onSizeChange={(r, c) => onResizeTable?.(r, c)}
+			/>
+			<span class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</span>
+		</div>
 		<div class="flex gap-2">
 			<button class="flex items-center gap-1 px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={onAddRow} title="Add Row">
 				<Plus class="w-3.5 h-3.5" />

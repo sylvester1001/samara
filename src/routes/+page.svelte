@@ -90,6 +90,10 @@
 		tableStore.deleteColumn(index);
 	}
 
+	function handleResizeTable(rows: number, cols: number) {
+		tableStore.resizeTable(rows, cols);
+	}
+
 	function handleSelectionChange(cells: { row: number; col: number }[]) {
 		tableStore.setSelectedCells(cells);
 	}
@@ -339,6 +343,7 @@
 								onDeleteRow={handleDeleteRow}
 								onDeleteColumn={handleDeleteColumn}
 								onClearSelectedCells={() => tableStore.clearSelectedCellsContent()}
+								onResizeTable={handleResizeTable}
 							/>
 						</div>
 					</div>
