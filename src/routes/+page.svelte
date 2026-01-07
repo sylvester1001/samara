@@ -167,7 +167,7 @@
 			const data = handlePaste(e.clipboardData);
 			if (data) {
 				e.preventDefault();
-				tableStore.importData(data);
+				tableStore.pasteAtSelection(data);
 			}
 		}
 	}
