@@ -68,17 +68,14 @@
 
 	const borderOptions: { value: BorderStyle; label: string }[] = [
 		{ value: 'none', label: 'None' },
-		{ value: 'thin', label: 'Light' },
-		{ value: 'thick', label: 'Heavy' },
+		{ value: 'thin', label: 'Thin' },
+		{ value: 'thick', label: 'Thick' },
 		{ value: 'double', label: 'Double' }
 	];
-	const topBorderOptions: { value: BorderStyle; label: string }[] = [
+	const doubleBorderOptions: { value: BorderStyle; label: string }[] = [
 		...borderOptions,
-		{ value: 'thick-thin', label: 'Heavy-Light' }
-	];
-	const bottomBorderOptions: { value: BorderStyle; label: string }[] = [
-		...borderOptions,
-		{ value: 'thin-thick', label: 'Light-Heavy' }
+		{ value: 'thick-thin', label: 'Thick-Thin' },
+		{ value: 'thin-thick', label: 'Thin-Thick' }
 	];
 
 	const headerRowOptions = $derived.by(() => {
@@ -137,6 +134,10 @@
 
 	function handleFontSizeChange(value: number) {
 		onStyleChange?.({ fontSize: value });
+	}
+
+	function handleScaleChange(value: number) {
+		onStyleChange?.({ scale: value / 100 });
 	}
 
 	function inferPreset(config: CanvasConfig) {
@@ -214,6 +215,10 @@
 		}
 	}
 
+	function handlePaddingValueChange(value: number) {
+		onCanvasChange?.({ padding: value });
+	}
+
 	function handleBgColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		onCanvasChange?.({ backgroundColor: target.value });
@@ -227,8 +232,7 @@
 	}
 
 	function getBorderLabel(value: BorderStyle) {
-		const allOptions = [...borderOptions, { value: 'thick-thin', label: 'Heavy-Light' }, { value: 'thin-thick', label: 'Light-Heavy' }];
-		return allOptions.find((option) => option.value === value)?.label ?? value;
+		return doubleBorderOptions.find((option) => option.value === value)?.label ?? value;
 	}
 
 	function handleSegmentStartColChange(e: Event) {
@@ -321,115 +325,6 @@
 <div class="settings-panel space-y-4">
 	<Card.Root class="p-4 gap-1">
 		<Card.Header class="p-0 pb-2">
-			<Card.Title class="text-sm">Table Style</Card.Title>
-		</Card.Header>
-		<Card.Content class="p-0 space-y-5">
-			<div class="space-y-3">
-				<Label>Font</Label>
-				<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
-					<Select.Trigger class="w-full">
-						{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || 'Select font'}
-					</Select.Trigger>
-					<Select.Content>
-						{#each fontOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-				<div class="flex items-center gap-3">
-					<span class="text-xs text-muted-foreground shrink-0 w-8">Size</span>
-					<Slider
-						class="flex-1"
-						type="single"
-						value={tableStyle.fontSize}
-						min={8}
-						max={16}
-						step={1}
-						onValueChange={handleFontSizeChange}
-					/>
-					<span class="text-xs text-muted-foreground shrink-0 w-8 text-right">{tableStyle.fontSize}pt</span>
-				</div>
-			</div>
-
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Spacing</Label>
-				<div class="space-y-2">
-					<span class="text-xs text-muted-foreground">Cell Padding</span>
-					<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
-						<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
-						<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1">Normal</ToggleGroup.Item>
-						<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1">Loose</ToggleGroup.Item>
-					</ToggleGroup.Root>
-				</div>
-			</div>
-
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Rules</Label>
-				<div class="grid grid-cols-2 gap-4">
-					<div class="flex flex-col gap-2">
-						<span class="text-xs text-muted-foreground">Top</span>
-						<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
-							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
-							<Select.Content>
-								{#each topBorderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</div>
-					<div class="flex flex-col gap-2">
-						<span class="text-xs text-muted-foreground">Bottom</span>
-						<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
-							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
-							<Select.Content>
-								{#each bottomBorderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</div>
-					<div class="flex flex-col gap-2">
-						<span class="text-xs text-muted-foreground">Header</span>
-						<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
-							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
-							<Select.Content>
-								{#each borderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</div>
-					{#if tableStyle.preset !== 'booktabs'}
-						<div class="flex flex-col gap-2">
-							<span class="text-xs text-muted-foreground">Vertical</span>
-							<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
-								<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
-								<Select.Content>
-									{#each borderOptions as option}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
-						</div>
-						<div class="flex flex-col gap-2">
-							<span class="text-xs text-muted-foreground">Horizontal</span>
-							<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
-								<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
-								<Select.Content>
-									{#each borderOptions as option}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
-
-	<Card.Root class="p-4 gap-1">
-		<Card.Header class="p-0 pb-2">
 			<Card.Title class="text-sm">Structure</Card.Title>
 		</Card.Header>
 		<Card.Content class="p-0 space-y-5">
@@ -447,7 +342,7 @@
 				</Select.Root>
 			</div>
 
-			<div class="space-y-4 pt-4 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-4 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Segments</Label>
 				<div class="space-y-3">
 					<div class="grid grid-cols-3 gap-3">
@@ -495,7 +390,7 @@
 					</div>
 				</div>
 
-				<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+				<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 					<Label>Line Style</Label>
 					<ToggleGroup.Root variant="outline" type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)} class="w-full">
 						<ToggleGroup.Item value="thin" aria-label="Thin" class="flex-1">Thin</ToggleGroup.Item>
@@ -529,16 +424,133 @@
 				{/if}
 			</div>
 
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Resize Lock</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Column</span>
+						<span class="text-xs text-muted-foreground">Column Widths</span>
 						<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
 					</div>
 					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Row</span>
+						<span class="text-xs text-muted-foreground">Row Heights</span>
 						<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
+					</div>
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
+
+	<Card.Root class="p-4 gap-1">
+		<Card.Header class="p-0 pb-2">
+			<Card.Title class="text-sm">Table Style</Card.Title>
+		</Card.Header>
+		<Card.Content class="p-0 space-y-5">
+			<div class="space-y-3">
+				<Label>Font</Label>
+				<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
+					<Select.Trigger class="w-full">
+						{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || 'Select font'}
+					</Select.Trigger>
+					<Select.Content>
+						{#each fontOptions as option}
+							<Select.Item value={option.value}>{option.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+				<div class="space-y-2">
+					<span class="text-xs text-muted-foreground">Font Size: {tableStyle.fontSize}pt</span>
+					<Slider
+						type="single"
+						value={tableStyle.fontSize}
+						min={8}
+						max={16}
+						step={1}
+						onValueChange={handleFontSizeChange}
+					/>
+				</div>
+			</div>
+
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Scale</Label>
+				<div class="space-y-2">
+					<span class="text-xs text-muted-foreground">{Math.round(tableStyle.scale * 100)}%</span>
+					<Slider
+						type="single"
+						value={tableStyle.scale * 100}
+						min={50}
+						max={150}
+						step={5}
+						onValueChange={handleScaleChange}
+					/>
+				</div>
+			</div>
+
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Cell Padding</Label>
+				<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
+					<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
+					<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1">Normal</ToggleGroup.Item>
+					<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1">Loose</ToggleGroup.Item>
+				</ToggleGroup.Root>
+			</div>
+
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Table Borders</Label>
+				<div class="grid grid-cols-2 gap-4">
+					<div class="flex flex-col gap-2">
+						<span class="text-xs text-muted-foreground">Top</span>
+						<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
+							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
+							<Select.Content>
+								{#each doubleBorderOptions as option}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+					<div class="flex flex-col gap-2">
+						<span class="text-xs text-muted-foreground">Bottom</span>
+						<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
+							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
+							<Select.Content>
+								{#each doubleBorderOptions as option}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+					<div class="flex flex-col gap-2">
+						<span class="text-xs text-muted-foreground">Header</span>
+						<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
+							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
+							<Select.Content>
+								{#each borderOptions as option}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+					<div class="flex flex-col gap-2">
+						<span class="text-xs text-muted-foreground">Vertical</span>
+						<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
+							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
+							<Select.Content>
+								{#each borderOptions as option}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+					<div class="flex flex-col gap-2">
+						<span class="text-xs text-muted-foreground">Horizontal</span>
+						<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
+							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
+							<Select.Content>
+								{#each borderOptions as option}
+									<Select.Item value={option.value}>{option.label}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
 					</div>
 				</div>
 			</div>
@@ -587,7 +599,22 @@
 				</div>
 			{/if}
 
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
+				<Label>Padding</Label>
+				<div class="space-y-2">
+					<span class="text-xs text-muted-foreground">{canvasConfig.padding}px</span>
+					<Slider
+						type="single"
+						value={canvasConfig.padding}
+						min={0}
+						max={60}
+						step={4}
+						onValueChange={handlePaddingValueChange}
+					/>
+				</div>
+			</div>
+
+			<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Background</Label>
 				<input
 					type="color"
