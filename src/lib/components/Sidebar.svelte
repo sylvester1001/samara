@@ -345,7 +345,7 @@
 			<div class="space-y-4 pt-3 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Segments</Label>
 				<div class="space-y-3">
-					<div class="grid grid-cols-[1fr_2fr] gap-3">
+					<div class="grid grid-cols-3 gap-3">
 						<div class="flex flex-col gap-1.5">
 							<span class="text-xs text-muted-foreground">Row</span>
 							<Input
@@ -356,27 +356,25 @@
 								onchange={handleSegmentRowChange}
 							/>
 						</div>
-						<div class="grid grid-cols-2 gap-3">
-							<div class="flex flex-col gap-1.5">
-								<span class="text-xs text-muted-foreground">Col Start</span>
-								<Input
-									type="number"
-									value={segmentStartCol}
-									min={1}
-									max={tableData.columnWidths.length}
-									onchange={handleSegmentStartColChange}
-								/>
-							</div>
-							<div class="flex flex-col gap-1.5">
-								<span class="text-xs text-muted-foreground">Col End</span>
-								<Input
-									type="number"
-									value={segmentEndCol}
-									min={1}
-									max={tableData.columnWidths.length}
-									onchange={handleSegmentEndColChange}
-								/>
-							</div>
+						<div class="flex flex-col gap-1.5">
+							<span class="text-xs text-muted-foreground">Col Start</span>
+							<Input
+								type="number"
+								value={segmentStartCol}
+								min={1}
+								max={tableData.columnWidths.length}
+								onchange={handleSegmentStartColChange}
+							/>
+						</div>
+						<div class="flex flex-col gap-1.5">
+							<span class="text-xs text-muted-foreground">Col End</span>
+							<Input
+								type="number"
+								value={segmentEndCol}
+								min={1}
+								max={tableData.columnWidths.length}
+								onchange={handleSegmentEndColChange}
+							/>
 						</div>
 					</div>
 				</div>
@@ -392,7 +390,7 @@
 					</div>
 				</div>
 
-				<div class="space-y-3">
+				<div class="space-y-3 pt-3 border-t border-border/60 dark:border-[#27272a]">
 					<Label>Line Style</Label>
 					<ToggleGroup.Root variant="outline" type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)} class="w-full">
 						<ToggleGroup.Item value="thin" aria-label="Thin" class="flex-1">Thin</ToggleGroup.Item>
