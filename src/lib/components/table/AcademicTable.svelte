@@ -82,6 +82,8 @@
 	});
 	// 1. 创建一个状态数组来直接绑定每一行在浏览器中的真实渲染高度
 	let domRowHeights: number[] = $state([]);
+	let domTableWidth = $state(0);
+	let domTableHeight = $state(0);
 
 	const tableWidth = $derived(tableData.columnWidths.reduce((sum, w) => sum + w, 0));
 	const tableHeight = $derived.by(() => {
@@ -91,24 +93,23 @@
 		}
 		return total;
 	});
+	// 用真实 DOM 尺寸计算最小画布尺寸，避免精度问题
+	const actualTableWidth = $derived(domTableWidth || tableWidth);
+	const actualTableHeight = $derived(domTableHeight || tableHeight);
 	const requestedCanvasWidth = $derived(
 		canvasConfig.width === 'auto'
-			? Math.ceil(tableWidth + canvasConfig.padding * 2)
+			? Math.ceil(actualTableWidth + canvasConfig.padding * 2)
 			: canvasConfig.width
 	);
 	const requestedCanvasHeight = $derived(
 		canvasConfig.height === 'auto'
-			? Math.ceil(tableHeight + canvasConfig.padding * 2)
+			? Math.ceil(actualTableHeight + canvasConfig.padding * 2)
 			: canvasConfig.height
 	);
-	const minCanvasWidth = $derived(Math.ceil(tableWidth));
-	const minCanvasHeight = $derived(Math.ceil(tableHeight));
+	const minCanvasWidth = $derived(actualTableWidth);
+	const minCanvasHeight = $derived(actualTableHeight);
 	const canvasWidth = $derived(Math.max(requestedCanvasWidth, minCanvasWidth));
 	const canvasHeight = $derived(Math.max(requestedCanvasHeight, minCanvasHeight));
-	const maxPaddingX = $derived(Math.max(0, (canvasWidth - tableWidth) / 2));
-	const maxPaddingY = $derived(Math.max(0, (canvasHeight - tableHeight) / 2));
-	const effectivePaddingX = $derived(Math.min(canvasConfig.padding, Math.floor(maxPaddingX)));
-	const effectivePaddingY = $derived(Math.min(canvasConfig.padding, Math.floor(maxPaddingY)));
 
 	// -----------------------------------------------------------------------
 	// 修改核心逻辑
@@ -264,12 +265,11 @@
 
 <div
 	class="canvas-wrapper"
-	style:padding="{`${effectivePaddingY}px ${effectivePaddingX}px`}"
 	style:background-color={canvasConfig.backgroundColor}
-	style:width="{`${canvasWidth}px`}"
-	style:height="{`${canvasHeight}px`}"
+	style:width="{canvasWidth}px"
+	style:height="{canvasHeight}px"
 >
-	<div class="table-container" style:width="{tableWidth}px" style:height="{tableHeight}px">
+	<div class="table-container" bind:clientWidth={domTableWidth} bind:clientHeight={domTableHeight}>
 		<div class="table-inner">
 			<div class="segment-layer">
 				{#each segmentLines as segment}
