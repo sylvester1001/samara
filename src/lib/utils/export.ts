@@ -6,6 +6,14 @@ export interface ExportOptions {
 	includeBackground?: boolean;
 }
 
+// 过滤掉不需要导出的元素
+function filterExportElements(node: HTMLElement): boolean {
+	// 排除 resizers-layer 和 canvas-resizer
+	if (node.classList?.contains('resizers-layer')) return false;
+	if (node.classList?.contains('canvas-resizer')) return false;
+	return true;
+}
+
 export async function exportToPng(
 	element: HTMLElement,
 	options: ExportOptions = {}
@@ -14,7 +22,8 @@ export async function exportToPng(
 
 	const dataUrl = await toPng(element, {
 		pixelRatio,
-		backgroundColor: includeBackground ? backgroundColor : undefined
+		backgroundColor: includeBackground ? backgroundColor : undefined,
+		filter: filterExportElements
 	});
 
 	return dataUrl;
@@ -27,7 +36,8 @@ export async function exportToSvg(
 	const { backgroundColor = '#ffffff', includeBackground = true } = options;
 
 	const dataUrl = await toSvg(element, {
-		backgroundColor: includeBackground ? backgroundColor : undefined
+		backgroundColor: includeBackground ? backgroundColor : undefined,
+		filter: filterExportElements
 	});
 
 	return dataUrl;
