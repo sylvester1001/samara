@@ -154,29 +154,32 @@ html, body {
   box-shadow: 0 2px 16px rgba(129, 140, 248, 0.18);
 }
 
-.table-container {
+/* Content container: holds double lines + table */
+.table-content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Table wrapper: for segment lines overlay */
+.table-wrapper {
   position: relative;
+  line-height: 0;
+  font-size: 0;
 }
 
-.table-inner {
-  position: relative;
+/* Resizers layer */
+.resizers-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.academic-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  table-layout: fixed;
-  user-select: text;
+.resizers-layer > :global(*) {
+  pointer-events: auto;
 }
 
-.academic-table th,
-.academic-table td {
-  padding: var(--cell-padding, 8px) 12px;
-  position: relative;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
+/* Segment lines */
 .segment-layer {
   position: absolute;
   inset: 0;
@@ -190,84 +193,49 @@ html, body {
   border-top: var(--segment-width, 1px) var(--segment-style, solid) black;
 }
 
-.resizable-cell {
-  position: relative;
+/* Double line elements */
+.double-line {
+  height: 5px;
+  flex-shrink: 0;
 }
 
-/* Booktabs preset - three-line table */
+.double-line-top.thick-thin {
+  background: linear-gradient(to bottom, black 0px, black 2px, transparent 2px, transparent 4px, black 4px, black 5px);
+}
+
+.double-line-top.thin-thick {
+  background: linear-gradient(to bottom, black 0px, black 1px, transparent 1px, transparent 3px, black 3px, black 5px);
+}
+
+.double-line-bottom.thick-thin {
+  background: linear-gradient(to bottom, black 0px, black 1px, transparent 1px, transparent 3px, black 3px, black 5px);
+}
+
+.double-line-bottom.thin-thick {
+  background: linear-gradient(to bottom, black 0px, black 2px, transparent 2px, transparent 4px, black 4px, black 5px);
+}
+
+/* Base table styles */
+.academic-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  user-select: text;
+  font-size: initial;
+  line-height: normal;
+}
+
+.academic-table th,
+.academic-table td {
+  padding: var(--cell-padding, 8px) 12px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Booktabs preset */
 .academic-table.preset-booktabs {
-  position: relative;
-  --double-line-size: 4px;
-  --double-line-offset: calc(var(--double-line-size) - 1px);
-  z-index: 0;
   border-top: var(--border-top) var(--border-top-style, solid) black;
   border-bottom: var(--border-bottom) var(--border-bottom-style, solid) black;
-}
-
-.academic-table.preset-booktabs.border-top-thick-thin,
-.academic-table.preset-booktabs.border-top-thin-thick {
-  border-top: none;
-  overflow: visible;
-}
-
-.academic-table.preset-booktabs.border-bottom-thick-thin,
-.academic-table.preset-booktabs.border-bottom-thin-thick {
-  border-bottom: none;
-  overflow: visible;
-}
-
-/* Asymmetric double lines using box-shadow (thick-thin / thin-thick) */
-.academic-table.preset-booktabs.border-top-thick-thin {
-  box-shadow: inset 0 2px 0 0 black, inset 0 4px 0 0 white, inset 0 5px 0 0 black;
-}
-
-.academic-table.preset-booktabs.border-top-thin-thick {
-  box-shadow: inset 0 1px 0 0 black, inset 0 3px 0 0 white, inset 0 5px 0 0 black;
-}
-
-.academic-table.preset-booktabs.border-bottom-thick-thin {
-  box-shadow: inset 0 -1px 0 0 black, inset 0 -3px 0 0 white, inset 0 -5px 0 0 black;
-}
-
-.academic-table.preset-booktabs.border-bottom-thin-thick {
-  box-shadow: inset 0 -2px 0 0 black, inset 0 -4px 0 0 white, inset 0 -5px 0 0 black;
-}
-
-/* Combined top and bottom thick-thin */
-.academic-table.preset-booktabs.border-top-thick-thin.border-bottom-thick-thin {
-  box-shadow: inset 0 2px 0 0 black, inset 0 4px 0 0 white, inset 0 5px 0 0 black,
-              inset 0 -1px 0 0 black, inset 0 -3px 0 0 white, inset 0 -5px 0 0 black;
-}
-
-.academic-table.preset-booktabs.border-top-thick-thin.border-bottom-thin-thick {
-  box-shadow: inset 0 2px 0 0 black, inset 0 4px 0 0 white, inset 0 5px 0 0 black,
-              inset 0 -2px 0 0 black, inset 0 -4px 0 0 white, inset 0 -5px 0 0 black;
-}
-
-.academic-table.preset-booktabs.border-top-thin-thick.border-bottom-thick-thin {
-  box-shadow: inset 0 1px 0 0 black, inset 0 3px 0 0 white, inset 0 5px 0 0 black,
-              inset 0 -1px 0 0 black, inset 0 -3px 0 0 white, inset 0 -5px 0 0 black;
-}
-
-.academic-table.preset-booktabs.border-top-thin-thick.border-bottom-thin-thick {
-  box-shadow: inset 0 1px 0 0 black, inset 0 3px 0 0 white, inset 0 5px 0 0 black,
-              inset 0 -2px 0 0 black, inset 0 -4px 0 0 white, inset 0 -5px 0 0 black;
-}
-
-.academic-table.preset-booktabs.border-top-thick-thin thead tr:first-child th,
-.academic-table.preset-booktabs.border-top-thick-thin thead tr:first-child td,
-.academic-table.preset-booktabs.border-top-thin-thick thead tr:first-child th,
-.academic-table.preset-booktabs.border-top-thin-thick thead tr:first-child td {
-  padding-top: calc(var(--cell-padding, 8px) + var(--double-line-offset));
-  position: relative;
-  z-index: 2;
-}
-
-.academic-table.preset-booktabs.border-bottom-thick-thin tbody tr:last-child td,
-.academic-table.preset-booktabs.border-bottom-thick-thin tbody tr:last-child th,
-.academic-table.preset-booktabs.border-bottom-thin-thick tbody tr:last-child td,
-.academic-table.preset-booktabs.border-bottom-thin-thick tbody tr:last-child th {
-  padding-bottom: calc(var(--cell-padding, 8px) + var(--double-line-offset));
 }
 
 .academic-table.preset-booktabs thead tr:last-child {
@@ -287,7 +255,7 @@ html, body {
 
 .academic-table.preset-bordered th,
 .academic-table.preset-bordered td {
-  border: var(--border-horizontal) var(--border-horizontal-style, solid) black;
+  border: 1px solid black;
 }
 
 /* Minimal preset */
