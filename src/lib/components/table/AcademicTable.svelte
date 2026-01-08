@@ -91,24 +91,22 @@
 		}
 		return total;
 	});
-	const scaledTableWidth = $derived(tableWidth * tableStyle.scale);
-	const scaledTableHeight = $derived(tableHeight * tableStyle.scale);
 	const requestedCanvasWidth = $derived(
 		canvasConfig.width === 'auto'
-			? Math.ceil(scaledTableWidth + canvasConfig.padding * 2)
+			? Math.ceil(tableWidth + canvasConfig.padding * 2)
 			: canvasConfig.width
 	);
 	const requestedCanvasHeight = $derived(
 		canvasConfig.height === 'auto'
-			? Math.ceil(scaledTableHeight + canvasConfig.padding * 2)
+			? Math.ceil(tableHeight + canvasConfig.padding * 2)
 			: canvasConfig.height
 	);
-	const minCanvasWidth = $derived(Math.ceil(scaledTableWidth));
-	const minCanvasHeight = $derived(Math.ceil(scaledTableHeight));
+	const minCanvasWidth = $derived(Math.ceil(tableWidth));
+	const minCanvasHeight = $derived(Math.ceil(tableHeight));
 	const canvasWidth = $derived(Math.max(requestedCanvasWidth, minCanvasWidth));
 	const canvasHeight = $derived(Math.max(requestedCanvasHeight, minCanvasHeight));
-	const maxPaddingX = $derived(Math.max(0, (canvasWidth - scaledTableWidth) / 2));
-	const maxPaddingY = $derived(Math.max(0, (canvasHeight - scaledTableHeight) / 2));
+	const maxPaddingX = $derived(Math.max(0, (canvasWidth - tableWidth) / 2));
+	const maxPaddingY = $derived(Math.max(0, (canvasHeight - tableHeight) / 2));
 	const effectivePaddingX = $derived(Math.min(canvasConfig.padding, Math.floor(maxPaddingX)));
 	const effectivePaddingY = $derived(Math.min(canvasConfig.padding, Math.floor(maxPaddingY)));
 
@@ -151,12 +149,6 @@
 		}
 		return offsets;
 	});
-	const scaledRowResizerPositions = $derived.by(() =>
-		rowResizerPositions.map((pos) => pos * tableStyle.scale)
-	);
-	const scaledColResizerPositions = $derived.by(() =>
-		colResizerPositions.map((pos) => pos * tableStyle.scale)
-	);
 	const segmentLines = $derived.by(() => {
 		const lines: {
 			id: number;
@@ -198,17 +190,13 @@
 
 	function handleColumnResize(colIndex: number, delta: number) {
 		const currentWidth = tableData.columnWidths[colIndex] || 100;
-		const adjustedDelta = delta / tableStyle.scale;
-		const newWidth = Math.max(40, currentWidth + adjustedDelta); // 最小宽度保护
+		const newWidth = Math.max(40, currentWidth + delta);
 		onColumnResize?.(colIndex, newWidth);
 	}
 
 	function handleRowResize(rowIndex: number, delta: number) {
 		const currentSetting = tableData.rowHeights[rowIndex] || 32;
-		// 只需要修改数据高度，DOM会自动响应
-		// 如果内容很高，tr height 变小不会有视觉变化（被内容撑住），但 Resizer 会正确吸附在底部
-		const adjustedDelta = delta / tableStyle.scale;
-		const newHeight = Math.max(32, currentSetting + adjustedDelta);
+		const newHeight = Math.max(32, currentSetting + delta);
 		onRowResize?.(rowIndex, newHeight);
 	}
 
@@ -281,8 +269,8 @@
 	style:width="{`${canvasWidth}px`}"
 	style:height="{`${canvasHeight}px`}"
 >
-	<div class="table-container" style:width="{scaledTableWidth}px" style:height="{scaledTableHeight}px">
-		<div class="table-scale" style:transform="scale({tableStyle.scale})">
+	<div class="table-container" style:width="{tableWidth}px" style:height="{tableHeight}px">
+		<div class="table-inner">
 			<div class="segment-layer">
 				{#each segmentLines as segment}
 					<div
@@ -384,14 +372,14 @@
 			</table>
 		</div>
 
-		{#each scaledColResizerPositions as left, colIndex}
+		{#each colResizerPositions as left, colIndex}
 			<ColumnResizer 
 				onResize={(delta) => handleColumnResize(colIndex, delta)} 
 				style="left: {left}px"
 			/>
 		{/each}
 
-		{#each scaledRowResizerPositions as top, rowIndex}
+		{#each rowResizerPositions as top, rowIndex}
 			<RowResizer 
 				onResize={(delta) => handleRowResize(rowIndex, delta)} 
 				style="top: {top}px"

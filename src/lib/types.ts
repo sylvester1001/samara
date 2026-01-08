@@ -44,7 +44,6 @@ export interface TableStyle {
 	preset: 'booktabs' | 'bordered' | 'minimal';
 	fontFamily: 'computer-modern' | 'times' | 'arial';
 	fontSize: number;
-	scale: number;
 	padding: 'compact' | 'normal' | 'loose' | number;
 	borders: BorderConfig;
 }
@@ -76,7 +75,6 @@ export const DEFAULT_TABLE_STYLE: TableStyle = {
 	preset: 'booktabs',
 	fontFamily: 'computer-modern',
 	fontSize: 12,
-	scale: 1,
 	padding: 'normal',
 	borders: DEFAULT_BORDER_CONFIG
 };

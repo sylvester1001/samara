@@ -154,8 +154,7 @@ html, body {
   display: inline-block;
 }
 
-.table-scale {
-  transform-origin: top left;
+.table-inner {
   position: relative;
 }
 

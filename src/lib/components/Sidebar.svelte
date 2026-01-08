@@ -136,10 +136,6 @@
 		onStyleChange?.({ fontSize: value });
 	}
 
-	function handleScaleChange(value: number) {
-		onStyleChange?.({ scale: value / 100 });
-	}
-
 	function inferPreset(config: CanvasConfig) {
 		if (config.width === 'auto' && config.height === 'auto') return 'auto';
 		if (config.width === presetSizes.ppt.width && config.height === presetSizes.ppt.height) return 'ppt';
@@ -357,21 +353,6 @@
 
 			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Spacing</Label>
-				<div class="flex items-center gap-3">
-					<span class="text-xs text-muted-foreground shrink-0 w-8">Scale</span>
-					<Slider
-						class="flex-1"
-						type="single"
-						value={tableStyle.scale * 100}
-						min={50}
-						max={150}
-						step={5}
-						onValueChange={handleScaleChange}
-					/>
-					<span class="text-xs text-muted-foreground shrink-0 w-8 text-right">
-						{Math.round(tableStyle.scale * 100)}%
-					</span>
-				</div>
 				<div class="space-y-2">
 					<span class="text-xs text-muted-foreground">Cell Padding</span>
 					<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
