@@ -14,7 +14,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { Table2, ArrowRightFromLine, Code, ZoomIn, ZoomOut } from 'lucide-svelte';
+	import { Table2, ArrowRightFromLine, Code, ZoomIn, ZoomOut, RotateCcw } from 'lucide-svelte';
 
 	let tableElement: HTMLElement | null = $state(null);
 	let previewContainer: HTMLElement;
@@ -375,6 +375,9 @@
 							Preview
 						</Badge>
 						<div class="absolute top-2 left-3 flex gap-1 z-10">
+							<Button variant="outline" size="icon" class="h-7 w-7 bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]" onclick={() => previewZoom = 1}>
+								<RotateCcw class="h-3.5 w-3.5" />
+							</Button>
 							<Button variant="outline" size="icon" class="h-7 w-7 bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]" onclick={handleZoomOut}>
 								<ZoomOut class="h-3.5 w-3.5" />
 							</Button>
