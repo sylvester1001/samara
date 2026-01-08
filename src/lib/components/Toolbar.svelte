@@ -3,6 +3,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { Undo2, Redo2, FilePlus, Download } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	interface Props {
 		onImport?: () => void;
@@ -74,4 +75,5 @@
 			</Select.Root>
 		</div>
 	</div>
+	<ThemeToggle />
 </div>
