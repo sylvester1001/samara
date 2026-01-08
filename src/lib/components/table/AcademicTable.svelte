@@ -117,8 +117,20 @@
 
 	const minCanvasWidth = $derived(actualContentWidth);
 	const minCanvasHeight = $derived(actualContentHeight);
-	const canvasWidth = $derived(Math.max(requestedCanvasWidth, minCanvasWidth));
-	const canvasHeight = $derived(Math.max(requestedCanvasHeight, minCanvasHeight));
+	
+	// 当 canvas 尺寸接近最小值时，精确匹配内容尺寸
+	const canvasWidth = $derived.by(() => {
+		if (requestedCanvasWidth <= minCanvasWidth + 1) {
+			return minCanvasWidth;
+		}
+		return Math.max(requestedCanvasWidth, minCanvasWidth);
+	});
+	const canvasHeight = $derived.by(() => {
+		if (requestedCanvasHeight <= minCanvasHeight + 1) {
+			return minCanvasHeight;
+		}
+		return Math.max(requestedCanvasHeight, minCanvasHeight);
+	});
 
 	// ========== Derived: Resizer Positions ==========
 	const rowResizerPositions = $derived.by(() => {
