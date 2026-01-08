@@ -399,16 +399,16 @@
 				style:width="{tableWidth}px"
 			></div>
 		{/if}
-	</div>
 
-	<!-- Resizers (outside content, inside canvas) -->
-	<div class="resizers-layer">
-		{#each colResizerPositions as left, colIndex}
-			<ColumnResizer onResize={(delta) => handleColumnResize(colIndex, delta)} style="left: {left}px" />
-		{/each}
-		{#each rowResizerPositions as top, rowIndex}
-			<RowResizer onResize={(delta) => handleRowResize(rowIndex, delta)} style="top: {top}px" />
-		{/each}
+		<!-- Resizers layer (inside table-content for correct positioning) -->
+		<div class="resizers-layer">
+			{#each colResizerPositions as left, colIndex}
+				<ColumnResizer onResize={(delta) => handleColumnResize(colIndex, delta)} style="left: {left}px" />
+			{/each}
+			{#each rowResizerPositions as top, rowIndex}
+				<RowResizer onResize={(delta) => handleRowResize(rowIndex, delta)} style="top: {top}px" />
+			{/each}
+		</div>
 	</div>
 
 	<!-- Canvas resize handles -->
