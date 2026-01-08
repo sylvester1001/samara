@@ -69,6 +69,15 @@
 
 	const SEGMENT_TRIM_PX = 8;
 	const DOUBLE_LINE_HEIGHT = 5;
+	// Extend amount for cell background to prevent white lines during export
+	const CELL_BG_EXTEND_PX = 0.5;
+
+	// ========== Helper: Cell Background Extension ==========
+	// Generates box-shadow to extend background color slightly, preventing gaps between adjacent colored cells
+	function getCellBgExtendStyle(bgColor: string | undefined): string | undefined {
+		if (!bgColor) return undefined;
+		return `${-CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}, ${CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`;
+	}
 
 	// ========== Derived: Style Values ==========
 	const fontFamily = $derived(FONT_FAMILY_MAP[tableStyle.fontFamily]);
@@ -339,6 +348,7 @@
 										class:font-bold={cell.isBold}
 										class:italic={cell.isItalic}
 										style:background-color={cell.backgroundColor}
+										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor)}
 										style:color={cell.textColor}
 										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
 										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
@@ -367,6 +377,7 @@
 										class:font-bold={cell.isBold}
 										class:italic={cell.isItalic}
 										style:background-color={cell.backgroundColor}
+										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor)}
 										style:color={cell.textColor}
 										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
 										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
