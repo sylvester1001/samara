@@ -68,17 +68,17 @@
 
 	const borderOptions: { value: BorderStyle; label: string }[] = [
 		{ value: 'none', label: 'None' },
-		{ value: 'thin', label: 'Thin' },
-		{ value: 'thick', label: 'Thick' },
+		{ value: 'thin', label: 'Light' },
+		{ value: 'thick', label: 'Heavy' },
 		{ value: 'double', label: 'Double' }
 	];
 	const topBorderOptions: { value: BorderStyle; label: string }[] = [
 		...borderOptions,
-		{ value: 'thick-thin', label: 'Thick-Thin' }
+		{ value: 'thick-thin', label: 'Heavy-Light' }
 	];
 	const bottomBorderOptions: { value: BorderStyle; label: string }[] = [
 		...borderOptions,
-		{ value: 'thin-thick', label: 'Thin-Thick' }
+		{ value: 'thin-thick', label: 'Light-Heavy' }
 	];
 
 	const headerRowOptions = $derived.by(() => {
@@ -231,7 +231,7 @@
 	}
 
 	function getBorderLabel(value: BorderStyle) {
-		const allOptions = [...borderOptions, { value: 'thick-thin', label: 'Thick-Thin' }, { value: 'thin-thick', label: 'Thin-Thick' }];
+		const allOptions = [...borderOptions, { value: 'thick-thin', label: 'Heavy-Light' }, { value: 'thin-thick', label: 'Light-Heavy' }];
 		return allOptions.find((option) => option.value === value)?.label ?? value;
 	}
 
@@ -368,7 +368,7 @@
 			</div>
 
 			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Table Borders</Label>
+				<Label>Rules</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex flex-col gap-2">
 						<span class="text-xs text-muted-foreground">Top</span>
