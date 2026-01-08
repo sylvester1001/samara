@@ -75,12 +75,12 @@
 	</AppTooltip>
 	<AppTooltip
 		text="Text color"
-		onchange={handleTextColorChange}
 		disabled={!hasSelection}
 		childProps={{
 			type: 'color',
 			class: 'ml-1 w-7 h-7 rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
-			'aria-label': 'Text color'
+			'aria-label': 'Text color',
+			oninput: handleTextColorChange
 		}}
 	>
 		{#snippet children({ props })}
@@ -89,12 +89,12 @@
 	</AppTooltip>
 	<AppTooltip
 		text="Cell background"
-		onchange={handleBackgroundColorChange}
 		disabled={!hasSelection}
 		childProps={{
 			type: 'color',
 			class: 'ml-2 w-7 h-7 rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
-			'aria-label': 'Cell background'
+			'aria-label': 'Cell background',
+			oninput: handleBackgroundColorChange
 		}}
 	>
 		{#snippet children({ props })}
