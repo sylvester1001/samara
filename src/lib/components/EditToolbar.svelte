@@ -58,7 +58,7 @@
 			</Button>
 		{/snippet}
 	</AppTooltip>
-	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
+	<div class="h-6 border-l border-border dark:border-[#27272a] mx-1"></div>
 	<AppTooltip text="Bold" aria-label="Bold" onclick={onToggleBold} disabled={!hasSelection}>
 		{#snippet children({ props })}
 			<Button variant="ghost" size="icon" {...props}>
@@ -101,7 +101,7 @@
 			<input {...props} />
 		{/snippet}
 	</AppTooltip>
-	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
+	<div class="h-6 border-l border-border dark:border-[#27272a] mx-1"></div>
 	<AppTooltip text="Merge cells" aria-label="Merge cells" onclick={onMergeCells} disabled={!hasSelection}>
 		{#snippet children({ props })}
 			<Button variant="ghost" size="sm" {...props}>
