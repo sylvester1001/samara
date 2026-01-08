@@ -289,7 +289,7 @@
 			<AppSidebar.Menu>
 				<AppSidebar.MenuItem>
 					<AppSidebar.MenuButton size="lg">
-						<div class="bg-sidebar-primary text-sidebar-primary-foreground flex size-8 items-center justify-center rounded-lg">
+						<div class="bg-foreground text-background flex size-8 items-center justify-center rounded-lg">
 							<Table2 class="size-4" />
 						</div>
 						<span class="text-sm font-semibold">Tablix</span>
