@@ -214,10 +214,6 @@
 		}
 	}
 
-	function handlePaddingValueChange(value: number) {
-		onCanvasChange?.({ padding: value });
-	}
-
 	function handleBgColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		onCanvasChange?.({ backgroundColor: target.value });
@@ -590,21 +586,6 @@
 					/>
 				</div>
 			{/if}
-
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Padding</Label>
-				<div class="space-y-2">
-					<span class="text-xs text-muted-foreground">{canvasConfig.padding}px</span>
-					<Slider
-						type="single"
-						value={canvasConfig.padding}
-						min={0}
-						max={60}
-						step={4}
-						onValueChange={handlePaddingValueChange}
-					/>
-				</div>
-			</div>
 
 			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Background</Label>
