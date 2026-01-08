@@ -72,9 +72,12 @@
 		{ value: 'thick', label: 'Thick' },
 		{ value: 'double', label: 'Double' }
 	];
-	const doubleBorderOptions: { value: BorderStyle; label: string }[] = [
+	const topBorderOptions: { value: BorderStyle; label: string }[] = [
 		...borderOptions,
-		{ value: 'thick-thin', label: 'Thick-Thin' },
+		{ value: 'thick-thin', label: 'Thick-Thin' }
+	];
+	const bottomBorderOptions: { value: BorderStyle; label: string }[] = [
+		...borderOptions,
 		{ value: 'thin-thick', label: 'Thin-Thick' }
 	];
 
@@ -228,7 +231,8 @@
 	}
 
 	function getBorderLabel(value: BorderStyle) {
-		return doubleBorderOptions.find((option) => option.value === value)?.label ?? value;
+		const allOptions = [...borderOptions, { value: 'thick-thin', label: 'Thick-Thin' }, { value: 'thin-thick', label: 'Thin-Thick' }];
+		return allOptions.find((option) => option.value === value)?.label ?? value;
 	}
 
 	function handleSegmentStartColChange(e: Event) {
@@ -371,7 +375,7 @@
 						<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
 							<Select.Content>
-								{#each doubleBorderOptions as option}
+								{#each topBorderOptions as option}
 									<Select.Item value={option.value}>{option.label}</Select.Item>
 								{/each}
 							</Select.Content>
@@ -382,7 +386,7 @@
 						<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
 							<Select.Content>
-								{#each doubleBorderOptions as option}
+								{#each bottomBorderOptions as option}
 									<Select.Item value={option.value}>{option.label}</Select.Item>
 								{/each}
 							</Select.Content>

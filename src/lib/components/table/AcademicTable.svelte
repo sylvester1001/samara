@@ -87,10 +87,10 @@
 	const bottomBorderType = $derived(tableStyle.borders.bottom);
 	
 	const needsTopDoubleLine = $derived(
-		isBooktabs && (topBorderType === 'thick-thin' || topBorderType === 'thin-thick')
+		isBooktabs && topBorderType === 'thick-thin'
 	);
 	const needsBottomDoubleLine = $derived(
-		isBooktabs && (bottomBorderType === 'thick-thin' || bottomBorderType === 'thin-thick')
+		isBooktabs && bottomBorderType === 'thin-thick'
 	);
 
 	// ========== Derived: Table Dimensions ==========
