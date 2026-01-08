@@ -16,7 +16,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Table2, ArrowRightFromLine, Code } from 'lucide-svelte';
 
-	let tableElement: HTMLElement;
+	let tableElement: HTMLElement | null = $state(null);
 	let fileInput: HTMLInputElement;
 	let exportDpi = $state(300);
 
@@ -352,17 +352,16 @@
 						</Badge>
 						<ScrollArea class="flex-1 w-full pt-12 px-4 pb-16" orientation="both">
 							<div class="min-w-full flex justify-center">
-								<div bind:this={tableElement} class="w-fit">
-									<AcademicTable
-										tableData={tableStore.tableData}
-										tableStyle={tableStore.tableStyle}
-										canvasConfig={tableStore.canvasConfig}
-										onCellUpdate={handleCellChange}
-										onColumnResize={handleColumnResize}
-										onRowResize={handleRowResize}
-										onCanvasResize={handleCanvasChange}
-									/>
-								</div>
+								<AcademicTable
+									tableData={tableStore.tableData}
+									tableStyle={tableStore.tableStyle}
+									canvasConfig={tableStore.canvasConfig}
+									onCellUpdate={handleCellChange}
+									onColumnResize={handleColumnResize}
+									onRowResize={handleRowResize}
+									onCanvasResize={handleCanvasChange}
+									canvasRef={(el) => tableElement = el}
+								/>
 							</div>
 						</ScrollArea>
 						<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6">

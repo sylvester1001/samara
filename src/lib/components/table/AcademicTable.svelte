@@ -12,9 +12,16 @@
 		onColumnResize?: (colIndex: number, width: number) => void;
 		onRowResize?: (rowIndex: number, height: number) => void;
 		onCanvasResize?: (config: Partial<CanvasConfig>) => void;
+		canvasRef?: (el: HTMLElement | null) => void;
 	}
 
-	let { tableData, tableStyle, canvasConfig, onCellUpdate, onColumnResize, onRowResize, onCanvasResize }: Props = $props();
+	let { tableData, tableStyle, canvasConfig, onCellUpdate, onColumnResize, onRowResize, onCanvasResize, canvasRef }: Props = $props();
+
+	let canvasElement: HTMLElement | null = $state(null);
+
+	$effect(() => {
+		canvasRef?.(canvasElement);
+	});
 
 	// ... (FontFamilyMap, PaddingMap 等常量保持不变，省略以节省空间) ...
     const fontFamilyMap: Record<string, string> = {
@@ -265,6 +272,7 @@
 
 <div
 	class="canvas-wrapper"
+	bind:this={canvasElement}
 	style:background-color={canvasConfig.backgroundColor}
 	style:width="{canvasWidth}px"
 	style:height="{canvasHeight}px"
