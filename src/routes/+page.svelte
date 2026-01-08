@@ -460,7 +460,7 @@
 									</div>
 								</Popover.Content>
 							</Popover.Root>
-							<Button variant="outline" class="w-[140px] shadow-md bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]" onclick={handleExportLatex}>
+							<Button variant="outline" class="w-[140px] bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]" onclick={handleExportLatex}>
 								<Code class="w-4 h-4 mr-1" />
 								Export LaTeX
 							</Button>
