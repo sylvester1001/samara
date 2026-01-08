@@ -399,28 +399,30 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="flex flex-col gap-2">
-						<span class="text-xs text-muted-foreground">Vertical</span>
-						<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
-							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
-							<Select.Content>
-								{#each borderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</div>
-					<div class="flex flex-col gap-2">
-						<span class="text-xs text-muted-foreground">Horizontal</span>
-						<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
-							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
-							<Select.Content>
-								{#each borderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</div>
+					{#if tableStyle.preset !== 'booktabs'}
+						<div class="flex flex-col gap-2">
+							<span class="text-xs text-muted-foreground">Vertical</span>
+							<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
+								<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
+								<Select.Content>
+									{#each borderOptions as option}
+										<Select.Item value={option.value}>{option.label}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</div>
+						<div class="flex flex-col gap-2">
+							<span class="text-xs text-muted-foreground">Horizontal</span>
+							<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
+								<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
+								<Select.Content>
+									{#each borderOptions as option}
+										<Select.Item value={option.value}>{option.label}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</div>
+					{/if}
 				</div>
 			</div>
 		</Card.Content>
