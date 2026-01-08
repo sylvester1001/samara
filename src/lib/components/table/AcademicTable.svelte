@@ -18,119 +18,113 @@
 	let { tableData, tableStyle, canvasConfig, onCellUpdate, onColumnResize, onRowResize, onCanvasResize, canvasRef }: Props = $props();
 
 	let canvasElement: HTMLElement | null = $state(null);
+	let contentElement: HTMLElement | null = $state(null);
 
 	$effect(() => {
 		canvasRef?.(canvasElement);
 	});
 
-	// ... (FontFamilyMap, PaddingMap 等常量保持不变，省略以节省空间) ...
-    const fontFamilyMap: Record<string, string> = {
+	// ========== Constants ==========
+	const FONT_FAMILY_MAP: Record<string, string> = {
 		'computer-modern': '"CMU Serif", serif',
 		times: '"Times New Roman", Times, serif',
 		arial: 'Arial, Helvetica, sans-serif'
 	};
-    // ... 其他常量 ...
-    const borderWidthMap: Record<string, number> = {
-		none: 0,
-		thin: 1,
-		thick: 2,
-		double: 3,
-		'thick-thin': 3,
-		'thin-thick': 3
-	};
-	const borderStyleMap: Record<string, string> = {
-		none: 'none',
-		thin: 'solid',
-		thick: 'solid',
-		double: 'double',
-		'thick-thin': 'double',
-		'thin-thick': 'double'
-	};
-	const segmentWidthMap: Record<string, number> = {
-		thin: 1,
-		thick: 2,
-		double: 3
-	};
-	const segmentStyleMap: Record<string, string> = {
-		thin: 'solid',
-		thick: 'solid',
-		double: 'double'
-	};
-    const paddingMap: Record<string, number> = {
+
+	const PADDING_MAP: Record<string, number> = {
 		compact: 4,
 		normal: 8,
 		loose: 16
 	};
-	const segmentTrimPx = 8;
 
-	const fontFamily = $derived(fontFamilyMap[tableStyle.fontFamily]);
+	const BORDER_WIDTH_MAP: Record<string, number> = {
+		none: 0,
+		thin: 1,
+		thick: 2,
+		double: 3,
+		'thick-thin': 0,
+		'thin-thick': 0
+	};
+
+	const BORDER_STYLE_MAP: Record<string, string> = {
+		none: 'none',
+		thin: 'solid',
+		thick: 'solid',
+		double: 'double',
+		'thick-thin': 'none',
+		'thin-thick': 'none'
+	};
+
+	const SEGMENT_WIDTH_MAP: Record<string, number> = {
+		thin: 1,
+		thick: 2,
+		double: 3
+	};
+
+	const SEGMENT_STYLE_MAP: Record<string, string> = {
+		thin: 'solid',
+		thick: 'solid',
+		double: 'double'
+	};
+
+	const SEGMENT_TRIM_PX = 8;
+	const DOUBLE_LINE_HEIGHT = 5;
+
+	// ========== Derived: Style Values ==========
+	const fontFamily = $derived(FONT_FAMILY_MAP[tableStyle.fontFamily]);
 	const cellPadding = $derived(
-		typeof tableStyle.padding === 'number' ? tableStyle.padding : paddingMap[tableStyle.padding]
+		typeof tableStyle.padding === 'number' ? tableStyle.padding : PADDING_MAP[tableStyle.padding]
 	);
-	const tableClass = $derived.by(() => {
-		const classes = ['academic-table', `preset-${tableStyle.preset}`];
-		if (tableStyle.preset === 'booktabs') {
-			if (tableStyle.borders.top === 'thick-thin') {
-				classes.push('border-top-thick-thin');
-			} else if (tableStyle.borders.top === 'thin-thick') {
-				classes.push('border-top-thin-thick');
-			}
-			if (tableStyle.borders.bottom === 'thick-thin') {
-				classes.push('border-bottom-thick-thin');
-			} else if (tableStyle.borders.bottom === 'thin-thick') {
-				classes.push('border-bottom-thin-thick');
-			}
-		}
-		return classes.join(' ');
-	});
+
 	const headerRowCount = $derived.by(() => {
 		const requested = tableData.headerRows ?? 1;
 		return Math.min(Math.max(1, requested), tableData.rows.length);
 	});
-	// 1. 创建一个状态数组来直接绑定每一行在浏览器中的真实渲染高度
-	let domRowHeights: number[] = $state([]);
-	let domTableWidth = $state(0);
-	let domTableHeight = $state(0);
 
+	// ========== Derived: Border Config ==========
+	const isBooktabs = $derived(tableStyle.preset === 'booktabs');
+	const topBorderType = $derived(tableStyle.borders.top);
+	const bottomBorderType = $derived(tableStyle.borders.bottom);
+	
+	const needsTopDoubleLine = $derived(
+		isBooktabs && (topBorderType === 'thick-thin' || topBorderType === 'thin-thick')
+	);
+	const needsBottomDoubleLine = $derived(
+		isBooktabs && (bottomBorderType === 'thick-thin' || bottomBorderType === 'thin-thick')
+	);
+
+	// ========== Derived: Table Dimensions ==========
 	const tableWidth = $derived(tableData.columnWidths.reduce((sum, w) => sum + w, 0));
-	const tableHeight = $derived.by(() => {
-		let total = 0;
-		for (let i = 0; i < tableData.rowHeights.length; i++) {
-			total += domRowHeights[i] ?? tableData.rowHeights[i] ?? 32;
-		}
-		return total;
-	});
-	// 用真实 DOM 尺寸计算最小画布尺寸，避免精度问题
-	const actualTableWidth = $derived(domTableWidth || tableWidth);
-	const actualTableHeight = $derived(domTableHeight || tableHeight);
+
+	let domRowHeights: number[] = $state([]);
+	let domContentWidth = $state(0);
+	let domContentHeight = $state(0);
+
+	// ========== Derived: Canvas Dimensions ==========
+	const actualContentWidth = $derived(domContentWidth || tableWidth);
+	const actualContentHeight = $derived(domContentHeight || 100);
+
 	const requestedCanvasWidth = $derived(
 		canvasConfig.width === 'auto'
-			? Math.ceil(actualTableWidth + canvasConfig.padding * 2)
+			? Math.ceil(actualContentWidth + canvasConfig.padding * 2)
 			: canvasConfig.width
 	);
 	const requestedCanvasHeight = $derived(
 		canvasConfig.height === 'auto'
-			? Math.ceil(actualTableHeight + canvasConfig.padding * 2)
+			? Math.ceil(actualContentHeight + canvasConfig.padding * 2)
 			: canvasConfig.height
 	);
-	const minCanvasWidth = $derived(actualTableWidth);
-	const minCanvasHeight = $derived(actualTableHeight);
+
+	const minCanvasWidth = $derived(actualContentWidth);
+	const minCanvasHeight = $derived(actualContentHeight);
 	const canvasWidth = $derived(Math.max(requestedCanvasWidth, minCanvasWidth));
 	const canvasHeight = $derived(Math.max(requestedCanvasHeight, minCanvasHeight));
 
-	// -----------------------------------------------------------------------
-	// 修改核心逻辑
-	// -----------------------------------------------------------------------
-
-	// 2. 计算累计位置 (Top值)，用于定位 Resizer
-	// 这里依赖 domRowHeights 的实时变化
+	// ========== Derived: Resizer Positions ==========
 	const rowResizerPositions = $derived.by(() => {
 		const positions: number[] = [];
-		let currentTop = 0;
-		
-		// 遍历所有行配置
+		let currentTop = needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0;
 		for (let i = 0; i < tableData.rowHeights.length; i++) {
-			// 优先取真实渲染高度(domRowHeights)，如果还没渲染出来，取设定高度，再不行取默认值
 			const height = domRowHeights[i] ?? tableData.rowHeights[i] ?? 32;
 			currentTop += height;
 			positions.push(currentTop);
@@ -138,7 +132,6 @@
 		return positions;
 	});
 
-	// 3. 计算列宽位置 (Left值)
 	const colResizerPositions = $derived.by(() => {
 		const positions: number[] = [];
 		let currentLeft = 0;
@@ -148,6 +141,7 @@
 		}
 		return positions;
 	});
+
 	const colOffsets = $derived.by(() => {
 		const offsets: number[] = [0];
 		let currentLeft = 0;
@@ -157,15 +151,10 @@
 		}
 		return offsets;
 	});
+
+	// ========== Derived: Segment Lines ==========
 	const segmentLines = $derived.by(() => {
-		const lines: {
-			id: number;
-			left: number;
-			top: number;
-			width: number;
-			borderWidth: number;
-			borderStyle: string;
-		}[] = [];
+		const lines: { id: number; left: number; top: number; width: number; borderWidth: number; borderStyle: string }[] = [];
 		const rowCount = tableData.rows.length;
 		const colCount = tableData.columnWidths.length;
 		if (rowCount === 0 || colCount === 0) return lines;
@@ -178,8 +167,8 @@
 			const endCol = Math.max(startCol, Math.min(segment.endCol, colCount - 1));
 			const left = colOffsets[startCol] ?? 0;
 			const right = colOffsets[endCol + 1] ?? left;
-			const trimLeft = segment.trimLeft === 'short' ? segmentTrimPx : 0;
-			const trimRight = segment.trimRight === 'short' ? segmentTrimPx : 0;
+			const trimLeft = segment.trimLeft === 'short' ? SEGMENT_TRIM_PX : 0;
+			const trimRight = segment.trimRight === 'short' ? SEGMENT_TRIM_PX : 0;
 			const width = Math.max(0, right - left - trimLeft - trimRight);
 			if (width <= 0) continue;
 			const top = rowResizerPositions[atRow] ?? 0;
@@ -189,13 +178,14 @@
 				left: left + trimLeft,
 				top,
 				width,
-				borderWidth: segmentWidthMap[styleKey] ?? 1,
-				borderStyle: segmentStyleMap[styleKey] ?? 'solid'
+				borderWidth: SEGMENT_WIDTH_MAP[styleKey] ?? 1,
+				borderStyle: SEGMENT_STYLE_MAP[styleKey] ?? 'solid'
 			});
 		}
 		return lines;
 	});
 
+	// ========== Event Handlers ==========
 	function handleColumnResize(colIndex: number, delta: number) {
 		const currentWidth = tableData.columnWidths[colIndex] || 100;
 		const newWidth = Math.max(40, currentWidth + delta);
@@ -208,6 +198,7 @@
 		onRowResize?.(rowIndex, newHeight);
 	}
 
+	// ========== Canvas Resize ==========
 	let isCanvasResizing = $state(false);
 	let resizeCorner = $state<'nw' | 'ne' | 'sw' | 'se' | null>(null);
 	let startX = 0;
@@ -234,19 +225,10 @@
 		let nextWidth = startWidth;
 		let nextHeight = startHeight;
 
-		if (resizeCorner === 'se') {
-			nextWidth = startWidth + dx;
-			nextHeight = startHeight + dy;
-		} else if (resizeCorner === 'sw') {
-			nextWidth = startWidth - dx;
-			nextHeight = startHeight + dy;
-		} else if (resizeCorner === 'ne') {
-			nextWidth = startWidth + dx;
-			nextHeight = startHeight - dy;
-		} else if (resizeCorner === 'nw') {
-			nextWidth = startWidth - dx;
-			nextHeight = startHeight - dy;
-		}
+		if (resizeCorner === 'se') { nextWidth = startWidth + dx; nextHeight = startHeight + dy; }
+		else if (resizeCorner === 'sw') { nextWidth = startWidth - dx; nextHeight = startHeight + dy; }
+		else if (resizeCorner === 'ne') { nextWidth = startWidth + dx; nextHeight = startHeight - dy; }
+		else if (resizeCorner === 'nw') { nextWidth = startWidth - dx; nextHeight = startHeight - dy; }
 
 		nextWidth = Math.max(minCanvasWidth, Math.round(nextWidth));
 		nextHeight = Math.max(minCanvasHeight, Math.round(nextHeight));
@@ -270,6 +252,7 @@
 	});
 </script>
 
+<!-- Canvas: the exportable area -->
 <div
 	class="canvas-wrapper"
 	bind:this={canvasElement}
@@ -277,124 +260,135 @@
 	style:width="{canvasWidth}px"
 	style:height="{canvasHeight}px"
 >
-	<div class="table-container" bind:clientWidth={domTableWidth} bind:clientHeight={domTableHeight}>
-		<div class="table-inner">
+	<!-- Content: table + double lines, used for size measurement -->
+	<div 
+		class="table-content"
+		bind:this={contentElement}
+		bind:clientWidth={domContentWidth}
+		bind:clientHeight={domContentHeight}
+	>
+		<!-- Top double line (if needed) -->
+		{#if needsTopDoubleLine}
+			<div 
+				class="double-line double-line-top {topBorderType}"
+				style:width="{tableWidth}px"
+			></div>
+		{/if}
+
+		<!-- Table wrapper for segment lines overlay -->
+		<div class="table-wrapper" style:width="{tableWidth}px">
+			<!-- Segment lines layer -->
 			<div class="segment-layer">
 				{#each segmentLines as segment}
 					<div
 						class="segment-line"
 						style:left="{segment.left}px"
-						style:top="{segment.top}px"
+						style:top="{segment.top - (needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0)}px"
 						style:width="{segment.width}px"
 						style:--segment-width="{segment.borderWidth}px"
 						style:--segment-style={segment.borderStyle}
 					></div>
 				{/each}
 			</div>
+
+			<!-- The actual table -->
 			<table
-				class={tableClass}
+				class="academic-table preset-{tableStyle.preset}"
 				style:width="{tableWidth}px"
 				style:font-family={fontFamily}
 				style:font-size="{tableStyle.fontSize}pt"
-				style:transform-origin="top left"
 				style:--cell-padding="{cellPadding}px"
-				style:--border-top="{borderWidthMap[tableStyle.borders.top]}px"
-				style:--border-bottom="{borderWidthMap[tableStyle.borders.bottom]}px"
-				style:--border-header="{borderWidthMap[tableStyle.borders.headerBottom]}px"
-				style:--border-vertical="{borderWidthMap[tableStyle.borders.vertical]}px"
-				style:--border-horizontal="{borderWidthMap[tableStyle.borders.horizontal]}px"
-				style:--border-top-style={borderStyleMap[tableStyle.borders.top]}
-				style:--border-bottom-style={borderStyleMap[tableStyle.borders.bottom]}
-				style:--border-header-style={borderStyleMap[tableStyle.borders.headerBottom]}
-				style:--border-vertical-style={borderStyleMap[tableStyle.borders.vertical]}
-				style:--border-horizontal-style={borderStyleMap[tableStyle.borders.horizontal]}
+				style:--border-top="{BORDER_WIDTH_MAP[topBorderType]}px"
+				style:--border-bottom="{BORDER_WIDTH_MAP[bottomBorderType]}px"
+				style:--border-header="{BORDER_WIDTH_MAP[tableStyle.borders.headerBottom]}px"
+				style:--border-top-style={BORDER_STYLE_MAP[topBorderType]}
+				style:--border-bottom-style={BORDER_STYLE_MAP[bottomBorderType]}
+				style:--border-header-style={BORDER_STYLE_MAP[tableStyle.borders.headerBottom]}
 			>
 				<colgroup>
 					{#each tableData.columnWidths as width}
 						<col style:width="{width}px" />
 					{/each}
 				</colgroup>
-			
-			<thead>
-				{#each tableData.rows.slice(0, headerRowCount) as row, rowIndex}
-					<tr 
-						style:height="{tableData.rowHeights[rowIndex] || 32}px"
-						bind:clientHeight={domRowHeights[rowIndex]} 
-					>
-						{#each row as cell, colIndex}
-							{#if !cell.isMerged}
-								<th
-									class="table-cell"
-									class:text-left={cell.align === 'left'}
-									class:text-center={cell.align === 'center' || !cell.align}
-									class:text-right={cell.align === 'right' || cell.align === 'decimal'}
-									class:font-bold={cell.isBold}
-									class:italic={cell.isItalic}
-									style:background-color={cell.backgroundColor}
-									style:color={cell.textColor}
-									colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
-									rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
-								>
-									<TableCell
-										{cell}
-										isHeader={true}
-										onupdate={(content) => onCellUpdate?.(rowIndex, colIndex, content)}
-									/>
-								</th>
-							{/if}
-						{/each}
-					</tr>
-				{/each}
-			</thead>
 
-			<tbody>
-				{#each tableData.rows.slice(headerRowCount) as row, rowIndex}
-					<tr 
-						style:height="{tableData.rowHeights[rowIndex + headerRowCount] || 32}px"
-						bind:clientHeight={domRowHeights[rowIndex + headerRowCount]}
-					>
-						{#each row as cell, colIndex}
-							{#if !cell.isMerged}
-								<td
-									class="table-cell"
-									class:text-left={cell.align === 'left'}
-									class:text-center={cell.align === 'center' || !cell.align}
-									class:text-right={cell.align === 'right' || cell.align === 'decimal'}
-									class:font-bold={cell.isBold}
-									class:italic={cell.isItalic}
-									style:background-color={cell.backgroundColor}
-									style:color={cell.textColor}
-									colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
-									rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
-								>
-									<TableCell
-										{cell}
-										onupdate={(content) => onCellUpdate?.(rowIndex + headerRowCount, colIndex, content)}
-									/>
-								</td>
-							{/if}
-						{/each}
-					</tr>
-				{/each}
-			</tbody>
+				<thead>
+					{#each tableData.rows.slice(0, headerRowCount) as row, rowIndex}
+						<tr 
+							style:height="{tableData.rowHeights[rowIndex] || 32}px"
+							bind:clientHeight={domRowHeights[rowIndex]}
+						>
+							{#each row as cell, colIndex}
+								{#if !cell.isMerged}
+									<th
+										class="table-cell"
+										class:text-left={cell.align === 'left'}
+										class:text-center={cell.align === 'center' || !cell.align}
+										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
+										class:font-bold={cell.isBold}
+										class:italic={cell.isItalic}
+										style:background-color={cell.backgroundColor}
+										style:color={cell.textColor}
+										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
+										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
+									>
+										<TableCell {cell} isHeader={true} onupdate={(content) => onCellUpdate?.(rowIndex, colIndex, content)} />
+									</th>
+								{/if}
+							{/each}
+						</tr>
+					{/each}
+				</thead>
+
+				<tbody>
+					{#each tableData.rows.slice(headerRowCount) as row, rowIndex}
+						<tr 
+							style:height="{tableData.rowHeights[rowIndex + headerRowCount] || 32}px"
+							bind:clientHeight={domRowHeights[rowIndex + headerRowCount]}
+						>
+							{#each row as cell, colIndex}
+								{#if !cell.isMerged}
+									<td
+										class="table-cell"
+										class:text-left={cell.align === 'left'}
+										class:text-center={cell.align === 'center' || !cell.align}
+										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
+										class:font-bold={cell.isBold}
+										class:italic={cell.isItalic}
+										style:background-color={cell.backgroundColor}
+										style:color={cell.textColor}
+										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
+										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
+									>
+										<TableCell {cell} onupdate={(content) => onCellUpdate?.(rowIndex + headerRowCount, colIndex, content)} />
+									</td>
+								{/if}
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
 			</table>
 		</div>
 
-		{#each colResizerPositions as left, colIndex}
-			<ColumnResizer 
-				onResize={(delta) => handleColumnResize(colIndex, delta)} 
-				style="left: {left}px"
-			/>
-		{/each}
+		<!-- Bottom double line (if needed) -->
+		{#if needsBottomDoubleLine}
+			<div 
+				class="double-line double-line-bottom {bottomBorderType}"
+				style:width="{tableWidth}px"
+			></div>
+		{/if}
+	</div>
 
+	<!-- Resizers (outside content, inside canvas) -->
+	<div class="resizers-layer">
+		{#each colResizerPositions as left, colIndex}
+			<ColumnResizer onResize={(delta) => handleColumnResize(colIndex, delta)} style="left: {left}px" />
+		{/each}
 		{#each rowResizerPositions as top, rowIndex}
-			<RowResizer 
-				onResize={(delta) => handleRowResize(rowIndex, delta)} 
-				style="top: {top}px"
-			/>
+			<RowResizer onResize={(delta) => handleRowResize(rowIndex, delta)} style="top: {top}px" />
 		{/each}
 	</div>
 
+	<!-- Canvas resize handles -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="canvas-resizer nw" onmousedown={(e) => handleCanvasResizeStart(e, 'nw')}></div>
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
