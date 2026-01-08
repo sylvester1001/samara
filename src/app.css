@@ -123,10 +123,16 @@
 /* Computer Modern font */
 @import "computer-modern/cmu-serif.css";
 
+/* Inter font for UI */
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
 html, body {
   height: 100%;
   overflow: hidden;
   user-select: none;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Academic table */
