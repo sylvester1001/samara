@@ -104,7 +104,7 @@
 	<div class="w-px h-6 bg-border dark:bg-[#27272a] mx-2"></div>
 	<AppTooltip text="Merge cells" aria-label="Merge cells" onclick={onMergeCells} disabled={!hasSelection}>
 		{#snippet children({ props })}
-			<Button variant="outline" size="sm" {...props}>
+			<Button variant="ghost" size="sm" {...props}>
 				<TableCellsMerge />
 				<!-- Merge -->
 			</Button>
@@ -112,7 +112,7 @@
 	</AppTooltip>
 	<AppTooltip text="Unmerge cells" aria-label="Unmerge cells" onclick={onUnmergeCells} disabled={!hasSelection}>
 		{#snippet children({ props })}
-			<Button variant="outline" size="sm" {...props}>
+			<Button variant="ghost" size="sm" {...props}>
 				<TableCellsSplit />
 				<!-- Unmerge -->
 			</Button>
