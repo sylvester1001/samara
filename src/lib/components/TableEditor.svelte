@@ -237,9 +237,20 @@
 	function isSelected(rowIndex: number, colIndex: number) {
 		return selectedSet.has(`${rowIndex}:${colIndex}`);
 	}
+
+	function handleEditorClick(e: MouseEvent) {
+		if (selectedCells.length === 0) return;
+		const target = e.target as HTMLElement;
+		// Only clear if clicking on the editor background, not on table cells or inputs
+		if (target.closest('table') || target.closest('button') || target.tagName === 'INPUT') {
+			return;
+		}
+		onSelectionChange([]);
+		selectionAnchor = null;
+	}
 </script>
 
-<div class="table-editor flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
+<div class="table-editor flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmousedown={handleEditorClick} onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
 	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a] shrink-0 relative z-0">
 		<div class="flex items-center gap-2">
 			<TableSizeSelector
