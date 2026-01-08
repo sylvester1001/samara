@@ -75,5 +75,5 @@
 			</Select.Root>
 		</div>
 	</div>
-	<ThemeToggle />
+	<ThemeToggle variant="ghost" />
 </div>
