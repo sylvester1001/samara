@@ -533,11 +533,11 @@
 				<Label>Resize Lock</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Column Widths</span>
+						<span class="text-xs text-muted-foreground">Column</span>
 						<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
 					</div>
 					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Row Heights</span>
+						<span class="text-xs text-muted-foreground">Row</span>
 						<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
 					</div>
 				</div>
