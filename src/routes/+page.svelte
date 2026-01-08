@@ -371,14 +371,14 @@
 						bind:this={previewContainer}
 						onwheel={handlePreviewWheel}
 					>
-						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10">
+						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10 bg-white dark:bg-[#18181b]">
 							Preview
 						</Badge>
 						<div class="absolute top-2 left-3 flex gap-1 z-10">
-							<Button variant="outline" size="icon" class="h-7 w-7" onclick={handleZoomOut}>
+							<Button variant="outline" size="icon" class="h-7 w-7 bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]" onclick={handleZoomOut}>
 								<ZoomOut class="h-3.5 w-3.5" />
 							</Button>
-							<Button variant="outline" size="icon" class="h-7 w-7" onclick={handleZoomIn}>
+							<Button variant="outline" size="icon" class="h-7 w-7 bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]" onclick={handleZoomIn}>
 								<ZoomIn class="h-3.5 w-3.5" />
 							</Button>
 							<span class="text-xs text-muted-foreground flex items-center px-2">
