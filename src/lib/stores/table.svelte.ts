@@ -18,7 +18,7 @@ function createEmptyTable(rows: number, cols: number): TableData {
 	for (let i = 0; i < rows; i++) {
 		const row: Cell[] = [];
 		for (let j = 0; j < cols; j++) {
-			row.push(createCell(i === 0 ? `Col ${j + 1}` : ''));
+			row.push(createCell());
 		}
 		tableRows.push(row);
 	}
@@ -252,8 +252,8 @@ class TableStore {
 	addColumn(index?: number) {
 		const idx = index ?? (this.tableData.rows[0]?.length || 0);
 		const defaultWidth = this.lockColumnResize ? this.tableData.columnWidths[0] ?? 100 : 100;
-		this.tableData.rows.forEach((row, i) => {
-			row.splice(idx, 0, createCell(i === 0 ? `Col ${idx + 1}` : ''));
+		this.tableData.rows.forEach((row) => {
+			row.splice(idx, 0, createCell());
 		});
 		this.tableData.columnWidths.splice(idx, 0, defaultWidth);
 		this.tableData.segments = this.tableData.segments.map((segment) => {
