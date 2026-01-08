@@ -2,11 +2,11 @@
 	import './layout.css';
 	import '../app.css';
 	import { Toaster } from 'svelte-sonner';
-	import { ModeWatcher } from 'mode-watcher';
+	import { ModeWatcher, mode } from 'mode-watcher';
 
 	let { children } = $props();
 </script>
 
 <ModeWatcher />
-<Toaster />
+<Toaster theme={mode.current} />
 {@render children()}
