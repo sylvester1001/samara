@@ -14,11 +14,13 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { Table2, ArrowRightFromLine, Code } from 'lucide-svelte';
+	import { Table2, ArrowRightFromLine, Code, ZoomIn, ZoomOut } from 'lucide-svelte';
 
 	let tableElement: HTMLElement | null = $state(null);
+	let previewContainer: HTMLElement;
 	let fileInput: HTMLInputElement;
 	let exportDpi = $state(300);
+	let previewZoom = $state(1);
 
 	function handleImportClick() {
 		fileInput?.click();
@@ -251,6 +253,24 @@
 		// TODO: implement latex export
 		console.log('Export LaTeX not implemented yet');
 	}
+
+	function handleZoomIn() {
+		previewZoom = Math.min(3, previewZoom + 0.1);
+	}
+
+	function handleZoomOut() {
+		previewZoom = Math.max(0.25, previewZoom - 0.1);
+	}
+
+	function handlePreviewWheel(e: WheelEvent) {
+		if (!e.ctrlKey) return;
+		e.preventDefault();
+		if (e.deltaY < 0) {
+			handleZoomIn();
+		} else {
+			handleZoomOut();
+		}
+	}
 </script>
 
 <svelte:window onpaste={handleGlobalPaste} onkeydown={handleGlobalKeydown} />
@@ -346,22 +366,39 @@
 				</Resizable.Pane>
 				<Resizable.Handle />
 				<Resizable.Pane defaultSize={54} minSize={30} class="min-w-[360px] min-h-0">
-					<main class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative flex flex-col preview-canvas">
+					<main 
+						class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative flex flex-col preview-canvas"
+						bind:this={previewContainer}
+						onwheel={handlePreviewWheel}
+					>
 						<Badge variant="outline" class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10">
 							Preview
 						</Badge>
+						<div class="absolute top-2 left-3 flex gap-1 z-10">
+							<Button variant="outline" size="icon" class="h-7 w-7" onclick={handleZoomOut}>
+								<ZoomOut class="h-3.5 w-3.5" />
+							</Button>
+							<Button variant="outline" size="icon" class="h-7 w-7" onclick={handleZoomIn}>
+								<ZoomIn class="h-3.5 w-3.5" />
+							</Button>
+							<span class="text-xs text-muted-foreground flex items-center px-2">
+								{Math.round(previewZoom * 100)}%
+							</span>
+						</div>
 						<ScrollArea class="flex-1 w-full pt-12 px-4 pb-16" orientation="both">
-							<div class="min-w-full flex justify-center">
-								<AcademicTable
-									tableData={tableStore.tableData}
-									tableStyle={tableStore.tableStyle}
-									canvasConfig={tableStore.canvasConfig}
-									onCellUpdate={handleCellChange}
-									onColumnResize={handleColumnResize}
-									onRowResize={handleRowResize}
-									onCanvasResize={handleCanvasChange}
-									canvasRef={(el) => tableElement = el}
-								/>
+							<div class="min-w-full min-h-full flex justify-center items-start py-4">
+								<div style:transform="scale({previewZoom})" style:transform-origin="top center">
+									<AcademicTable
+										tableData={tableStore.tableData}
+										tableStyle={tableStore.tableStyle}
+										canvasConfig={tableStore.canvasConfig}
+										onCellUpdate={handleCellChange}
+										onColumnResize={handleColumnResize}
+										onRowResize={handleRowResize}
+										onCanvasResize={handleCanvasChange}
+										canvasRef={(el) => tableElement = el}
+									/>
+								</div>
 							</div>
 						</ScrollArea>
 						<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6">
