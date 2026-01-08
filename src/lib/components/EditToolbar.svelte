@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import AppTooltip from '$lib/components/AppTooltip.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { TextAlignStart, TextAlignCenter, TextAlignEnd, Bold, Italic, TableCellsMerge, TableCellsSplit } from 'lucide-svelte';
 
 	interface Props {
@@ -119,6 +118,4 @@
 			</Button>
 		{/snippet}
 	</AppTooltip>
-	<div class="flex-1"></div>
-	<ThemeToggle />
 </div>
