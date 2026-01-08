@@ -36,7 +36,7 @@
 	}
 </script>
 
-<div class="flex items-center gap-2 flex-wrap rounded-lg border border-border bg-white dark:bg-[#0a0a0a] px-3 py-2">
+<div class="flex items-center gap-1 flex-wrap rounded-lg border border-border bg-white dark:bg-[#0a0a0a] px-2 py-1.5">
 	<AppTooltip text="Align left" aria-label="Align left" onclick={() => onAlignChange?.('left')} disabled={!hasSelection}>
 		{#snippet children({ props })}
 			<Button variant="ghost" size="icon" {...props}>
@@ -79,7 +79,7 @@
 		disabled={!hasSelection}
 		childProps={{
 			type: 'color',
-			class: 'w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
+			class: 'w-7 h-7 rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
 			'aria-label': 'Text color'
 		}}
 	>
@@ -93,7 +93,7 @@
 		disabled={!hasSelection}
 		childProps={{
 			type: 'color',
-			class: 'w-7 h-7 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
+			class: 'ml-1 w-7 h-7 rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]',
 			'aria-label': 'Cell background'
 		}}
 	>
@@ -101,7 +101,7 @@
 			<input {...props} />
 		{/snippet}
 	</AppTooltip>
-	<div class="h-6 border-l border-border dark:border-[#27272a] mx-1"></div>
+	<div class="ml-3 h-6 border-l border-border dark:border-[#27272a] mx-1"></div>
 	<AppTooltip text="Merge cells" aria-label="Merge cells" onclick={onMergeCells} disabled={!hasSelection}>
 		{#snippet children({ props })}
 			<Button variant="ghost" size="sm" {...props}>
