@@ -241,8 +241,8 @@
 	function handleEditorClick(e: MouseEvent) {
 		if (selectedCells.length === 0) return;
 		const target = e.target as HTMLElement;
-		// Only clear if clicking on the editor background, not on table cells or inputs
-		if (target.closest('table') || target.closest('button') || target.tagName === 'INPUT') {
+		// Only clear if clicking on the editor background, not on table cells, inputs, or color pickers
+		if (target.closest('table') || target.closest('button') || target.tagName === 'INPUT' || target.closest('[type="color"]')) {
 			return;
 		}
 		onSelectionChange([]);
