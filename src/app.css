@@ -217,6 +217,7 @@ html, body {
   user-select: text;
   font-size: initial;
   line-height: normal;
+  color: #000000;
 }
 
 .academic-table th,
