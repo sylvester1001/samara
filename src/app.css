@@ -136,7 +136,6 @@ html, body {
   align-items: center;
   min-width: 200px;
   position: relative;
-  margin: 8px;
   border-radius: 4px;
   transition: box-shadow 0.25s ease;
 }
