@@ -13,6 +13,9 @@ const PADDING_MAP: Record<string, number> = {
     loose: 16
 };
 
+// 默认行高（px）
+const DEFAULT_ROW_HEIGHT = 32;
+
 // --- Helpers ---
 
 function formatColor(hex: string): string {
@@ -83,7 +86,7 @@ function applyStyles(content: string, cell: Cell): string {
  * 处理单元格内换行：如果有换行，用 makecell 包裹
  * 样式需要对每一行分别应用，否则 \\ 在样式命令内部不会正确换行
  */
-function wrapWithMakecell(cell: Cell, content: string, cellPaddingPt: number): string {
+function wrapWithMakecell(cell: Cell, content: string): string {
     if (!cell.content.includes('\n')) {
         // 没有换行，直接应用样式
         return applyStyles(content, cell);
@@ -94,23 +97,21 @@ function wrapWithMakecell(cell: Cell, content: string, cellPaddingPt: number): s
     const styledLines = lines.map(line => applyStyles(line, cell));
     const alignChar = cell.align ? cell.align[0] : 'c';
     
-    // makecell 内部不需要额外间距，因为 \makegapedcells 已经处理了单元格间距
-    // 但需要禁用 makegapedcells 对这个单元格的影响，用 \nommark 或直接用原始 makecell
     const innerContent = styledLines.join(' \\\\ ');
     return `\\makecell[${alignChar}]{${innerContent}}`;
 }
 
 /**
- * 将内容包裹在布局命令中（处理 colspan, rowspan, cellcolor, align）
+ * 将内容包裹在布局命令中（处理 colspan, rowspan, cellcolor）
+ * 注意：当使用 m{} 列类型时，不应该用 \multicolumn{1}{c} 覆盖单个单元格的对齐
  */
-function wrapWithLayout(cell: Cell, innerContent: string): string {
-    const { colspan = 1, rowspan = 1, backgroundColor, align } = cell;
+function wrapWithLayout(cell: Cell, innerContent: string, useStyleMode: boolean = false): string {
+    const { colspan = 1, rowspan = 1, backgroundColor } = cell;
 
     // 准备组件
     const cellColorCmd = backgroundColor
         ? `\\cellcolor[HTML]{${formatColor(backgroundColor)}}`
         : '';
-    const alignChar = align ? align[0] : 'c'; // 默认为 c
 
     // 组合逻辑
     let finalLatex = innerContent;
@@ -121,17 +122,14 @@ function wrapWithLayout(cell: Cell, innerContent: string): string {
         finalLatex = `\\multirow{${rowspan}}{*}{${finalLatex}}`;
     }
 
-    // 2. 处理 Colspan 或 强制对齐 或 带有背景色
-    // 只要有 colspan, 或者有特定对齐, 或者有背景色(为了安全起见), 我们都用 multicolumn
-    const needsMulticolumn = colspan > 1 || align || backgroundColor;
-
-    if (needsMulticolumn) {
-        // 关键：背景色通常放在 multicolumn 内部单元格的最前面
-        // \multicolumn{nums}{align}{ \cellcolor{...} Content }
-        finalLatex = `\\multicolumn{${colspan}}{${alignChar}}{${cellColorCmd}${finalLatex}}`;
-    } else {
-        // 如果完全没有特殊布局，直接返回（如果有背景色但没进上面分支，说明逻辑有问题，但这里 needsMulticolumn 覆盖了）
-        // 如果只有背景色，没有 colspan，我们也推荐用 multicolumn{1} 包裹以隔离样式
+    // 2. 处理 Colspan
+    // 在样式模式下，只有 colspan > 1 或有背景色时才用 multicolumn
+    // 单个单元格的对齐由列定义 m{} 处理，不需要 multicolumn{1}{c} 覆盖
+    if (colspan > 1) {
+        // colspan > 1 时需要 multicolumn，使用 c 保持居中
+        finalLatex = `\\multicolumn{${colspan}}{c}{${cellColorCmd}${finalLatex}}`;
+    } else if (backgroundColor) {
+        // 只有背景色，直接添加 cellcolor
         finalLatex = `${cellColorCmd}${finalLatex}`;
     }
 
@@ -161,13 +159,25 @@ export function generateLatexTable(
     options: LatexExportOptions = {}
 ): string {
     const opts = { ...DEFAULT_EXPORT_OPTIONS, ...options };
-    const { rows, headerRows, columnWidths } = data;
+    const { rows, headerRows, rowHeights, columnWidths } = data;
     const { preset, borders, fontSize, padding } = style;
     const isBooktabs = preset === 'booktabs';
 
     // 计算 cell padding
     const cellPadding = typeof padding === 'number' ? padding : PADDING_MAP[padding] || 8;
     const cellPaddingPt = pxToPt(cellPadding);
+
+    // 计算平均行高
+    const avgRowHeightPx = rowHeights.length > 0 
+        ? rowHeights.reduce((a, b) => a + (b || DEFAULT_ROW_HEIGHT), 0) / rowHeights.length 
+        : DEFAULT_ROW_HEIGHT;
+    const avgRowHeightPt = pxToPt(avgRowHeightPx);
+    
+    // 基础文字高度（大约是字体大小）
+    const textHeight = fontSize;
+    // 需要添加的额外高度（上下各一半）
+    const extraHeight = Math.max(0, avgRowHeightPt - textHeight);
+    const halfExtra = (extraHeight / 2).toFixed(1);
 
     const output: string[] = [];
 
@@ -189,8 +199,9 @@ export function generateLatexTable(
         );
 
         if (opts.includeStyles) {
-            output.push(`\\setcellgapes{${cellPaddingPt}pt}`);
             output.push(`\\setlength{\\tabcolsep}{${cellPaddingPt}pt}`);
+            // 使用 setcellgapes 设置上下间距（makecell 包）
+            output.push(`\\setcellgapes{${halfExtra}pt}`);
             output.push('');
         }
 
@@ -199,6 +210,7 @@ export function generateLatexTable(
 
     output.push('\\begin{table}[h]', '\\centering');
 
+    // 启用 makegapedcells 来应用间距
     if (opts.includeStyles) {
         output.push('\\makegapedcells');
     }
@@ -208,21 +220,11 @@ export function generateLatexTable(
         output.push(`{\\fontsize{${fontSize}pt}{${Math.round(fontSize * 1.2)}pt}\\selectfont`);
     }
 
-    // 2. Column Config
+    // 2. Column Config - 使用 c 列类型
     const colCount = rows[0]?.length || 0;
     if (colCount > 0) {
-        if (opts.includeStyles) {
-            // 带样式：使用固定列宽
-            const colSpecs = columnWidths.map(width => {
-                const ptWidth = pxToPt(width);
-                return `>{\\centering\\arraybackslash}p{${ptWidth}pt}`;
-            });
-            output.push(`\\begin{tabular}{${colSpecs.join('')}}`);
-        } else {
-            // 简洁模式：使用自动列宽
-            const colSpec = Array(colCount).fill('c').join('');
-            output.push(`\\begin{tabular}{${colSpec}}`);
-        }
+        const colSpec = Array(colCount).fill('c').join('');
+        output.push(`\\begin{tabular}{${colSpec}}`);
     } else {
         return '';
     }
@@ -266,7 +268,7 @@ export function generateLatexTable(
             }
 
             let innerContent = renderCellContent(cell);
-            innerContent = wrapWithMakecell(cell, innerContent, cellPaddingPt);
+            innerContent = wrapWithMakecell(cell, innerContent);
             const latexFragment = wrapWithLayout(cell, innerContent);
             rowCells.push(latexFragment);
 
