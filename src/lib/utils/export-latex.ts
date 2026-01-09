@@ -8,7 +8,7 @@ function formatColor(hex: string): string {
 }
 
 /**
- * 渲染单元格内部内容（处理转义、粗体、斜体、文字颜色）
+ * 渲染单元格内部内容（处理转义、粗体、斜体、文字颜色、换行）
  */
 function renderCellContent(cell: Cell): string {
     let content = cell.content;
@@ -18,7 +18,10 @@ function renderCellContent(cell: Cell): string {
         content = escapeLatexText(content);
     }
 
-    // 2. 样式修饰
+    // 2. 处理换行符：将 \n 转换为 \\
+    content = content.replace(/\n/g, ' \\\\ ');
+
+    // 3. 样式修饰
     if (cell.isBold) content = `\\textbf{${content}}`;
     if (cell.isItalic) content = `\\textit{${content}}`;
     if (cell.textColor) {
@@ -85,6 +88,7 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
         '\\usepackage[table]{xcolor}',
         '\\usepackage{amsmath}',
         '\\usepackage{multirow}',
+        '\\usepackage{makecell}',
         '\\usepackage{geometry}',
         '\\geometry{margin=1in}',
         '',
@@ -97,7 +101,7 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
     // 2. Column Config
     const colCount = rows[0]?.length || 0;
     if (colCount > 0) {
-        // TODO: 支持列宽
+        // 使用 makecell 支持换行，所有列都用 c（居中）
         const colSpec = Array(colCount).fill('c').join('');
         output.push(`\\begin{tabular}{${colSpec}}`);
     } else {
@@ -147,7 +151,14 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
 
             // 渲染内容
             const innerContent = renderCellContent(cell);
-            const latexFragment = wrapWithLayout(cell, innerContent);
+            let latexFragment = wrapWithLayout(cell, innerContent);
+            
+            // 如果内容包含换行，用 makecell 包裹
+            if (cell.content.includes('\n')) {
+                const alignChar = cell.align ? cell.align[0] : 'c';
+                latexFragment = `\\makecell[${alignChar}]{${latexFragment}}`;
+            }
+            
             rowCells.push(latexFragment);
 
             // Check 3: 如果它有 colspan，跳过当前行的后续格子 (Horizontal Slave)
