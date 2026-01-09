@@ -1,10 +1,53 @@
-import type { TableData, TableStyle, Cell } from '$lib/types';
+import type { TableData, TableStyle, Cell, BorderStyle } from '$lib/types';
 import { escapeLatexText } from './latex-processor';
+
+// --- Constants ---
+
+// 像素到 pt 的转换比例 (假设 96 DPI)
+const PX_TO_PT = 0.75;
+
+// Padding 映射 (与 AcademicTable 保持一致)
+const PADDING_MAP: Record<string, number> = {
+    compact: 4,
+    normal: 8,
+    loose: 16
+};
 
 // --- Helpers ---
 
 function formatColor(hex: string): string {
     return hex.replace('#', '');
+}
+
+/**
+ * 将像素转换为 pt
+ */
+function pxToPt(px: number): number {
+    return Math.round(px * PX_TO_PT);
+}
+
+/**
+ * 根据 BorderStyle 生成 booktabs 的线型命令
+ */
+function getBorderCommand(borderStyle: BorderStyle, position: 'top' | 'bottom' | 'header'): string {
+    switch (borderStyle) {
+        case 'none':
+            return '';
+        case 'thin':
+            return position === 'header' ? '\\midrule' : (position === 'top' ? '\\toprule' : '\\bottomrule');
+        case 'thick':
+            return position === 'header' ? '\\midrule' : (position === 'top' ? '\\toprule' : '\\bottomrule');
+        case 'double':
+            return position === 'header' ? '\\midrule\\midrule' : (position === 'top' ? '\\toprule\\toprule' : '\\bottomrule\\bottomrule');
+        case 'thick-thin':
+            // 粗线 + 细线，用于顶部
+            return '\\toprule\\midrule';
+        case 'thin-thick':
+            // 细线 + 粗线，用于底部
+            return '\\midrule\\bottomrule';
+        default:
+            return '\\hline';
+    }
 }
 
 /**
@@ -40,9 +83,7 @@ function applyStyles(content: string, cell: Cell): string {
  * 处理单元格内换行：如果有换行，用 makecell 包裹
  * 样式需要对每一行分别应用，否则 \\ 在样式命令内部不会正确换行
  */
-function wrapWithMakecell(cell: Cell, content: string): string {
-    const hasStyles = cell.isBold || cell.isItalic || cell.textColor;
-    
+function wrapWithMakecell(cell: Cell, content: string, cellPaddingPt: number): string {
     if (!cell.content.includes('\n')) {
         // 没有换行，直接应用样式
         return applyStyles(content, cell);
@@ -53,7 +94,10 @@ function wrapWithMakecell(cell: Cell, content: string): string {
     const styledLines = lines.map(line => applyStyles(line, cell));
     const alignChar = cell.align ? cell.align[0] : 'c';
     
-    return `\\makecell[${alignChar}]{${styledLines.join(' \\\\ ')}}`;
+    // makecell 内部不需要额外间距，因为 \makegapedcells 已经处理了单元格间距
+    // 但需要禁用 makegapedcells 对这个单元格的影响，用 \nommark 或直接用原始 makecell
+    const innerContent = styledLines.join(' \\\\ ');
+    return `\\makecell[${alignChar}]{${innerContent}}`;
 }
 
 /**
@@ -99,8 +143,12 @@ function wrapWithLayout(cell: Cell, innerContent: string): string {
 
 export function generateLatexTable(data: TableData, style: TableStyle): string {
     const { rows, headerRows } = data;
-    const { preset } = style;
+    const { preset, borders, fontSize, padding } = style;
     const isBooktabs = preset === 'booktabs';
+
+    // 计算 cell padding
+    const cellPadding = typeof padding === 'number' ? padding : PADDING_MAP[padding] || 8;
+    const cellPaddingPt = pxToPt(cellPadding);
 
     const output: string[] = [];
 
@@ -114,27 +162,48 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
         '\\usepackage{amsmath}',
         '\\usepackage{multirow}',
         '\\usepackage{makecell}',
+        '\\usepackage{array}',
         '\\usepackage{geometry}',
         '\\geometry{margin=1in}',
-        '',
+        ''
+    );
+
+    // 使用 makecell 的 setcellgapes 来设置上下间距
+    output.push(`\\setcellgapes{${cellPaddingPt}pt}`);
+
+    // 设置单元格左右内边距
+    output.push(`\\setlength{\\tabcolsep}{${cellPaddingPt}pt}`);
+    output.push('');
+
+    output.push(
         '\\begin{document}',
         '',
         '\\begin{table}[h]',
-        '\\centering'
+        '\\centering',
+        '\\makegapedcells'  // 启用单元格间距
     );
 
-    // 2. Column Config
+    // 设置字体大小
+    if (fontSize !== 12) {
+        output.push(`{\\fontsize{${fontSize}pt}{${Math.round(fontSize * 1.2)}pt}\\selectfont`);
+    }
+
+    // 2. Column Config - 使用 c 列类型
     const colCount = rows[0]?.length || 0;
     if (colCount > 0) {
-        // 使用 makecell 支持换行，所有列都用 c（居中）
         const colSpec = Array(colCount).fill('c').join('');
         output.push(`\\begin{tabular}{${colSpec}}`);
     } else {
         return '';
     }
 
-    // 3. Table Rows
-    output.push(isBooktabs ? '\\toprule' : '\\hline');
+    // 3. Top border
+    const topBorderCmd = isBooktabs 
+        ? getBorderCommand(borders.top, 'top')
+        : '\\hline';
+    if (topBorderCmd) {
+        output.push(topBorderCmd);
+    }
 
     // 追踪被 rowspan 占据的格子 "rowIndex-colIndex"
     const spannedMatrix = new Set<string>();
@@ -149,13 +218,11 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
 
             // Check 1: 是否被上方的 rowspan 占据 (Vertical Slave)
             if (spannedMatrix.has(coord)) {
-                // 是垂直 slave，输出空占位符
-                // 保持背景色以防断裂
                 const bgCmd = cell.backgroundColor
                     ? `\\cellcolor[HTML]{${formatColor(cell.backgroundColor)}}`
                     : '';
                 rowCells.push(bgCmd);
-                continue; // 处理下一个单元格
+                continue;
             }
 
             // Check 2: 这是个新的有效单元格
@@ -163,10 +230,8 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
             // 如果它有 rowspan，标记未来的格子
             if (cell.rowspan && cell.rowspan > 1) {
                 const colspan = cell.colspan || 1;
-                // 对于 rowspan 覆盖的每一行
                 for (let r = 1; r < cell.rowspan; r++) {
                     const targetRow = i + r;
-                    // 对于 colspan 覆盖的每一列 (rowspan 的格可能本身也是 colspan)
                     for (let c = 0; c < colspan; c++) {
                         const targetCol = j + c;
                         spannedMatrix.add(`${targetRow}-${targetCol}`);
@@ -174,14 +239,13 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
                 }
             }
 
-            // 渲染内容：先处理文本和样式，再处理换行，最后处理布局
+            // 渲染内容
             let innerContent = renderCellContent(cell);
-            innerContent = wrapWithMakecell(cell, innerContent);
+            innerContent = wrapWithMakecell(cell, innerContent, cellPaddingPt);
             const latexFragment = wrapWithLayout(cell, innerContent);
-            
             rowCells.push(latexFragment);
 
-            // Check 3: 如果它有 colspan，跳过当前行的后续格子 (Horizontal Slave)
+            // Check 3: 如果它有 colspan，跳过当前行的后续格子
             if (cell.colspan && cell.colspan > 1) {
                 j += cell.colspan - 1;
             }
@@ -191,14 +255,31 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
 
         // Draw horizontal lines
         if (headerRows && i === headerRows - 1) {
-            output.push(isBooktabs ? '\\midrule' : '\\hline');
-        } else if (!isBooktabs && i < rows.length - 1) {
-            // Grid lines
+            const headerBorderCmd = isBooktabs
+                ? getBorderCommand(borders.headerBottom, 'header')
+                : '\\hline';
+            if (headerBorderCmd) {
+                output.push(headerBorderCmd);
+            }
         }
     }
 
-    output.push(isBooktabs ? '\\bottomrule' : '\\hline');
-    output.push('\\end{tabular}', '\\end{table}', '', '\\end{document}');
+    // 4. Bottom border
+    const bottomBorderCmd = isBooktabs
+        ? getBorderCommand(borders.bottom, 'bottom')
+        : '\\hline';
+    if (bottomBorderCmd) {
+        output.push(bottomBorderCmd);
+    }
+
+    output.push('\\end{tabular}');
+    
+    // 关闭字体大小设置
+    if (fontSize !== 12) {
+        output.push('}');
+    }
+
+    output.push('\\end{table}', '', '\\end{document}');
 
     return output.join('\n');
 }
