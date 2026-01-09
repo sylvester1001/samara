@@ -26,13 +26,15 @@
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter' && !e.shiftKey) {
+		if (e.key === 'Enter' && e.shiftKey) {
+			// Shift+Enter: finish editing
 			e.preventDefault();
 			finishEdit();
 		}
 		if (e.key === 'Escape') {
 			editing = false;
 		}
+		// Plain Enter: allow default behavior (insert newline in textarea)
 	}
 
 	function handleBlur() {
@@ -40,16 +42,39 @@
 	}
 </script>
 
+<style>
+	.cell-content {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.cell-input {
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: none;
+		outline: none;
+		font-family: inherit;
+		font-size: inherit;
+		resize: none;
+		overflow: hidden;
+		white-space: pre-wrap;
+		word-wrap: break-word;
+	}
+</style>
+
 <div class="cell-content" ondblclick={startEdit} role="textbox" aria-label="Table cell, double-click to edit" tabindex="0">
 	{#if editing}
-		<input
-			type="text"
+		<textarea
 			class="cell-input"
 			bind:value={editValue}
 			onblur={handleBlur}
 			onkeydown={handleKeydown}
-		/>
+		></textarea>
 	{:else}
-		{@html renderLatex(cell.content)}
+		<div style="white-space: pre-wrap;">
+			{@html renderLatex(cell.content)}
+		</div>
 	{/if}
 </div>

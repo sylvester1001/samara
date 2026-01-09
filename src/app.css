@@ -274,6 +274,8 @@ html, body {
   min-height: 1em;
   cursor: default;
   user-select: text;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .cell-content .cell-input {
@@ -286,6 +288,8 @@ html, body {
   padding: 0;
   margin: 0;
   user-select: text;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 input,
