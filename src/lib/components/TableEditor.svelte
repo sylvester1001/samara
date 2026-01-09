@@ -89,6 +89,13 @@
 		onCellChange(rowIndex, colIndex, value);
 	}
 
+	// Auto-resize textarea height (fallback for browsers without field-sizing support)
+	function autoResizeTextarea(e: Event) {
+		const textarea = e.target as HTMLTextAreaElement;
+		textarea.style.height = 'auto';
+		textarea.style.height = textarea.scrollHeight + 'px';
+	}
+
 	function handleContextMenu(e: MouseEvent) {
 		const target = (e.target as HTMLElement | null)?.closest('[data-row][data-col]');
 		if (!target) return;
@@ -347,13 +354,17 @@
 												<textarea
 													rows="1"
 													class="w-full px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
-													style="field-sizing: content; vertical-align: middle;"
+													style="field-sizing: content; vertical-align: middle; min-height: 1.5em;"
 													class:text-left={cell.align === 'left'}
 													class:text-center={cell.align === 'center' || !cell.align}
 													class:text-right={cell.align === 'right' || cell.align === 'decimal'}
 													data-row={rowIndex}
 													data-col={colIndex}
-													oninput={(e) => handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex)}
+													oninput={(e) => {
+														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex);
+														autoResizeTextarea(e);
+													}}
+													onfocus={autoResizeTextarea}
 													oncompositionupdate={(e) =>
 														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex)
 													}

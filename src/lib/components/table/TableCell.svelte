@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Cell } from '$lib/types';
 	import { renderLatex } from '$lib/utils/katex';
+	import { tick } from 'svelte';
 
 	interface Props {
 		cell: Cell;
@@ -12,10 +13,14 @@
 
 	let editing = $state(false);
 	let editValue = $state('');
+	let textareaRef = $state<HTMLTextAreaElement | null>(null);
 
-	function startEdit() {
+	async function startEdit() {
 		editing = true;
 		editValue = cell.content;
+		await tick();
+		textareaRef?.focus();
+		textareaRef?.select();
 	}
 
 	function finishEdit() {
@@ -68,6 +73,7 @@
 	{#if editing}
 		<textarea
 			class="cell-input"
+			bind:this={textareaRef}
 			bind:value={editValue}
 			onblur={handleBlur}
 			onkeydown={handleKeydown}

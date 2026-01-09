@@ -8,7 +8,8 @@ function formatColor(hex: string): string {
 }
 
 /**
- * 渲染单元格内部内容（处理转义、粗体、斜体、文字颜色、换行）
+ * 渲染单元格内部内容（处理转义、粗体、斜体、文字颜色）
+ * 注意：换行处理在 wrapWithMakecell 中进行
  */
 function renderCellContent(cell: Cell): string {
     let content = cell.content;
@@ -18,10 +19,7 @@ function renderCellContent(cell: Cell): string {
         content = escapeLatexText(content);
     }
 
-    // 2. 处理换行符：将 \n 转换为 \\
-    content = content.replace(/\n/g, ' \\\\ ');
-
-    // 3. 样式修饰
+    // 2. 样式修饰（不在这里处理换行，避免 \textbf{Hello \\ World} 的问题）
     if (cell.isBold) content = `\\textbf{${content}}`;
     if (cell.isItalic) content = `\\textit{${content}}`;
     if (cell.textColor) {
@@ -29,6 +27,23 @@ function renderCellContent(cell: Cell): string {
     }
 
     return content;
+}
+
+/**
+ * 处理单元格内换行：如果有换行，用 makecell 包裹
+ * 这个函数应该在样式修饰之后、布局命令之前调用
+ */
+function wrapWithMakecell(cell: Cell, content: string): string {
+    if (!cell.content.includes('\n')) {
+        return content;
+    }
+    
+    // 将 \n 转换为 \\（makecell 内部的换行）
+    // 注意：需要在已转义的内容上操作，所以这里匹配的是原始内容中的换行位置
+    // 但 escapeLatexText 不会改变 \n，所以可以直接替换
+    const contentWithBreaks = content.replace(/\n/g, ' \\\\ ');
+    const alignChar = cell.align ? cell.align[0] : 'c';
+    return `\\makecell[${alignChar}]{${contentWithBreaks}}`;
 }
 
 /**
@@ -149,15 +164,10 @@ export function generateLatexTable(data: TableData, style: TableStyle): string {
                 }
             }
 
-            // 渲染内容
-            const innerContent = renderCellContent(cell);
-            let latexFragment = wrapWithLayout(cell, innerContent);
-            
-            // 如果内容包含换行，用 makecell 包裹
-            if (cell.content.includes('\n')) {
-                const alignChar = cell.align ? cell.align[0] : 'c';
-                latexFragment = `\\makecell[${alignChar}]{${latexFragment}}`;
-            }
+            // 渲染内容：先处理文本和样式，再处理换行，最后处理布局
+            let innerContent = renderCellContent(cell);
+            innerContent = wrapWithMakecell(cell, innerContent);
+            const latexFragment = wrapWithLayout(cell, innerContent);
             
             rowCells.push(latexFragment);
 
