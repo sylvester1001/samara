@@ -19,31 +19,41 @@ function renderCellContent(cell: Cell): string {
         content = escapeLatexText(content);
     }
 
-    // 2. 样式修饰（不在这里处理换行，避免 \textbf{Hello \\ World} 的问题）
-    if (cell.isBold) content = `\\textbf{${content}}`;
-    if (cell.isItalic) content = `\\textit{${content}}`;
-    if (cell.textColor) {
-        content = `\\textcolor[HTML]{${formatColor(cell.textColor)}}{${content}}`;
-    }
-
+    // 不在这里应用样式，样式在 wrapWithMakecell 中按行应用
     return content;
 }
 
 /**
+ * 对单行内容应用样式（粗体、斜体、颜色）
+ */
+function applyStyles(content: string, cell: Cell): string {
+    let result = content;
+    if (cell.isBold) result = `\\textbf{${result}}`;
+    if (cell.isItalic) result = `\\textit{${result}}`;
+    if (cell.textColor) {
+        result = `\\textcolor[HTML]{${formatColor(cell.textColor)}}{${result}}`;
+    }
+    return result;
+}
+
+/**
  * 处理单元格内换行：如果有换行，用 makecell 包裹
- * 这个函数应该在样式修饰之后、布局命令之前调用
+ * 样式需要对每一行分别应用，否则 \\ 在样式命令内部不会正确换行
  */
 function wrapWithMakecell(cell: Cell, content: string): string {
+    const hasStyles = cell.isBold || cell.isItalic || cell.textColor;
+    
     if (!cell.content.includes('\n')) {
-        return content;
+        // 没有换行，直接应用样式
+        return applyStyles(content, cell);
     }
     
-    // 将 \n 转换为 \\（makecell 内部的换行）
-    // 注意：需要在已转义的内容上操作，所以这里匹配的是原始内容中的换行位置
-    // 但 escapeLatexText 不会改变 \n，所以可以直接替换
-    const contentWithBreaks = content.replace(/\n/g, ' \\\\ ');
+    // 有换行，需要对每一行分别应用样式
+    const lines = content.split('\n');
+    const styledLines = lines.map(line => applyStyles(line, cell));
     const alignChar = cell.align ? cell.align[0] : 'c';
-    return `\\makecell[${alignChar}]{${contentWithBreaks}}`;
+    
+    return `\\makecell[${alignChar}]{${styledLines.join(' \\\\ ')}}`;
 }
 
 /**
