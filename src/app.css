@@ -223,6 +223,8 @@ html, body {
   font-size: initial;
   line-height: normal;
   color: #000000;
+  /* Disable anti-aliasing for sharper edges during export */
+  shape-rendering: crispEdges;
 }
 
 .academic-table th,
@@ -230,6 +232,8 @@ html, body {
   padding: var(--cell-padding, 8px) 12px;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  /* Ensure crisp rendering for cells */
+  shape-rendering: crispEdges;
 }
 
 /* Booktabs preset */

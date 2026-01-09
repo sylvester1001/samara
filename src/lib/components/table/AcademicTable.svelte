@@ -74,9 +74,17 @@
 
 	// ========== Helper: Cell Background Extension ==========
 	// Generates box-shadow to extend background color slightly, preventing gaps between adjacent colored cells
-	function getCellBgExtendStyle(bgColor: string | undefined): string | undefined {
+	// isFirst/isLast: whether this cell is at the left/right edge of the table (to avoid overflow)
+	function getCellBgExtendStyle(bgColor: string | undefined, isFirst: boolean, isLast: boolean): string | undefined {
 		if (!bgColor) return undefined;
-		return `${-CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}, ${CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`;
+		const shadows: string[] = [];
+		if (!isFirst) {
+			shadows.push(`${-CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
+		}
+		if (!isLast) {
+			shadows.push(`${CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
+		}
+		return shadows.length > 0 ? shadows.join(', ') : undefined;
 	}
 
 	// ========== Derived: Style Values ==========
@@ -334,12 +342,17 @@
 
 				<thead>
 					{#each tableData.rows.slice(0, headerRowCount) as row, rowIndex}
+						{@const visibleCells = row.map((c, i) => ({ cell: c, colIndex: i })).filter(x => !x.cell.isMerged)}
 						<tr 
 							style:height="{tableData.rowHeights[rowIndex] || 32}px"
 							bind:clientHeight={domRowHeights[rowIndex]}
 						>
 							{#each row as cell, colIndex}
 								{#if !cell.isMerged}
+									{@const isFirstCell = visibleCells[0]?.colIndex === colIndex}
+									{@const lastVisibleIdx = visibleCells[visibleCells.length - 1]?.colIndex ?? -1}
+									{@const cellEndCol = colIndex + (cell.colspan && cell.colspan > 1 ? cell.colspan - 1 : 0)}
+									{@const isLastCell = cellEndCol >= row.length - 1 || cellEndCol >= lastVisibleIdx + (row[lastVisibleIdx]?.colspan ?? 1) - 1}
 									<th
 										class="table-cell"
 										class:text-left={cell.align === 'left'}
@@ -348,7 +361,7 @@
 										class:font-bold={cell.isBold}
 										class:italic={cell.isItalic}
 										style:background-color={cell.backgroundColor}
-										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor)}
+										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, isFirstCell, isLastCell)}
 										style:color={cell.textColor}
 										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
 										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
@@ -363,12 +376,17 @@
 
 				<tbody>
 					{#each tableData.rows.slice(headerRowCount) as row, rowIndex}
+						{@const visibleCells = row.map((c, i) => ({ cell: c, colIndex: i })).filter(x => !x.cell.isMerged)}
 						<tr 
 							style:height="{tableData.rowHeights[rowIndex + headerRowCount] || 32}px"
 							bind:clientHeight={domRowHeights[rowIndex + headerRowCount]}
 						>
 							{#each row as cell, colIndex}
 								{#if !cell.isMerged}
+									{@const isFirstCell = visibleCells[0]?.colIndex === colIndex}
+									{@const lastVisibleIdx = visibleCells[visibleCells.length - 1]?.colIndex ?? -1}
+									{@const cellEndCol = colIndex + (cell.colspan && cell.colspan > 1 ? cell.colspan - 1 : 0)}
+									{@const isLastCell = cellEndCol >= row.length - 1 || cellEndCol >= lastVisibleIdx + (row[lastVisibleIdx]?.colspan ?? 1) - 1}
 									<td
 										class="table-cell"
 										class:text-left={cell.align === 'left'}
@@ -377,7 +395,7 @@
 										class:font-bold={cell.isBold}
 										class:italic={cell.isItalic}
 										style:background-color={cell.backgroundColor}
-										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor)}
+										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, isFirstCell, isLastCell)}
 										style:color={cell.textColor}
 										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
 										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
