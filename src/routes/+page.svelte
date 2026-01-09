@@ -307,21 +307,22 @@
 
 	// ... (existing imports)
 
-	function handleExportLatex() {
+	function handleExportLatex(includeStyles: boolean = true) {
 		const latex = generateLatexTable(
 			tableStore.tableData,
 			tableStore.tableStyle,
+			{ includeStyles, includeDocument: true }
 		);
 		const blob = new Blob([latex], { type: "text/x-tex" });
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement("a");
 		a.href = url;
-		a.download = "table.tex";
+		a.download = includeStyles ? "table-styled.tex" : "table.tex";
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
-		showExportToast("table.tex");
+		showExportToast(includeStyles ? "table-styled.tex" : "table.tex");
 	}
 
 	function handleZoomIn() {
@@ -632,14 +633,43 @@
 									</div>
 								</Popover.Content>
 							</Popover.Root>
-							<Button
-								variant="outline"
-								class="w-[140px] bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]"
-								onclick={handleExportLatex}
-							>
-								<Code class="w-4 h-4 mr-1" />
-								Export LaTeX
-							</Button>
+							<Popover.Root>
+								<Popover.Trigger>
+									{#snippet child({ props })}
+										<Button
+											variant="outline"
+											class="w-[140px] bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]"
+											{...props}
+										>
+											<Code class="w-4 h-4 mr-1" />
+											Export LaTeX
+										</Button>
+									{/snippet}
+								</Popover.Trigger>
+								<Popover.Content
+									side="top"
+									align="center"
+									class="w-56"
+								>
+									<div class="grid gap-2">
+										<p class="text-sm text-muted-foreground mb-2">Choose export format:</p>
+										<Button
+											variant="outline"
+											class="w-full justify-start"
+											onclick={() => handleExportLatex(true)}
+										>
+											With Styles
+										</Button>
+										<Button
+											variant="outline"
+											class="w-full justify-start"
+											onclick={() => handleExportLatex(false)}
+										>
+											Plain (No Styles)
+										</Button>
+									</div>
+								</Popover.Content>
+							</Popover.Root>
 						</div>
 					</main>
 				</Resizable.Pane>
