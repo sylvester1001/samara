@@ -220,10 +220,20 @@ export function generateLatexTable(
         output.push(`{\\fontsize{${fontSize}pt}{${Math.round(fontSize * 1.2)}pt}\\selectfont`);
     }
 
-    // 2. Column Config - 使用 c 列类型
+    // 2. Column Config
     const colCount = rows[0]?.length || 0;
     if (colCount > 0) {
-        const colSpec = Array(colCount).fill('c').join('');
+        let colSpec: string;
+        if (opts.includeStyles && columnWidths && columnWidths.length === colCount) {
+            // 使用 w{c}{width} 列类型：固定宽度 + 水平居中，不自动换行
+            colSpec = columnWidths.map(w => {
+                const widthPt = pxToPt(w);
+                return `w{c}{${widthPt}pt}`;
+            }).join('');
+        } else {
+            // 无样式模式，使用简单的 c 列
+            colSpec = Array(colCount).fill('c').join('');
+        }
         output.push(`\\begin{tabular}{${colSpec}}`);
     } else {
         return '';
