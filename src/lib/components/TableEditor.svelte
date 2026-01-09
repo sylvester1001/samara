@@ -152,34 +152,52 @@
 			
 			if (nextRow >= 0 && nextRow < rowCount) {
 				const nextInput = document.querySelector(
-					`[data-row="${nextRow}"][data-col="${finalCol}"]`
-				) as HTMLInputElement;
+					`textarea[data-row="${nextRow}"][data-col="${finalCol}"]`
+				) as HTMLTextAreaElement;
 				nextInput?.focus();
 			}
 		} else if (e.key === 'Enter') {
-			e.preventDefault();
-			const nextRow = rowIndex + 1;
-			if (nextRow < rowCount) {
-				const nextInput = document.querySelector(
-					`[data-row="${nextRow}"][data-col="${colIndex}"]`
-				) as HTMLInputElement;
-				nextInput?.focus();
+			if (e.shiftKey) {
+				// Shift+Enter: jump to next row
+				e.preventDefault();
+				const nextRow = rowIndex + 1;
+				if (nextRow < rowCount) {
+					const nextInput = document.querySelector(
+						`textarea[data-row="${nextRow}"][data-col="${colIndex}"]`
+					) as HTMLTextAreaElement;
+					nextInput?.focus();
+				}
 			}
+			// Plain Enter: allow default behavior (insert newline in textarea)
 		} else if (e.key === 'ArrowDown') {
-			const nextRow = rowIndex + 1;
-			if (nextRow < rowCount) {
-				const nextInput = document.querySelector(
-					`[data-row="${nextRow}"][data-col="${colIndex}"]`
-				) as HTMLInputElement;
-				nextInput?.focus();
+			// Only navigate if cursor is at the last line of textarea
+			const target = e.target as HTMLTextAreaElement;
+			const cursorPos = target.selectionStart;
+			const textAfterCursor = target.value.substring(cursorPos);
+			if (!textAfterCursor.includes('\n')) {
+				e.preventDefault();
+				const nextRow = rowIndex + 1;
+				if (nextRow < rowCount) {
+					const nextInput = document.querySelector(
+						`textarea[data-row="${nextRow}"][data-col="${colIndex}"]`
+					) as HTMLTextAreaElement;
+					nextInput?.focus();
+				}
 			}
 		} else if (e.key === 'ArrowUp') {
-			const prevRow = rowIndex - 1;
-			if (prevRow >= 0) {
-				const prevInput = document.querySelector(
-					`[data-row="${prevRow}"][data-col="${colIndex}"]`
-				) as HTMLInputElement;
-				prevInput?.focus();
+			// Only navigate if cursor is at the first line of textarea
+			const target = e.target as HTMLTextAreaElement;
+			const cursorPos = target.selectionStart;
+			const textBeforeCursor = target.value.substring(0, cursorPos);
+			if (!textBeforeCursor.includes('\n')) {
+				e.preventDefault();
+				const prevRow = rowIndex - 1;
+				if (prevRow >= 0) {
+					const prevInput = document.querySelector(
+						`textarea[data-row="${prevRow}"][data-col="${colIndex}"]`
+					) as HTMLTextAreaElement;
+					prevInput?.focus();
+				}
 			}
 		}
 	}
@@ -326,21 +344,21 @@
 												onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
 												onmouseenter={() => handleCellMouseEnter(rowIndex, colIndex)}
 											>
-												<input
-													type="text"
-													class="w-full px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit"
+												<textarea
+													rows="1"
+													class="w-full px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
+													style="field-sizing: content;"
 													class:text-left={cell.align === 'left'}
 													class:text-center={cell.align === 'center' || !cell.align}
 													class:text-right={cell.align === 'right' || cell.align === 'decimal'}
-													value={cell.content}
 													data-row={rowIndex}
 													data-col={colIndex}
-													oninput={(e) => handleCellInput((e.target as HTMLInputElement).value, rowIndex, colIndex)}
+													oninput={(e) => handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex)}
 													oncompositionupdate={(e) =>
-														handleCellInput((e.target as HTMLInputElement).value, rowIndex, colIndex)
+														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex)
 													}
 													onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-												/>
+												>{cell.content}</textarea>
 											</td>
 										{/if}
 									{/each}
