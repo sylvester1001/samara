@@ -303,9 +303,25 @@
 		scheduleExportFallback();
 	}
 
+	import { generateLatexTable } from "$lib/utils/export-latex";
+
+	// ... (existing imports)
+
 	function handleExportLatex() {
-		// TODO: implement latex export
-		console.log("Export LaTeX not implemented yet");
+		const latex = generateLatexTable(
+			tableStore.tableData,
+			tableStore.tableStyle,
+		);
+		const blob = new Blob([latex], { type: "text/x-tex" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = "table.tex";
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+		showExportToast("table.tex");
 	}
 
 	function handleZoomIn() {
