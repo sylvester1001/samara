@@ -1,295 +1,153 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Badge } from '$lib/components/ui/badge/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Separator } from '$lib/components/ui/separator/index.js';
 	import {
 		ArrowRight,
 		Download,
 		Github,
-		BookOpen,
-		Sparkles,
-		Layers,
 		Table2,
-		Wand,
-		Check
+		Layers,
+		FileImage
 	} from 'lucide-svelte';
 
 	const links = {
 		repo: 'https://github.com/your-org/tablix',
-		guide: '/docs',
 		download: 'https://github.com/your-org/tablix/releases',
 		screenshot: '/UI-screenshot.png'
 	};
 
-	const highlights = [
-		'WYSIWYG table editing with LaTeX-grade output.',
-		'Precise control over rules, merges, and spacing.',
-		'Export clean PNG or SVG for papers and slides.'
-	];
-
 	const features = [
 		{
-			title: 'Academic-ready presets',
-			description: 'Booktabs, bordered, or minimal styles with live previews.',
+			title: 'Professional styling',
+			description: 'Choose from academic presets or customize every detail of your table design.',
 			icon: Table2
 		},
 		{
-			title: 'Smart cell ops',
-			description: 'Merge, split, and align data with predictable behavior.',
+			title: 'Intuitive editing',
+			description: 'Merge cells, adjust spacing, and format content with simple drag-and-drop.',
 			icon: Layers
 		},
 		{
-			title: 'Design polish',
-			description: 'Fine-tune line weight, spacing, and typography in seconds.',
-			icon: Wand
-		},
-		{
-			title: 'Export anywhere',
-			description: 'Publish to PNG, SVG, or LaTeX without layout drift.',
-			icon: Download
-		},
-		{
-			title: 'Desktop + web',
-			description: 'Same workspace across platforms with no compromise.',
-			icon: Sparkles
-		},
-		{
-			title: 'Fast to start',
-			description: 'Drop CSV, paste tables, or build from scratch in minutes.',
-			icon: ArrowRight
+			title: 'Multiple export formats',
+			description: 'Generate LaTeX code, high-resolution images, or vector graphics instantly.',
+			icon: FileImage
 		}
 	];
 </script>
 
 <svelte:head>
-	<title>Tablix - Tables with academic precision</title>
+	<title>Tablix - Academic table editor</title>
 	<meta
 		name="description"
-		content="Tablix is a table design studio for academic work. Build precise tables fast, export LaTeX-ready output, and share instantly."
+		content="A modern table editor for academic work. Create beautiful tables with LaTeX-quality output."
 	/>
 </svelte:head>
 
-<div class="landing text-slate-100">
-	<header class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 pt-8">
-		<a href="/" class="group flex items-center gap-3">
-			<div class="logo-tile">
-				<Table2 class="h-5 w-5" />
-			</div>
-			<span class="text-base font-semibold tracking-tight text-white">Tablix</span>
-		</a>
-		<nav class="hidden items-center gap-2 md:flex">
-			<Button
-				variant="ghost"
-				href={links.repo}
-				class="text-slate-200 hover:text-white hover:bg-white/10"
-			>
-				<Github class="h-4 w-4" />
-				GitHub
-			</Button>
-			<Button
-				variant="ghost"
-				href={links.guide}
-				class="text-slate-200 hover:text-white hover:bg-white/10"
-			>
-				<BookOpen class="h-4 w-4" />
-				User Guide
-			</Button>
-		</nav>
-		<div class="flex items-center gap-2 md:hidden">
-			<Button
-				variant="ghost"
-				size="icon"
-				href={links.repo}
-				class="text-slate-200 hover:text-white hover:bg-white/10"
-				aria-label="GitHub"
-			>
-				<Github class="h-4 w-4" />
-			</Button>
-			<Button
-				variant="ghost"
-				size="icon"
-				href={links.guide}
-				class="text-slate-200 hover:text-white hover:bg-white/10"
-				aria-label="User Guide"
-			>
-				<BookOpen class="h-4 w-4" />
-			</Button>
+<div class="landing">
+	<header class="header">
+		<div class="container">
+			<a href="/" class="logo">
+				<div class="logo-icon">
+					<Table2 class="h-5 w-5" />
+				</div>
+				<span class="logo-text">Tablix</span>
+			</a>
+			<nav class="nav">
+				<Button variant="ghost" href={links.repo} class="nav-link">
+					<Github class="h-4 w-4" />
+					GitHub
+				</Button>
+			</nav>
 		</div>
 	</header>
 
-	<main class="mx-auto w-full max-w-6xl px-6 pb-24">
-		<section class="pt-16 lg:pt-24">
-			<div class="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-				<div class="space-y-6 reveal reveal-delay-1">
-					<Badge variant="secondary" class="badge-soft">
-						Desktop + Web
-					</Badge>
-					<div class="space-y-5">
-						<h1 class="hero-title text-4xl leading-tight sm:text-5xl lg:text-6xl">
-							Tables, finally designed for academic precision.
-						</h1>
-						<p class="text-lg text-slate-300 sm:text-xl">
-							Tablix blends a focused editor with LaTeX-grade output so your
-							tables look right every time.
-						</p>
-					</div>
-					<div class="flex flex-wrap items-center gap-3">
-						<Button href="/" class="cta-primary">
-							Try it now
+	<main class="main">
+		<section class="hero">
+			<div class="container">
+				<div class="hero-content">
+					<h1 class="hero-title">
+						Academic Tables, <span class="italic">Simplified</span>
+					</h1>
+					<p class="hero-description">
+						Design publication-ready tables with an intuitive editor. Export to LaTeX, PNG, or SVG with pixel-perfect precision.
+					</p>
+					<div class="hero-actions">
+						<Button href="/" size="lg" class="btn-primary">
+							Open Editor
 							<ArrowRight class="h-4 w-4" />
 						</Button>
-						<Button href={links.download} variant="outline" class="cta-secondary">
+						<Button href={links.download} variant="outline" size="lg" class="btn-secondary">
 							<Download class="h-4 w-4" />
-							Download
+							Get Desktop App
 						</Button>
 					</div>
-					<div class="grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
-						<div class="flex items-center gap-2">
-							<Sparkles class="h-4 w-4 text-amber-300" />
-							Clean exports with no layout drift.
-						</div>
-						<div class="flex items-center gap-2">
-							<Table2 class="h-4 w-4 text-amber-300" />
-							Advanced rules, merges, and spacing.
-						</div>
-						<div class="flex items-center gap-2">
-							<Layers class="h-4 w-4 text-amber-300" />
-							Reusable presets for quick styling.
-						</div>
-						<div class="flex items-center gap-2">
-							<Wand class="h-4 w-4 text-amber-300" />
-							Polish in seconds, not hours.
-						</div>
-					</div>
 				</div>
-				<Card.Root class="hero-card reveal reveal-delay-2">
-					<Card.Header class="space-y-3">
-						<Card.Title class="text-lg font-semibold text-white">
-							Build tables like a designer
-						</Card.Title>
-						<Card.Description class="text-slate-300">
-							Drag rows, apply booktabs, and preview LaTeX instantly.
-						</Card.Description>
-					</Card.Header>
-					<Card.Content class="space-y-4">
-						<div class="mini-preview">
-							<div class="mini-grid">
-								<div class="mini-row"></div>
-								<div class="mini-row"></div>
-								<div class="mini-row"></div>
-								<div class="mini-row"></div>
-							</div>
-						</div>
-						<div class="flex items-center gap-2 text-sm text-slate-300">
-							<Check class="h-4 w-4 text-emerald-300" />
-							Ready for papers, slides, and docs.
+			</div>
+		</section>
+
+		<section class="screenshot-section">
+			<div class="container">
+				<img
+					class="app-screenshot"
+					src={links.screenshot}
+					alt="Tablix UI screenshot"
+				/>
+			</div>
+		</section>
+
+		<section class="features-section">
+			<div class="container">
+				<div class="features-header">
+					<h2 class="section-title">Designed for academic publishing</h2>
+					<p class="section-description">
+						Professional table creation with the tools researchers actually need.
+					</p>
+				</div>
+				<div class="features-grid">
+					{#each features as feature}
+						<Card.Root class="feature-card">
+							<Card.Content class="feature-content">
+								<div class="feature-icon">
+									<svelte:component this={feature.icon} class="h-5 w-5" />
+								</div>
+								<h3 class="feature-title">{feature.title}</h3>
+								<p class="feature-description">{feature.description}</p>
+							</Card.Content>
+						</Card.Root>
+					{/each}
+				</div>
+			</div>
+		</section>
+
+		<section class="cta-section">
+			<div class="container">
+				<Card.Root class="cta-card">
+					<Card.Content class="cta-content">
+						<h2 class="cta-title">Ready to create your next table?</h2>
+						<p class="cta-description">
+							Start editing in your browser or download the desktop application.
+						</p>
+						<div class="cta-actions">
+							<Button href="/" size="lg" class="btn-primary">
+								Open Editor
+								<ArrowRight class="h-4 w-4" />
+							</Button>
+							<Button href={links.download} variant="outline" size="lg" class="btn-secondary">
+								<Download class="h-4 w-4" />
+								Get Desktop App
+							</Button>
 						</div>
 					</Card.Content>
 				</Card.Root>
 			</div>
-
-			<img
-				class="hero-screenshot reveal reveal-delay-3 mt-14"
-				src={links.screenshot}
-				alt="Tablix UI screenshot"
-			/>
-		</section>
-
-		<Separator class="my-16 bg-white/10" />
-
-		<section id="ui" class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-			<div class="space-y-6">
-				<h2 class="section-title text-3xl sm:text-4xl">The full workspace view.</h2>
-				<p class="text-base text-slate-300 sm:text-lg">
-					Everything you need is visible at a glance: structure controls on the
-					left, editable canvas in the center, and export-ready preview on the
-					right.
-				</p>
-				<div class="space-y-3">
-					{#each highlights as item}
-						<div class="flex items-start gap-3 text-slate-200">
-							<div class="check-chip">
-								<Check class="h-3.5 w-3.5" />
-							</div>
-							<span>{item}</span>
-						</div>
-					{/each}
-				</div>
-				<Button href="/" class="cta-secondary">
-					Open the editor
-					<ArrowRight class="h-4 w-4" />
-				</Button>
-			</div>
-			<img
-				class="ui-screenshot reveal reveal-delay-2"
-				src={links.screenshot}
-				alt="Full Tablix workspace"
-			/>
-		</section>
-
-		<Separator class="my-16 bg-white/10" />
-
-		<section id="features" class="space-y-10">
-			<div class="space-y-3">
-				<h2 class="section-title text-3xl sm:text-4xl">Built for serious tables.</h2>
-				<p class="text-base text-slate-300 sm:text-lg">
-					Every feature is tuned for clarity, consistency, and academic output.
-				</p>
-			</div>
-			<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{#each features as feature, i}
-					<Card.Root
-						class="feature-card reveal"
-						style={`animation-delay: ${0.1 + i * 0.08}s`}
-					>
-						<Card.Header class="space-y-3">
-							<div class="feature-icon">
-								<svelte:component this={feature.icon} class="h-4 w-4" />
-							</div>
-							<Card.Title class="text-lg text-white">{feature.title}</Card.Title>
-						</Card.Header>
-						<Card.Content class="text-sm text-slate-300">
-							{feature.description}
-						</Card.Content>
-					</Card.Root>
-				{/each}
-			</div>
-		</section>
-
-		<section class="mt-20">
-			<Card.Root class="cta-panel">
-				<Card.Header class="space-y-3">
-					<Badge variant="secondary" class="badge-soft">
-						Start in minutes
-					</Badge>
-					<Card.Title class="section-title text-3xl sm:text-4xl">
-						Design your next table faster.
-					</Card.Title>
-					<Card.Description class="text-base text-slate-300 sm:text-lg">
-						Jump into the editor or grab the desktop build.
-					</Card.Description>
-				</Card.Header>
-				<Card.Footer class="mt-6 flex flex-wrap gap-3">
-					<Button href="/" class="cta-primary">
-						Try it now
-						<ArrowRight class="h-4 w-4" />
-					</Button>
-					<Button href={links.download} variant="outline" class="cta-secondary">
-						<Download class="h-4 w-4" />
-						Download
-					</Button>
-				</Card.Footer>
-			</Card.Root>
 		</section>
 	</main>
 
-	<footer class="mx-auto w-full max-w-6xl px-6 pb-12 text-sm text-slate-400">
-		<div class="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
-			<span>Tablix (c) 2025</span>
-			<div class="flex items-center gap-4">
-				<a href={links.repo} class="hover:text-white">Source</a>
-				<a href={links.guide} class="hover:text-white">Docs</a>
+	<footer class="footer">
+		<div class="container">
+			<span class="footer-text">Tablix © 2025</span>
+			<div class="footer-links">
+				<a href={links.repo} class="footer-link">GitHub</a>
 			</div>
 		</div>
 	</footer>
@@ -307,170 +165,318 @@
 	}
 
 	:global(body) {
-		background: #0d0e12;
-		color: #e8e9ef;
-		font-family: "CMU Sans Serif", "Helvetica Neue", Arial, sans-serif;
+		background: #fafaf9;
+		color: #1c1917;
+		font-family: "CMU Sans Serif", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 		user-select: text;
 	}
 
 	.landing {
 		min-height: 100vh;
-		background: radial-gradient(circle at 10% 20%, rgba(245, 179, 71, 0.18), transparent 45%),
-			radial-gradient(circle at 85% 15%, rgba(86, 131, 255, 0.12), transparent 40%),
-			radial-gradient(circle at 40% 85%, rgba(91, 189, 155, 0.12), transparent 35%),
-			#0d0e12;
+		background: #fafaf9;
 	}
 
-	.hero-title,
-	.section-title {
-		font-family: "CMU Serif", "Times New Roman", serif;
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 2rem;
+	}
+
+	/* Header */
+	.header {
+		padding: 1.5rem 0;
+		border-bottom: 1px solid #e7e5e4;
+		background: rgba(250, 250, 249, 0.8);
+		backdrop-filter: blur(8px);
+		position: sticky;
+		top: 0;
+		z-index: 50;
+	}
+
+	.header .container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.logo {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		text-decoration: none;
+		transition: opacity 0.2s;
+	}
+
+	.logo:hover {
+		opacity: 0.7;
+	}
+
+	.logo-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		background: #1c1917;
+		color: #fafaf9;
+	}
+
+	.logo-text {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #1c1917;
 		letter-spacing: -0.01em;
 	}
 
-	.logo-tile {
-		display: inline-flex;
+	.nav {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	:global(.nav-link) {
+		color: #57534e;
+	}
+
+	:global(.nav-link:hover) {
+		color: #1c1917;
+		background: #f5f5f4;
+	}
+
+	/* Hero */
+	.hero {
+		padding: 6rem 0 4rem;
+	}
+
+	.hero-content {
+		max-width: 720px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	.hero-title {
+		font-family: "CMU Serif", Georgia, serif;
+		font-size: clamp(2.5rem, 5vw, 3.5rem);
+		font-weight: 400;
+		line-height: 1.1;
+		color: #1c1917;
+		margin-bottom: 1.5rem;
+		letter-spacing: -0.02em;
+	}
+
+	.hero-title .italic {
+		font-style: italic;
+		color: #78716c;
+	}
+
+	.hero-description {
+		font-size: 1.125rem;
+		line-height: 1.6;
+		color: #57534e;
+		margin-bottom: 2rem;
+	}
+
+	.hero-actions {
+		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: 40px;
-		width: 40px;
-		border-radius: 12px;
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.03));
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		color: white;
+		gap: 1rem;
+		flex-wrap: wrap;
 	}
 
-	:global(.badge-soft) {
-		background: rgba(255, 255, 255, 0.08);
-		color: rgba(255, 255, 255, 0.9);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+	/* Screenshot Section */
+	.screenshot-section {
+		padding: 2rem 0 4rem;
 	}
 
-	:global(.cta-primary) {
-		background: linear-gradient(135deg, #f7d58b, #f4a461);
-		color: #201a0f;
-		box-shadow: 0 12px 30px rgba(244, 164, 97, 0.25);
-	}
-
-	:global(.cta-primary:hover) {
-		filter: brightness(1.05);
-	}
-
-	:global(.cta-secondary) {
-		border-color: rgba(255, 255, 255, 0.3);
-		color: rgba(255, 255, 255, 0.85);
-		background: rgba(255, 255, 255, 0.02);
-	}
-
-	:global(.cta-secondary:hover) {
-		background: rgba(255, 255, 255, 0.1);
-		color: #ffffff;
-	}
-
-	:global(.hero-card) {
-		background: rgba(15, 16, 22, 0.75);
-		border-color: rgba(255, 255, 255, 0.08);
-		backdrop-filter: blur(14px);
-	}
-
-	.mini-preview {
-		height: 180px;
-		border-radius: 16px;
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		padding: 16px;
-	}
-
-	.mini-grid {
-		display: grid;
-		gap: 10px;
-	}
-
-	.mini-row {
-		height: 14px;
-		border-radius: 999px;
-		background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05));
-	}
-
-	.hero-screenshot,
-	.ui-screenshot {
+	.app-screenshot {
 		width: 100%;
-		display: block;
 		height: auto;
+		border-radius: 0;
+		border: none;
+		box-shadow: none;
 	}
 
-	.check-chip {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		height: 26px;
-		width: 26px;
-		border-radius: 999px;
-		background: rgba(116, 255, 193, 0.12);
-		border: 1px solid rgba(116, 255, 193, 0.3);
-		color: #7af5c9;
-		flex-shrink: 0;
+	/* Features Section */
+	.features-section {
+		padding: 4rem 0;
+	}
+
+	.features-header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.section-title {
+		font-family: "CMU Serif", Georgia, serif;
+		font-size: 2.5rem;
+		font-weight: 400;
+		color: #1c1917;
+		margin-bottom: 1rem;
+		letter-spacing: -0.01em;
+	}
+
+	.section-description {
+		font-size: 1.125rem;
+		color: #57534e;
+	}
+
+	.features-grid {
+		display: grid;
+		gap: 2rem;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 	}
 
 	:global(.feature-card) {
-		background: rgba(14, 15, 20, 0.72);
-		border-color: rgba(255, 255, 255, 0.08);
-		backdrop-filter: blur(8px);
+		background: #ffffff;
+		border: 1px solid #e7e5e4;
+	}
+
+	:global(.feature-content) {
+		padding: 2rem;
 	}
 
 	.feature-icon {
-		display: inline-flex;
+		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: 38px;
-		width: 38px;
-		border-radius: 12px;
-		background: rgba(255, 255, 255, 0.08);
-		color: #f6d28c;
-		border: 1px solid rgba(255, 255, 255, 0.15);
+		width: 48px;
+		height: 48px;
+		border-radius: 10px;
+		background: #1c1917;
+		color: #fafaf9;
+		margin-bottom: 1rem;
 	}
 
-	:global(.cta-panel) {
-		background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
-		border-color: rgba(255, 255, 255, 0.12);
-		padding: 28px;
+	.feature-title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: #1c1917;
+		margin-bottom: 0.5rem;
 	}
 
-	:global(.reveal) {
-		opacity: 0;
-		transform: translateY(16px);
-		animation: rise 0.9s ease forwards;
+	.feature-description {
+		font-size: 0.9375rem;
+		color: #57534e;
+		line-height: 1.6;
 	}
 
-	:global(.reveal-delay-1) {
-		animation-delay: 0.1s;
+	/* CTA Section */
+	.cta-section {
+		padding: 4rem 0;
 	}
 
-	:global(.reveal-delay-2) {
-		animation-delay: 0.2s;
+	:global(.cta-card) {
+		background: #ffffff;
+		border: 1px solid #e7e5e4;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	}
 
-	:global(.reveal-delay-3) {
-		animation-delay: 0.3s;
+	:global(.cta-content) {
+		padding: 3rem;
+		text-align: center;
 	}
 
-	@keyframes rise {
-		100% {
-			opacity: 1;
-			transform: translateY(0);
+	.cta-title {
+		font-family: "CMU Serif", Georgia, serif;
+		font-size: 2rem;
+		font-weight: 400;
+		color: #1c1917;
+		margin-bottom: 1rem;
+		letter-spacing: -0.01em;
+	}
+
+	.cta-description {
+		font-size: 1.125rem;
+		color: #57534e;
+		margin-bottom: 2rem;
+	}
+
+	.cta-actions {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	/* Buttons */
+	:global(.btn-primary) {
+		background: #1c1917;
+		color: #fafaf9;
+		border: 1px solid #1c1917;
+	}
+
+	:global(.btn-primary:hover) {
+		background: #292524;
+		border-color: #292524;
+	}
+
+	:global(.btn-secondary) {
+		border-color: #d6d3d1;
+		color: #1c1917;
+		background: transparent;
+	}
+
+	:global(.btn-secondary:hover) {
+		background: #f5f5f4;
+		border-color: #a8a29e;
+	}
+
+	/* Main */
+	.main {
+		flex: 1;
+	}
+
+	/* Footer */
+	.footer {
+		padding: 2rem 0;
+		border-top: 1px solid #e7e5e4;
+		margin-top: 4rem;
+	}
+
+	.footer .container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.footer-text {
+		font-size: 0.875rem;
+		color: #78716c;
+	}
+
+	.footer-links {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	.footer-link {
+		font-size: 0.875rem;
+		color: #57534e;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.footer-link:hover {
+		color: #1c1917;
+	}
+
+	@media (max-width: 768px) {
+		.hero {
+			padding: 4rem 0 3rem;
 		}
-	}
 
-	@media (prefers-reduced-motion: reduce) {
-		:global(.reveal) {
-			animation: none;
-			opacity: 1;
-			transform: translateY(0);
+		.container {
+			padding: 0 1.5rem;
 		}
-	}
 
-	@media (max-width: 640px) {
-		.hero-screenshot {
-			margin-top: 2.5rem;
+		:global(.cta-content) {
+			padding: 2rem;
 		}
 	}
 </style>
