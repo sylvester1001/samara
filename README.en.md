@@ -1,8 +1,19 @@
+<div align="center">
+
 # Tablix
 
 A visual academic table editor. Design tables visually, then export them to LaTeX or high-resolution images in one click — no more hand-writing `tabular` markup.
 
+![Svelte](https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white&style=flat-square)
+![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white&style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white&style=flat-square)
+![Tailwind](https://img.shields.io/badge/TailwindCSS-4-38BDF8?logo=tailwindcss&logoColor=white&style=flat-square)
+![Rust](https://img.shields.io/badge/Rust-1.77-000000?logo=rust&logoColor=white&style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Desktop-3b82f6?style=flat-square)
+
 **[简体中文](README.md)**
+
+</div>
 
 ---
 

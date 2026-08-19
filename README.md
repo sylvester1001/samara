@@ -1,8 +1,19 @@
+<div align="center">
+
 # Tablix
 
 一个所见即所得的学术表格编辑器。可视化地设计表格，然后一键导出为 LaTeX 代码或高清图片，不用再手写 `tabular` 命令。
 
+![Svelte](https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white&style=flat-square)
+![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white&style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white&style=flat-square)
+![Tailwind](https://img.shields.io/badge/TailwindCSS-4-38BDF8?logo=tailwindcss&logoColor=white&style=flat-square)
+![Rust](https://img.shields.io/badge/Rust-1.77-000000?logo=rust&logoColor=white&style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Desktop-3b82f6?style=flat-square)
+
 **[English](README.en.md)**
+
+</div>
 
 ---
 
