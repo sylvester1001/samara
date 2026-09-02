@@ -6,12 +6,14 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
+	import PresetPicker from '$lib/components/PresetPicker.svelte';
 	import type { TableStyle, CanvasConfig, BorderStyle } from '$lib/types';
 
 	interface Props {
 		tableStyle: TableStyle;
 		canvasConfig: CanvasConfig;
 		onStyleChange?: (style: Partial<TableStyle>) => void;
+		onPresetChange?: (preset: TableStyle['preset']) => void;
 		onCanvasChange?: (config: Partial<CanvasConfig>) => void;
 		lockColumnResize?: boolean;
 		lockRowResize?: boolean;
@@ -23,6 +25,7 @@
 		tableStyle,
 		canvasConfig,
 		onStyleChange,
+		onPresetChange,
 		onCanvasChange,
 		lockColumnResize = false,
 		lockRowResize = false,
@@ -160,6 +163,11 @@
 		<Sidebar.GroupLabel class="text-sm text-sidebar-foreground">Table Style</Sidebar.GroupLabel>
 		<Sidebar.GroupContent class="flex flex-col gap-5 px-2 pb-3">
 			<div class="flex flex-col gap-3">
+				<Label>Preset</Label>
+				<PresetPicker value={tableStyle.preset} onValueChange={onPresetChange} />
+			</div>
+
+			<div class="flex flex-col gap-3 pt-4 border-t border-border/60">
 				<Label>Font</Label>
 				<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
 					<Select.Trigger class="w-full">

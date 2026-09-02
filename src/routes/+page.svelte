@@ -437,6 +437,7 @@
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}
 				onStyleChange={handleStyleChange}
+				onPresetChange={handlePresetChange}
 				onCanvasChange={handleCanvasChange}
 				lockColumnResize={tableStore.lockColumnResize}
 				lockRowResize={tableStore.lockRowResize}
@@ -452,14 +453,12 @@
 	<AppSidebar.Inset>
 		<div class="flex flex-col flex-1 min-h-0 overflow-hidden">
 			<Toolbar
-				preset={tableStore.tableStyle.preset}
 				{canUndo}
 				{canRedo}
 				onImport={handleImportClick}
 				onNewTable={handleNewTable}
 				onUndo={handleUndo}
 				onRedo={handleRedo}
-				onPresetChange={handlePresetChange}
 			/>
 
 			<Resizable.PaneGroup
