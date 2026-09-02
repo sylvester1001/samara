@@ -19,7 +19,9 @@
 		exportAndDownloadSvg,
 	} from "$lib/utils/export";
 	import { showExportToast } from "$lib/utils/notifications";
-	import type { TableStyle, CanvasConfig, RuleSegment } from "$lib/types";
+	import { generateLatexTable } from "$lib/utils/export-latex";
+	import { isSegmentTrimmed, type LineEdge } from "$lib/utils/table-geometry";
+	import type { TableStyle, CanvasConfig } from "$lib/types";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
 	import * as Popover from "$lib/components/ui/popover/index.js";
@@ -115,6 +117,10 @@
 
 	function handleSelectionChange(cells: { row: number; col: number }[]) {
 		tableStore.setSelectedCells(cells);
+		if (cells.length > 0) {
+			lineHint = "";
+		}
+		syncActiveSegment();
 	}
 
 	function handleAlignChange(align: "left" | "center" | "right") {
@@ -145,20 +151,72 @@
 		tableStore.unmergeSelectedCells();
 	}
 
-	function handleHeaderRowsChange(count: number) {
-		tableStore.setHeaderRows(count);
+	function handleHeaderRowsChange(count: number, recordHistory = true) {
+		tableStore.setHeaderRows(count, recordHistory);
 	}
 
-	function handleAddSegment(segment: RuleSegment) {
-		tableStore.addSegment(segment);
+	function handleHeaderRowsCommit() {
+		tableStore.commitHistory();
+	}
+
+	let headerAdjustMode = $state(false);
+	let activeSegmentIndex = $state<number | null>(null);
+	let lineHint = $state("");
+	let lineShorter = $state(true);
+
+	function syncActiveSegment() {
+		const below = tableStore.findLineIndexFromSelection("below");
+		const above = tableStore.findLineIndexFromSelection("above");
+		if (
+			activeSegmentIndex != null &&
+			(activeSegmentIndex === below || activeSegmentIndex === above)
+		) {
+			return;
+		}
+		activeSegmentIndex = below ?? above ?? null;
+	}
+
+	function handleAddLine(edge: LineEdge) {
+		if (tableStore.selectedCells.length === 0) {
+			lineHint = "Select a cell first";
+			return;
+		}
+		lineHint = "";
+		const shorter =
+			activeSegmentIndex != null
+				? isSegmentTrimmed(
+						tableStore.tableData.segments[activeSegmentIndex],
+					)
+				: lineShorter;
+		const index = tableStore.addLineFromSelection(edge, shorter);
+		if (index != null) {
+			activeSegmentIndex = index;
+			lineShorter = isSegmentTrimmed(
+				tableStore.tableData.segments[index],
+			);
+		}
+	}
+
+	function handleShorterChange(shorter: boolean) {
+		lineShorter = shorter;
+		if (activeSegmentIndex == null) return;
+		tableStore.setSegmentTrim(activeSegmentIndex, shorter);
 	}
 
 	function handleRemoveSegment(index: number) {
 		tableStore.removeSegment(index);
+		if (activeSegmentIndex == null) return;
+		if (activeSegmentIndex === index) {
+			activeSegmentIndex = null;
+			return;
+		}
+		if (activeSegmentIndex > index) {
+			activeSegmentIndex -= 1;
+		}
 	}
 
-	function handleClearSegments() {
-		tableStore.clearSegments();
+	function handleSelectSegment(index: number) {
+		activeSegmentIndex = index;
 	}
 
 	async function handleExportPng() {
@@ -303,10 +361,6 @@
 		scheduleExportFallback();
 	}
 
-	import { generateLatexTable } from "$lib/utils/export-latex";
-
-	// ... (existing imports)
-
 	function handleExportLatex(includeStyles: boolean = true) {
 		const latex = generateLatexTable(
 			tableStore.tableData,
@@ -382,11 +436,6 @@
 			<SettingsSidebar
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}
-				tableData={tableStore.tableData}
-				selectedCells={tableStore.selectedCells}
-				headerRows={tableStore.tableData.headerRows}
-				maxHeaderRows={tableStore.tableData.rows.length}
-				onHeaderRowsChange={handleHeaderRowsChange}
 				onStyleChange={handleStyleChange}
 				onCanvasChange={handleCanvasChange}
 				lockColumnResize={tableStore.lockColumnResize}
@@ -395,9 +444,6 @@
 					(tableStore.lockColumnResize = value)}
 				onLockRowResizeChange={(value) =>
 					(tableStore.lockRowResize = value)}
-				onAddSegment={handleAddSegment}
-				onRemoveSegment={handleRemoveSegment}
-				onClearSegments={handleClearSegments}
 			/>
 		</AppSidebar.Content>
 	</AppSidebar.Root>
@@ -438,6 +484,16 @@
 								onMergeCells={handleMergeCells}
 								onUnmergeCells={handleUnmergeCells}
 								onInsertFormula={handleInsertFormula}
+								{headerAdjustMode}
+								onToggleHeaderAdjust={() =>
+									(headerAdjustMode = !headerAdjustMode)}
+								tableData={tableStore.tableData}
+								{activeSegmentIndex}
+								{lineHint}
+								onAddLine={handleAddLine}
+								onShorterChange={handleShorterChange}
+								onRemoveSegment={handleRemoveSegment}
+								onSelectSegment={handleSelectSegment}
 							/>
 						</div>
 						<div class="flex-1 min-h-0">
@@ -453,6 +509,15 @@
 								onClearSelectedCells={() =>
 									tableStore.clearSelectedCellsContent()}
 								onResizeTable={handleResizeTable}
+								headerRows={tableStore.tableData.headerRows}
+								{headerAdjustMode}
+								onHeaderRowsChange={handleHeaderRowsChange}
+								onHeaderRowsCommit={handleHeaderRowsCommit}
+								onHeaderAdjustModeChange={(open: boolean) =>
+									(headerAdjustMode = open)}
+								onMergeCells={handleMergeCells}
+								onUnmergeCells={handleUnmergeCells}
+								onAddLine={handleAddLine}
 							/>
 						</div>
 					</div>

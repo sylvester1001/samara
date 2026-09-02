@@ -191,7 +191,7 @@
 		const segments = tableData.segments ?? [];
 		for (let i = 0; i < segments.length; i++) {
 			const segment = segments[i];
-			const atRow = Math.max(0, Math.min(segment.atRow, rowCount - 1));
+			const atRow = Math.max(-1, Math.min(segment.atRow, rowCount - 1));
 			const startCol = Math.max(0, Math.min(segment.startCol, colCount - 1));
 			const endCol = Math.max(startCol, Math.min(segment.endCol, colCount - 1));
 			const left = colOffsets[startCol] ?? 0;
@@ -200,12 +200,17 @@
 			const trimRight = segment.trimRight === 'short' ? SEGMENT_TRIM_PX : 0;
 			const width = Math.max(0, right - left - trimLeft - trimRight);
 			if (width <= 0) continue;
-			const top = rowResizerPositions[atRow] ?? 0;
+			const rawTop =
+				atRow < 0
+					? needsTopDoubleLine
+						? DOUBLE_LINE_HEIGHT
+						: 0
+					: (rowResizerPositions[atRow] ?? 0);
 			const styleKey = segment.style ?? 'thin';
 			lines.push({
 				id: i,
 				left: left + trimLeft,
-				top,
+				top: rawTop - (needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0),
 				width,
 				borderWidth: SEGMENT_WIDTH_MAP[styleKey] ?? 1,
 				borderStyle: SEGMENT_STYLE_MAP[styleKey] ?? 'solid'
@@ -312,7 +317,7 @@
 					<div
 						class="segment-line"
 						style:left="{segment.left}px"
-						style:top="{segment.top - (needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0)}px"
+						style:top="{segment.top}px"
 						style:width="{segment.width}px"
 						style:--segment-width="{segment.borderWidth}px"
 						style:--segment-style={segment.borderStyle}

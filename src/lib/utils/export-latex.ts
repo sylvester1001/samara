@@ -1,4 +1,4 @@
-import type { TableData, TableStyle, Cell, BorderStyle } from '$lib/types';
+import type { TableData, TableStyle, Cell, BorderStyle, RuleSegment } from '$lib/types';
 import { escapeLatexText } from './latex-processor';
 
 // --- Constants ---
@@ -32,6 +32,26 @@ function pxToPt(px: number): number {
 /**
  * 根据 BorderStyle 生成 booktabs 的线型命令
  */
+function formatPartialRule(segment: RuleSegment, isBooktabs: boolean): string {
+    const start = segment.startCol + 1;
+    const end = segment.endCol + 1;
+    if (!isBooktabs) {
+        return `\\cline{${start}-${end}}`;
+    }
+    const left = segment.trimLeft === 'short' ? 'l' : '';
+    const right = segment.trimRight === 'short' ? 'r' : '';
+    const trim = left || right ? `(${left}${right})` : '';
+    return `\\cmidrule${trim}{${start}-${end}}`;
+}
+
+function getPartialRulesAt(data: TableData, atRow: number, isBooktabs: boolean): string {
+    const commands = (data.segments ?? [])
+        .filter((segment) => segment.atRow === atRow)
+        .sort((a, b) => a.startCol - b.startCol)
+        .map((segment) => formatPartialRule(segment, isBooktabs));
+    return commands.join('');
+}
+
 function getBorderCommand(borderStyle: BorderStyle, position: 'top' | 'bottom' | 'header'): string {
     switch (borderStyle) {
         case 'none':
@@ -246,6 +266,10 @@ export function generateLatexTable(
     if (topBorderCmd) {
         output.push(topBorderCmd);
     }
+    const rulesAbove = getPartialRulesAt(data, -1, isBooktabs);
+    if (rulesAbove) {
+        output.push(rulesAbove);
+    }
 
     // 追踪被 rowspan 占据的格子
     const spannedMatrix = new Set<string>();
@@ -288,6 +312,11 @@ export function generateLatexTable(
         }
 
         output.push(rowCells.join(' & ') + ' \\\\');
+
+        const partialRules = getPartialRulesAt(data, i, isBooktabs);
+        if (partialRules) {
+            output.push(partialRules);
+        }
 
         if (headerRows && i === headerRows - 1) {
             const headerBorderCmd = isBooktabs

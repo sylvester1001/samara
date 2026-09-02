@@ -8,6 +8,11 @@ import {
 	DEFAULT_TABLE_STYLE,
 	DEFAULT_CANVAS_CONFIG
 } from '$lib/types';
+import {
+	findSegmentIndex,
+	getLineTarget,
+	type LineEdge
+} from '$lib/utils/table-geometry';
 
 function createCell(content: string = ''): Cell {
 	return { ...DEFAULT_CELL, content };
@@ -75,10 +80,15 @@ class TableStore {
 		this.saveHistory();
 	}
 
-	setHeaderRows(count: number) {
+	setHeaderRows(count: number, recordHistory = true) {
 		const maxRows = this.tableData.rows.length || 1;
 		const next = Math.min(Math.max(1, count), maxRows);
+		if (this.tableData.headerRows === next) return;
 		this.tableData.headerRows = next;
+		if (recordHistory) this.saveHistory();
+	}
+
+	commitHistory() {
 		this.saveHistory();
 	}
 
@@ -243,7 +253,7 @@ class TableStore {
 			const maxRow = this.tableData.rows.length - 1;
 			this.tableData.segments = this.tableData.segments.map((segment) => {
 				const shifted = segment.atRow >= index ? segment.atRow - 1 : segment.atRow;
-				return { ...segment, atRow: Math.min(Math.max(0, shifted), maxRow) };
+				return { ...segment, atRow: Math.min(Math.max(-1, shifted), maxRow) };
 			});
 			this.saveHistory();
 		}
@@ -304,11 +314,11 @@ class TableStore {
 	addSegment(segment: RuleSegment) {
 		const rowCount = this.tableData.rows.length;
 		const colCount = this.tableData.columnWidths.length;
-		if (rowCount === 0 || colCount === 0) return;
+		if (rowCount === 0 || colCount === 0) return -1;
 
 		const startCol = Math.max(0, Math.min(segment.startCol, colCount - 1));
 		const endCol = Math.max(startCol, Math.min(segment.endCol, colCount - 1));
-		const atRow = Math.max(0, Math.min(segment.atRow, rowCount - 1));
+		const atRow = Math.max(-1, Math.min(segment.atRow, rowCount - 1));
 
 		this.tableData.segments = [
 			...this.tableData.segments,
@@ -319,6 +329,52 @@ class TableStore {
 				endCol
 			}
 		];
+		this.saveHistory();
+		return this.tableData.segments.length - 1;
+	}
+
+	addLineFromSelection(edge: LineEdge, shorter: boolean): number | null {
+		const target = getLineTarget(this.tableData, this.selectedCells, edge);
+		if (!target) return null;
+		const existing = findSegmentIndex(
+			this.tableData.segments,
+			target.atRow,
+			target.startCol,
+			target.endCol
+		);
+		if (existing >= 0) return existing;
+		const trim = shorter ? 'short' : 'none';
+		const index = this.addSegment({
+			atRow: target.atRow,
+			startCol: target.startCol,
+			endCol: target.endCol,
+			trimLeft: trim,
+			trimRight: trim,
+			style: 'thin'
+		});
+		return index >= 0 ? index : null;
+	}
+
+	findLineIndexFromSelection(edge: LineEdge): number | null {
+		const target = getLineTarget(this.tableData, this.selectedCells, edge);
+		if (!target) return null;
+		const index = findSegmentIndex(
+			this.tableData.segments,
+			target.atRow,
+			target.startCol,
+			target.endCol
+		);
+		return index >= 0 ? index : null;
+	}
+
+	setSegmentTrim(index: number, shorter: boolean) {
+		const segment = this.tableData.segments[index];
+		if (!segment) return;
+		const trim = shorter ? 'short' : 'none';
+		if (segment.trimLeft === trim && segment.trimRight === trim) return;
+		this.tableData.segments = this.tableData.segments.map((item, i) =>
+			i === index ? { ...item, trimLeft: trim, trimRight: trim } : item
+		);
 		this.saveHistory();
 	}
 

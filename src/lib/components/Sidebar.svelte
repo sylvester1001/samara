@@ -5,46 +5,29 @@
 	import { Slider } from '$lib/components/ui/slider/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
-	import type { TableStyle, CanvasConfig, BorderStyle, TableData, RuleSegment, SegmentStyle } from '$lib/types';
+	import type { TableStyle, CanvasConfig, BorderStyle } from '$lib/types';
 
 	interface Props {
 		tableStyle: TableStyle;
 		canvasConfig: CanvasConfig;
-		tableData: TableData;
-		selectedCells: { row: number; col: number }[];
-		headerRows: number;
-		maxHeaderRows: number;
-		onHeaderRowsChange?: (count: number) => void;
 		onStyleChange?: (style: Partial<TableStyle>) => void;
 		onCanvasChange?: (config: Partial<CanvasConfig>) => void;
 		lockColumnResize?: boolean;
 		lockRowResize?: boolean;
 		onLockColumnResizeChange?: (locked: boolean) => void;
 		onLockRowResizeChange?: (locked: boolean) => void;
-		onAddSegment?: (segment: RuleSegment) => void;
-		onRemoveSegment?: (index: number) => void;
-		onClearSegments?: () => void;
 	}
 
 	let {
 		tableStyle,
 		canvasConfig,
-		tableData,
-		selectedCells,
-		headerRows = 1,
-		maxHeaderRows = 1,
-		onHeaderRowsChange,
 		onStyleChange,
 		onCanvasChange,
 		lockColumnResize = false,
 		lockRowResize = false,
 		onLockColumnResizeChange,
-		onLockRowResizeChange,
-		onAddSegment,
-		onRemoveSegment,
-		onClearSegments
+		onLockRowResizeChange
 	}: Props = $props();
 
 	const fontOptions = [
@@ -81,24 +64,9 @@
 		{ value: 'thin-thick', label: 'Light-Heavy' }
 	];
 
-	const headerRowOptions = $derived.by(() => {
-		const max = Math.max(1, maxHeaderRows);
-		return Array.from({ length: max }, (_, index) => {
-			const value = index + 1;
-			return { value: String(value), label: `${value} Row${value === 1 ? '' : 's'}` };
-		});
-	});
-
 	let canvasPreset = $state('auto');
 	let customWidth = $state(800);
 	let customHeight = $state(600);
-	let segmentRow = $state(1);
-	let segmentStartCol = $state(1);
-	let segmentEndCol = $state(1);
-	let segmentTrimLeft = $state(true);
-	let segmentTrimRight = $state(true);
-	let segmentStyle = $state<SegmentStyle>('thin');
-	let lastSelectionKey = $state('');
 
 	// Initialize custom dimensions from canvasConfig
 	$effect(() => {
@@ -127,14 +95,6 @@
 		}
 	}
 
-	function handleHeaderRowsChange(value: string | undefined) {
-		if (!value) return;
-		const parsed = parseInt(value);
-		if (!Number.isNaN(parsed)) {
-			onHeaderRowsChange?.(parsed);
-		}
-	}
-
 	function handleFontSizeChange(value: number) {
 		onStyleChange?.({ fontSize: value });
 	}
@@ -148,37 +108,6 @@
 
 	$effect(() => {
 		canvasPreset = inferPreset(canvasConfig);
-	});
-
-	$effect(() => {
-		const maxRow = Math.max(1, tableData.rows.length);
-		const maxCol = Math.max(1, tableData.columnWidths.length);
-		segmentRow = Math.min(Math.max(1, segmentRow), maxRow);
-		segmentStartCol = Math.min(Math.max(1, segmentStartCol), maxCol);
-		segmentEndCol = Math.min(Math.max(1, segmentEndCol), maxCol);
-		if (segmentStartCol > segmentEndCol) {
-			const nextStart = segmentEndCol;
-			segmentEndCol = segmentStartCol;
-			segmentStartCol = nextStart;
-		}
-	});
-
-	$effect(() => {
-		const key = selectedCells
-			.map((cell) => `${cell.row}:${cell.col}`)
-			.sort()
-			.join('|');
-		if (key !== lastSelectionKey) {
-			lastSelectionKey = key;
-			if (selectedCells.length) {
-				const range = getSelectionRange();
-				if (range) {
-					segmentRow = range.row;
-					segmentStartCol = range.startCol;
-					segmentEndCol = range.endCol;
-				}
-			}
-		}
 	});
 
 	function handleCanvasPresetChange(value: string | undefined) {
@@ -229,92 +158,6 @@
 	function getBorderLabel(value: BorderStyle) {
 		const allOptions = [...borderOptions, { value: 'thick-thin', label: 'Heavy-Light' }, { value: 'thin-thick', label: 'Light-Heavy' }];
 		return allOptions.find((option) => option.value === value)?.label ?? value;
-	}
-
-	function handleSegmentStartColChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		segmentStartCol = parseInt(target.value) || 1;
-	}
-
-	function handleSegmentEndColChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		segmentEndCol = parseInt(target.value) || 1;
-	}
-
-	function handleSegmentRowChange(e: Event) {
-		const target = e.target as HTMLInputElement;
-		segmentRow = parseInt(target.value) || 1;
-	}
-
-	function getCellRange(row: number, col: number) {
-		const cell = tableData.rows[row]?.[col];
-		if (cell && !cell.isMerged) {
-			const rowspan = cell.rowspan ?? 1;
-			const colspan = cell.colspan ?? 1;
-			return {
-				rowStart: row,
-				rowEnd: row + rowspan - 1,
-				colStart: col,
-				colEnd: col + colspan - 1
-			};
-		}
-		for (let r = 0; r < tableData.rows.length; r++) {
-			for (let c = 0; c < tableData.rows[r].length; c++) {
-				const candidate = tableData.rows[r][c];
-				const rowspan = candidate.rowspan ?? 1;
-				const colspan = candidate.colspan ?? 1;
-				if (rowspan <= 1 && colspan <= 1) continue;
-				if (row >= r && row < r + rowspan && col >= c && col < c + colspan) {
-					return {
-						rowStart: r,
-						rowEnd: r + rowspan - 1,
-						colStart: c,
-						colEnd: c + colspan - 1
-					};
-				}
-			}
-		}
-		return { rowStart: row, rowEnd: row, colStart: col, colEnd: col };
-	}
-
-	function getSelectionBounds() {
-		if (!selectedCells.length) return null;
-		let rowStart = Number.POSITIVE_INFINITY;
-		let rowEnd = -Infinity;
-		let colStart = Number.POSITIVE_INFINITY;
-		let colEnd = -Infinity;
-		for (const cell of selectedCells) {
-			const range = getCellRange(cell.row, cell.col);
-			rowStart = Math.min(rowStart, range.rowStart);
-			rowEnd = Math.max(rowEnd, range.rowEnd);
-			colStart = Math.min(colStart, range.colStart);
-			colEnd = Math.max(colEnd, range.colEnd);
-		}
-		return { rowStart, rowEnd, colStart, colEnd };
-	}
-
-	function getSelectionRange() {
-		const bounds = getSelectionBounds();
-		if (!bounds) return null;
-		return {
-			row: bounds.rowEnd + 1,
-			startCol: bounds.colStart + 1,
-			endCol: bounds.colEnd + 1
-		};
-	}
-
-	function handleAddSegment() {
-		const nextRow = segmentRow;
-		const nextStartCol = segmentStartCol;
-		const nextEndCol = segmentEndCol;
-		onAddSegment?.({
-			atRow: nextRow - 1,
-			startCol: nextStartCol - 1,
-			endCol: nextEndCol - 1,
-			trimLeft: segmentTrimLeft ? 'short' : 'none',
-			trimRight: segmentTrimRight ? 'short' : 'none',
-			style: segmentStyle
-		});
 	}
 </script>
 
@@ -434,102 +277,6 @@
 		</Card.Header>
 		<Card.Content class="p-0 space-y-5">
 			<div class="space-y-3">
-				<Label>Header Rows</Label>
-				<Select.Root type="single" value={String(headerRows)} onValueChange={handleHeaderRowsChange}>
-					<Select.Trigger class="w-full">
-						{headerRowOptions.find(o => o.value === String(headerRows))?.label || `${headerRows} Rows`}
-					</Select.Trigger>
-					<Select.Content>
-						{#each headerRowOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-			</div>
-
-			<div class="space-y-4 pt-4 border-t border-border/60 dark:border-[#27272a]">
-				<Label>Segments</Label>
-				<div class="space-y-3">
-					<div class="grid grid-cols-3 gap-3">
-						<div class="flex flex-col gap-1.5">
-							<span class="text-xs text-muted-foreground">Row</span>
-							<Input
-								type="number"
-								value={segmentRow}
-								min={1}
-								max={tableData.rows.length}
-								onchange={handleSegmentRowChange}
-							/>
-						</div>
-						<div class="flex flex-col gap-1.5">
-							<span class="text-xs text-muted-foreground">Col Start</span>
-							<Input
-								type="number"
-								value={segmentStartCol}
-								min={1}
-								max={tableData.columnWidths.length}
-								onchange={handleSegmentStartColChange}
-							/>
-						</div>
-						<div class="flex flex-col gap-1.5">
-							<span class="text-xs text-muted-foreground">Col End</span>
-							<Input
-								type="number"
-								value={segmentEndCol}
-								min={1}
-								max={tableData.columnWidths.length}
-								onchange={handleSegmentEndColChange}
-							/>
-						</div>
-					</div>
-				</div>
-
-				<div class="grid grid-cols-2 gap-4">
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Trim Left</span>
-						<Switch checked={segmentTrimLeft} onCheckedChange={(v) => segmentTrimLeft = v} />
-					</div>
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Trim Right</span>
-						<Switch checked={segmentTrimRight} onCheckedChange={(v) => segmentTrimRight = v} />
-					</div>
-				</div>
-
-				<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
-					<Label>Line Style</Label>
-					<ToggleGroup.Root variant="outline" type="single" value={segmentStyle} onValueChange={(v) => v && (segmentStyle = v as SegmentStyle)} class="w-full">
-						<ToggleGroup.Item value="thin" aria-label="Thin" class="flex-1">Thin</ToggleGroup.Item>
-						<ToggleGroup.Item value="thick" aria-label="Thick" class="flex-1">Thick</ToggleGroup.Item>
-						<ToggleGroup.Item value="double" aria-label="Double" class="flex-1">Double</ToggleGroup.Item>
-					</ToggleGroup.Root>
-				</div>
-
-				<div class="flex items-center justify-between">
-					<Button size="sm" onclick={handleAddSegment} disabled={!tableData.columnWidths.length}>
-						Add Segment
-					</Button>
-					<Button size="sm" variant="ghost" onclick={onClearSegments} disabled={!tableData.segments.length}>
-						Clear All
-					</Button>
-				</div>
-
-				{#if tableData.segments.length}
-					<div class="space-y-3">
-						{#each tableData.segments as segment, index}
-							<div class="flex items-center justify-between text-xs rounded-md border border-border dark:border-[#27272a] px-2.5 py-2.5">
-								<span>
-									Row {segment.atRow + 1}, Col {segment.startCol + 1}-{segment.endCol + 1}
-								</span>
-								<Button size="sm" variant="ghost" onclick={() => onRemoveSegment?.(index)}>
-									Remove
-								</Button>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
 				<Label>Resize Lock</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex items-center justify-between">
