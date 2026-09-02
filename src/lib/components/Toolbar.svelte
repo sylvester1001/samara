@@ -4,6 +4,7 @@
 	import { Undo2, Redo2, FilePlus, Download } from 'lucide-svelte';
 	import type { TableStyle } from '$lib/types';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { SidebarTrigger } from '$lib/components/ui/sidebar/index.js';
 
 	interface Props {
 		onImport?: () => void;
@@ -43,6 +44,7 @@
 <div class="flex items-center h-16 px-4 py-2 border-b border-border bg-white dark:bg-[#09090b] dark:border-[#27272a] gap-4 overflow-hidden w-full box-border">
 	<div class="flex items-center gap-4 min-w-0 flex-1 overflow-hidden">
 		<div class="flex items-center gap-2 min-w-0">
+			<SidebarTrigger class="size-8" />
 			<Button variant="outline" size="sm" onclick={onImport}>
 				<Download class="shrink-0 w-4 h-4" />
 				<span class="hidden min-[1200px]:inline whitespace-nowrap">Import</span>

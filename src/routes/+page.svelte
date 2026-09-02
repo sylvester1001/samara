@@ -416,8 +416,8 @@
 />
 
 <AppSidebar.Provider>
-	<AppSidebar.Root collapsible="none" class="border-r border-border">
-		<AppSidebar.Header class="h-16 justify-center px-4">
+	<AppSidebar.Root collapsible="offcanvas">
+		<AppSidebar.Header class="h-16 shrink-0 justify-center px-4">
 			<AppSidebar.Menu>
 				<AppSidebar.MenuItem>
 					<AppSidebar.MenuButton size="lg">
@@ -432,7 +432,7 @@
 			</AppSidebar.Menu>
 		</AppSidebar.Header>
 
-		<AppSidebar.Content class="px-4 pb-4">
+		<AppSidebar.Content class="px-2 pb-2">
 			<SettingsSidebar
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}
@@ -446,6 +446,7 @@
 					(tableStore.lockRowResize = value)}
 			/>
 		</AppSidebar.Content>
+		<AppSidebar.Rail />
 	</AppSidebar.Root>
 
 	<AppSidebar.Inset>

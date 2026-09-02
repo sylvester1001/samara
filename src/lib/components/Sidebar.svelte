@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import * as ToggleGroup from '$lib/components/ui/toggle-group/index.js';
 	import { Slider } from '$lib/components/ui/slider/index.js';
@@ -34,12 +34,6 @@
 		{ value: 'computer-modern', label: 'Computer Modern' },
 		{ value: 'times', label: 'Times New Roman' },
 		{ value: 'arial', label: 'Arial' }
-	];
-
-	const paddingOptions = [
-		{ value: 'compact', label: 'Compact' },
-		{ value: 'normal', label: 'Normal' },
-		{ value: 'loose', label: 'Loose' }
 	];
 
 	const canvasPresets = [
@@ -161,22 +155,22 @@
 	}
 </script>
 
-<div class="settings-panel space-y-4">
-	<Card.Root class="p-4 gap-1">
-		<Card.Header class="p-0 pb-2">
-			<Card.Title class="text-sm">Table Style</Card.Title>
-		</Card.Header>
-		<Card.Content class="p-0 space-y-5">
-			<div class="space-y-3">
+<div class="flex flex-col gap-4">
+	<Sidebar.Group class="rounded-lg border border-sidebar-border bg-background">
+		<Sidebar.GroupLabel class="text-sm text-sidebar-foreground">Table Style</Sidebar.GroupLabel>
+		<Sidebar.GroupContent class="flex flex-col gap-5 px-2 pb-3">
+			<div class="flex flex-col gap-3">
 				<Label>Font</Label>
 				<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
 					<Select.Trigger class="w-full">
 						{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || 'Select font'}
 					</Select.Trigger>
 					<Select.Content>
-						{#each fontOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
+						<Select.Group>
+							{#each fontOptions as option}
+								<Select.Item value={option.value}>{option.label}</Select.Item>
+							{/each}
+						</Select.Group>
 					</Select.Content>
 				</Select.Root>
 				<div class="flex items-center gap-3">
@@ -194,9 +188,9 @@
 				</div>
 			</div>
 
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+			<div class="flex flex-col gap-3 pt-4 border-t border-border/60">
 				<Label>Spacing</Label>
-				<div class="space-y-2">
+				<div class="flex flex-col gap-2">
 					<span class="text-xs text-muted-foreground">Cell Padding</span>
 					<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full">
 						<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1">Compact</ToggleGroup.Item>
@@ -206,7 +200,7 @@
 				</div>
 			</div>
 
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+			<div class="flex flex-col gap-3 pt-4 border-t border-border/60">
 				<Label>Rules</Label>
 				<div class="grid grid-cols-2 gap-4">
 					<div class="flex flex-col gap-2">
@@ -214,9 +208,11 @@
 						<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
 							<Select.Content>
-								{#each topBorderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
+								<Select.Group>
+									{#each topBorderOptions as option}
+										<Select.Item value={option.value}>{option.label}</Select.Item>
+									{/each}
+								</Select.Group>
 							</Select.Content>
 						</Select.Root>
 					</div>
@@ -225,9 +221,11 @@
 						<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
 							<Select.Content>
-								{#each bottomBorderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
+								<Select.Group>
+									{#each bottomBorderOptions as option}
+										<Select.Item value={option.value}>{option.label}</Select.Item>
+									{/each}
+								</Select.Group>
 							</Select.Content>
 						</Select.Root>
 					</div>
@@ -236,9 +234,11 @@
 						<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
 							<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
 							<Select.Content>
-								{#each borderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
-								{/each}
+								<Select.Group>
+									{#each borderOptions as option}
+										<Select.Item value={option.value}>{option.label}</Select.Item>
+									{/each}
+								</Select.Group>
 							</Select.Content>
 						</Select.Root>
 					</div>
@@ -248,9 +248,11 @@
 							<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
 								<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
 								<Select.Content>
-									{#each borderOptions as option}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
+									<Select.Group>
+										{#each borderOptions as option}
+											<Select.Item value={option.value}>{option.label}</Select.Item>
+										{/each}
+									</Select.Group>
 								</Select.Content>
 							</Select.Root>
 						</div>
@@ -259,60 +261,58 @@
 							<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
 								<Select.Trigger class="w-full">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
 								<Select.Content>
-									{#each borderOptions as option}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
-									{/each}
+									<Select.Group>
+										{#each borderOptions as option}
+											<Select.Item value={option.value}>{option.label}</Select.Item>
+										{/each}
+									</Select.Group>
 								</Select.Content>
 							</Select.Root>
 						</div>
 					{/if}
 				</div>
 			</div>
-		</Card.Content>
-	</Card.Root>
+		</Sidebar.GroupContent>
+	</Sidebar.Group>
 
-	<Card.Root class="p-4 gap-1">
-		<Card.Header class="p-0 pb-2">
-			<Card.Title class="text-sm">Structure</Card.Title>
-		</Card.Header>
-		<Card.Content class="p-0 space-y-5">
-			<div class="space-y-3">
-				<Label>Resize Lock</Label>
-				<div class="grid grid-cols-2 gap-4">
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Column</span>
-						<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
-					</div>
-					<div class="flex items-center justify-between">
-						<span class="text-xs text-muted-foreground">Row</span>
-						<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
-					</div>
+	<Sidebar.Group class="rounded-lg border border-sidebar-border bg-background">
+		<Sidebar.GroupLabel class="text-sm text-sidebar-foreground">Structure</Sidebar.GroupLabel>
+		<Sidebar.GroupContent class="flex flex-col gap-3 px-2 pb-3">
+			<Label>Resize Lock</Label>
+			<div class="grid grid-cols-2 gap-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs text-muted-foreground">Column</span>
+					<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
+				</div>
+				<div class="flex items-center justify-between">
+					<span class="text-xs text-muted-foreground">Row</span>
+					<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
 				</div>
 			</div>
-		</Card.Content>
-	</Card.Root>
+		</Sidebar.GroupContent>
+	</Sidebar.Group>
 
-	<Card.Root class="p-4 gap-1">
-		<Card.Header class="p-0 pb-2">
-			<Card.Title class="text-sm">Canvas</Card.Title>
-		</Card.Header>
-		<Card.Content class="p-0 space-y-5">
-			<div class="space-y-3">
+	<Sidebar.Group class="rounded-lg border border-sidebar-border bg-background">
+		<Sidebar.GroupLabel class="text-sm text-sidebar-foreground">Canvas</Sidebar.GroupLabel>
+		<Sidebar.GroupContent class="flex flex-col gap-5 px-2 pb-3">
+			<div class="flex flex-col gap-3">
 				<Label>Size Preset</Label>
 				<Select.Root type="single" value={canvasPreset} onValueChange={handleCanvasPresetChange}>
 					<Select.Trigger class="w-full">
 						{canvasPresets.find(o => o.value === canvasPreset)?.label || 'Auto'}
 					</Select.Trigger>
 					<Select.Content>
-						{#each canvasPresets as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
-						{/each}
+						<Select.Group>
+							{#each canvasPresets as option}
+								<Select.Item value={option.value}>{option.label}</Select.Item>
+							{/each}
+						</Select.Group>
 					</Select.Content>
 				</Select.Root>
 			</div>
 
 			{#if canvasPreset === 'custom'}
-				<div class="space-y-3">
+				<div class="flex flex-col gap-3">
 					<Label>Custom Width (px)</Label>
 					<Input
 						type="number"
@@ -322,7 +322,7 @@
 						max={4000}
 					/>
 				</div>
-				<div class="space-y-3">
+				<div class="flex flex-col gap-3">
 					<Label>Custom Height (px)</Label>
 					<Input
 						type="number"
@@ -334,15 +334,15 @@
 				</div>
 			{/if}
 
-			<div class="space-y-3 pt-4 border-t border-border/60 dark:border-[#27272a]">
+			<div class="flex flex-col gap-3 pt-4 border-t border-border/60">
 				<Label>Background</Label>
 				<input
 					type="color"
-					class="w-full h-9 border border-border dark:border-[#27272a] rounded-md cursor-pointer p-0.5"
+					class="w-full h-9 border border-border rounded-md cursor-pointer p-0.5"
 					value={canvasConfig.backgroundColor}
 					onchange={handleBgColorChange}
 				/>
 			</div>
-		</Card.Content>
-	</Card.Root>
+		</Sidebar.GroupContent>
+	</Sidebar.Group>
 </div>
