@@ -94,6 +94,14 @@
 		return `calc(${chars}ch + ${inputPaddingXRem}rem)`;
 	}
 
+	const rowGutterWidth = $derived.by(() => {
+		const digits = Math.max(String(Math.max(rowCount, 1)).length, 2);
+		return `calc(${digits}ch + 1rem)`;
+	});
+	const dataColWidth = $derived(
+		colCount > 0 ? `calc((100% - ${rowGutterWidth}) / ${colCount})` : 'auto'
+	);
+
 	const contextTarget = $derived.by(() => {
 		if (contextCell) return contextCell;
 		if (selectedCells.length > 0) return selectedCells[0];
@@ -402,22 +410,27 @@
 	</div>
 
 	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both">
-		<div class="p-4">
+		<div class="p-4 w-full">
 			<ContextMenu.Root>
-				<ContextMenu.Trigger class="inline-block" oncontextmenu={handleContextMenu}>
-					<div class="relative inline-block" bind:this={gridWrap}>
-					<table class="border-collapse min-w-max table-auto">
+				<ContextMenu.Trigger class="block w-full" oncontextmenu={handleContextMenu}>
+					<div class="relative w-full" bind:this={gridWrap}>
+					<table class="w-full border-collapse table-fixed">
 						<colgroup>
-							<col style="width: 2.5rem;" />
+							<col style="width: {rowGutterWidth};" />
 							{#each columnCharWidths as width}
-								<col style:width={getColumnWidthStyle(width)} />
+								<col style="width: {dataColWidth}; min-width: {getColumnWidthStyle(width)};" />
 							{/each}
 						</colgroup>
 						<thead>
 							<tr>
-								<th class="w-10 min-w-10 bg-[#f4f4f5] dark:bg-[#27272a]"></th>
+								<th
+									class="box-border bg-[#f4f4f5] dark:bg-[#27272a] p-0"
+									style="width: {rowGutterWidth};"
+								></th>
 								{#each rows[0] || [] as _, colIndex}
-									<th class="relative px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group">
+									<th
+										class="relative px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group"
+									>
 										<span class="block">{String.fromCharCode(65 + colIndex)}</span>
 										<button 
 											class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
@@ -434,8 +447,11 @@
 									data-table-row={rowIndex}
 									class={rowIndex < headerRows ? 'bg-blue-50/60 dark:bg-blue-950/30' : ''}
 								>
-									<td class="relative w-10 min-w-10 px-2 py-2 border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group {rowIndex < headerRows ? 'bg-blue-100 dark:bg-blue-900/40' : 'bg-[#f4f4f5] dark:bg-[#27272a]'}">
-										<span class="block">{rowIndex + 1}</span>
+									<td
+										class="relative box-border px-0.5 py-1 border border-border dark:border-[#3f3f46] text-xs font-semibold tabular-nums text-muted-foreground text-center group {rowIndex < headerRows ? 'bg-blue-100 dark:bg-blue-900/40' : 'bg-[#f4f4f5] dark:bg-[#27272a]'}"
+										style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
+									>
+										<span class="block leading-none">{rowIndex + 1}</span>
 										<button 
 											class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
 											onclick={() => onDeleteRow(rowIndex)}
@@ -461,8 +477,9 @@
 											>
 												<textarea
 													rows="1"
-													class="w-full px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
-													style="field-sizing: content; vertical-align: middle; min-height: 1.5em;"
+													cols="1"
+													class="w-full min-w-0 px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
+													style="vertical-align: middle; min-height: 1.5em;"
 													class:text-left={cell.align === 'left'}
 													class:text-center={cell.align === 'center' || !cell.align}
 													class:text-right={cell.align === 'right' || cell.align === 'decimal'}
