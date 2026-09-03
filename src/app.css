@@ -6,6 +6,11 @@
 
 :root {
   --radius: 0.625rem;
+  --cobalt: #0202f1;
+  --cobalt-hover: #0000d0;
+  --cobalt-subtle: rgba(2, 2, 241, 0.08);
+  --cobalt-border: rgba(2, 2, 241, 0.4);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
@@ -73,11 +78,127 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
+/* =========================================================
+   Avant-Garde (Hermes High-Tech Editorial) Theme Definition
+   Signature Electric Cobalt: #0202f1 (rgb: 2, 2, 241)
+   100% 直角 (Sharp 90° Angles, Zero Border-Radius)
+   ========================================================= */
+html[data-theme="avant-garde"],
+:root[data-theme="avant-garde"] {
+  --radius: 0px !important;
+  --cobalt: #0202f1 !important;
+  --cobalt-hover: #0000d0 !important;
+  --cobalt-subtle: rgba(2, 2, 241, 0.08) !important;
+  --cobalt-border: rgba(2, 2, 241, 0.4) !important;
+
+  --background: #fafafc !important;
+  --foreground: #0a0a0e !important;
+  --card: #ffffff !important;
+  --card-foreground: #0a0a0e !important;
+  --popover: #ffffff !important;
+  --popover-foreground: #0a0a0e !important;
+  --primary: #0202f1 !important;
+  --primary-foreground: #ffffff !important;
+  --secondary: #f0f0f4 !important;
+  --secondary-foreground: #0a0a0e !important;
+  --muted: #f4f4f8 !important;
+  --muted-foreground: #5e5e6a !important;
+  --accent: rgba(2, 2, 241, 0.08) !important;
+  --accent-foreground: #0202f1 !important;
+  --border: rgba(10, 10, 14, 0.15) !important;
+  --input: rgba(10, 10, 14, 0.18) !important;
+  --ring: #0202f1 !important;
+  --sidebar: #f8f8fb !important;
+  --sidebar-foreground: #0a0a0e !important;
+  --sidebar-primary: #0202f1 !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #ececf2 !important;
+  --sidebar-accent-foreground: #0a0a0e !important;
+  --sidebar-border: rgba(10, 10, 14, 0.15) !important;
+  --sidebar-ring: #0202f1 !important;
+}
+
+html[data-theme="avant-garde"].dark,
+:root[data-theme="avant-garde"].dark {
+  --radius: 0px !important;
+  --cobalt: #0202f1 !important;
+  --cobalt-hover: #1e24ff !important;
+  --cobalt-subtle: rgba(2, 2, 241, 0.25) !important;
+  --cobalt-border: rgba(90, 110, 255, 0.5) !important;
+
+  --background: #08080c !important;
+  --foreground: #f6f6fa !important;
+  --card: #101016 !important;
+  --card-foreground: #f6f6fa !important;
+  --popover: #121218 !important;
+  --popover-foreground: #f6f6fa !important;
+  --primary: #0202f1 !important;
+  --primary-foreground: #ffffff !important;
+  --secondary: #181820 !important;
+  --secondary-foreground: #f6f6fa !important;
+  --muted: #16161e !important;
+  --muted-foreground: #888898 !important;
+  --accent: rgba(2, 2, 241, 0.2) !important;
+  --accent-foreground: #8a96ff !important;
+  --border: rgba(255, 255, 255, 0.15) !important;
+  --input: rgba(255, 255, 255, 0.18) !important;
+  --ring: #0202f1 !important;
+  --sidebar: #0d0d12 !important;
+  --sidebar-foreground: #f6f6fa !important;
+  --sidebar-primary: #0202f1 !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #1a1a24 !important;
+  --sidebar-accent-foreground: #f6f6fa !important;
+  --sidebar-border: rgba(255, 255, 255, 0.15) !important;
+  --sidebar-ring: #0202f1 !important;
+}
+
+/* Enforce 100% 直角 (sharp 90-degree corners) across EVERYTHING in Avant-Garde mode */
+html[data-theme="avant-garde"],
+html[data-theme="avant-garde"] *,
+html[data-theme="avant-garde"] *::before,
+html[data-theme="avant-garde"] *::after {
+  border-radius: 0px !important;
+}
+
+/* Primary Button in Avant-Garde mode: Pure #0202f1 with white text */
+html[data-theme="avant-garde"] [data-slot="button"][data-variant="default"],
+html[data-theme="avant-garde"] button.bg-primary,
+html[data-theme="avant-garde"] .export-img-btn {
+  background-color: #0202f1 !important;
+  color: #ffffff !important;
+  border: 1px solid #0202f1 !important;
+}
+
+html[data-theme="avant-garde"] [data-slot="button"][data-variant="default"]:hover,
+html[data-theme="avant-garde"] button.bg-primary:hover,
+html[data-theme="avant-garde"] .export-img-btn:hover {
+  background-color: #0000d0 !important;
+  border-color: #0000d0 !important;
+}
+
+/* Outline Buttons in Avant-Garde */
+html[data-theme="avant-garde"] [data-slot="button"][data-variant="outline"] {
+  border-color: rgba(10, 10, 14, 0.2) !important;
+}
+
+html[data-theme="avant-garde"].dark [data-slot="button"][data-variant="outline"] {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Ticket Buttons in Toolbar */
+html[data-theme="avant-garde"] .ticket-btn:hover {
+  background-color: #0202f1 !important;
+  color: #ffffff !important;
+  border-color: #0202f1 !important;
+}
+
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 1px;
+  --radius-md: var(--radius);
+  --radius-lg: 3px;
+  --radius-xl: 4px;
+  --color-cobalt: var(--cobalt);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -133,6 +254,29 @@ html, body {
   overflow: hidden;
   user-select: none;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Avant-Garde Editorial Typography & Ticket Utility */
+.font-editorial {
+  font-family: 'CMU Serif', 'Times New Roman', Georgia, serif;
+}
+
+.font-terminal {
+  font-family: ui-monospace, 'SF Mono', 'Courier Prime', Courier, 'JetBrains Mono', monospace;
+}
+
+.ticket-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: ui-monospace, 'SF Mono', 'Courier Prime', Courier, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
 }
 
 /* Academic table */
@@ -375,19 +519,19 @@ textarea,
 
 .row-resizer.dragging::before {
   opacity: 1;
-  background: rgba(99, 102, 241, 0.8);
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+  background: var(--cobalt);
+  box-shadow: 0 0 10px rgba(0, 0, 242, 0.6);
   width: 100%;
 }
 
 /* Canvas resize handles */
 .canvas-resizer {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   background: #ffffff;
-  border: 1px solid #d4d4d8;
-  border-radius: 2px;
+  border: 1px solid var(--cobalt);
+  border-radius: 1px;
   opacity: 0;
   transition: opacity 0.15s;
   z-index: 20;
@@ -398,35 +542,35 @@ textarea,
 }
 
 .canvas-resizer.nw {
-  top: -6px;
-  left: -6px;
+  top: -4px;
+  left: -4px;
   cursor: nwse-resize;
 }
 
 .canvas-resizer.ne {
-  top: -6px;
-  right: -6px;
+  top: -4px;
+  right: -4px;
   cursor: nesw-resize;
 }
 
 .canvas-resizer.sw {
-  bottom: -6px;
-  left: -6px;
+  bottom: -4px;
+  left: -4px;
   cursor: nesw-resize;
 }
 
 .canvas-resizer.se {
-  bottom: -6px;
-  right: -6px;
+  bottom: -4px;
+  right: -4px;
   cursor: nwse-resize;
 }
 
 :global(.dark) .canvas-resizer {
-  background: #0a0a0a;
-  border-color: #3f3f46;
+  background: #000000;
+  border-color: #5566FF;
 }
 
-/* Preview canvas dot pattern */
+/* Preview canvas dot pattern (retained original dots per user request) */
 .preview-canvas {
   background-image: radial-gradient(circle, #d4d4d8 1px, transparent 1px);
   background-size: 16px 16px;
@@ -434,4 +578,34 @@ textarea,
 
 :global(.dark) .preview-canvas {
   background-image: radial-gradient(circle, #3f3f46 1px, transparent 1px);
+}
+
+/* Avant-Garde context menu, dropdown & popover overrides */
+html[data-theme="avant-garde"] [data-context-menu-content],
+html[data-theme="avant-garde"] [data-popover-content],
+html[data-theme="avant-garde"] [data-dropdown-menu-content],
+html[data-theme="avant-garde"] [role="menu"] {
+  border-radius: 2px !important;
+  border: 1px solid rgba(10, 10, 14, 0.15) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.12) !important;
+}
+
+html[data-theme="avant-garde"].dark [data-context-menu-content],
+html[data-theme="avant-garde"].dark [data-popover-content],
+html[data-theme="avant-garde"].dark [data-dropdown-menu-content],
+html[data-theme="avant-garde"].dark [role="menu"] {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="avant-garde"] [data-highlighted],
+html[data-theme="avant-garde"] [data-highlighted]:not([data-disabled]) {
+  background-color: #0202f1 !important;
+  color: #ffffff !important;
+  border-radius: 1px !important;
+}
+
+html[data-theme="avant-garde"] [data-highlighted][data-destructive] {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
 }

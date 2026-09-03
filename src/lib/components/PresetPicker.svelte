@@ -34,13 +34,13 @@
 			value={preset.value}
 			aria-label={preset.label}
 			class={cn(
-				'ml-0 flex h-auto min-w-0 flex-col gap-1.5 rounded-lg border border-border bg-background p-1.5 shadow-none',
-				'first:ml-0 first:rounded-lg last:rounded-lg',
-				'hover:bg-background hover:text-foreground',
-				'data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:ring-2 data-[state=on]:ring-ring'
+				'ml-0 flex h-auto min-w-0 flex-col gap-1.5 rounded-[2px] border border-border bg-background p-1.5 shadow-none transition-all',
+				'first:ml-0 first:rounded-[2px] last:rounded-[2px]',
+				'hover:border-foreground/40 hover:text-foreground',
+				'data-[state=on]:border-[var(--cobalt)] data-[state=on]:ring-1 data-[state=on]:ring-[var(--cobalt)] data-[state=on]:bg-[var(--cobalt-subtle)]/30'
 			)}
 		>
-			<div class="flex aspect-[5/4] w-full items-center justify-center overflow-hidden rounded-md bg-muted/40 p-1.5">
+			<div class="flex aspect-[5/4] w-full items-center justify-center overflow-hidden rounded-[1px] bg-muted/40 p-1.5">
 				{#if preset.value === 'booktabs'}
 					<div class="flex h-full w-full flex-col justify-between py-0.5">
 						<div class="h-0.5 rounded-full bg-foreground"></div>
@@ -88,7 +88,7 @@
 					</div>
 				{/if}
 			</div>
-			<span class="text-[11px] font-medium leading-none">{preset.label}</span>
+			<span class="text-[10px] font-terminal uppercase tracking-widest font-semibold leading-none">{preset.label}</span>
 		</ToggleGroup.Item>
 	{/each}
 </ToggleGroup.Root>

@@ -6,6 +6,7 @@
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
 	import type { Cell } from '$lib/types';
 	import type { LineEdge } from '$lib/utils/table-geometry';
+	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 
 	interface Props {
 		rows: Cell[][];
@@ -387,23 +388,23 @@
 
 <svelte:window onkeydown={handleHeaderAdjustKeydown} />
 
-<div class="table-editor flex flex-col h-full bg-white dark:bg-[#18181b] rounded-lg border border-border dark:border-[#27272a] overflow-hidden" onmousedown={handleEditorClick} onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
-	<div class="flex justify-between items-center px-4 py-3 bg-[#fafafa] dark:bg-[#0a0a0a] border-b border-border dark:border-[#27272a] shrink-0 relative z-0">
-		<div class="flex items-center gap-2">
+<div class="table-editor flex flex-col h-full bg-background rounded-[2px] border border-border overflow-hidden" onmousedown={handleEditorClick} onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
+	<div class="flex justify-between items-center px-4 py-2 bg-muted/25 border-b border-border shrink-0 relative z-0">
+		<div class="flex items-center gap-2.5">
 			<TableSizeSelector
 				currentRows={rowCount}
 				currentCols={colCount}
 				onSizeChange={(r, c) => onResizeTable?.(r, c)}
 			/>
-			<span class="text-[13px] text-muted-foreground font-medium">{rowCount} x {colCount}</span>
+			<span class="text-[11px] font-terminal text-muted-foreground uppercase tracking-widest">{rowCount} × {colCount}</span>
 		</div>
-		<div class="flex gap-2">
-			<button class="flex items-center gap-1 px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={() => onAddRow()} title="Add Row">
-				<Plus class="w-3.5 h-3.5" />
+		<div class="flex gap-1.5">
+			<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddRow()} title="Add Row">
+				<Plus class="w-3 h-3" />
 				Row
 			</button>
-			<button class="flex items-center gap-1 px-3 py-1.5 text-[13px] font-medium text-foreground bg-white dark:bg-[#27272a] border border-border dark:border-[#3f3f46] rounded-md cursor-pointer transition-all hover:bg-[#f4f4f5] dark:hover:bg-[#3f3f46]" onclick={() => onAddColumn()} title="Add Column">
-				<Plus class="w-3.5 h-3.5" />
+			<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddColumn()} title="Add Column">
+				<Plus class="w-3 h-3" />
 				Col
 			</button>
 		</div>
@@ -424,12 +425,12 @@
 						<thead>
 							<tr>
 								<th
-									class="box-border bg-[#f4f4f5] dark:bg-[#27272a] p-0"
+									class="box-border bg-muted/40 p-0 border-b border-r border-border"
 									style="width: {rowGutterWidth};"
 								></th>
 								{#each rows[0] || [] as _, colIndex}
 									<th
-										class="relative px-3 py-2 bg-[#f4f4f5] dark:bg-[#27272a] border border-border dark:border-[#3f3f46] text-xs font-semibold text-muted-foreground text-center group"
+										class="relative px-2 py-1.5 bg-muted/30 border border-border text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none"
 									>
 										<span class="block">{String.fromCharCode(65 + colIndex)}</span>
 										<button 
@@ -445,10 +446,10 @@
 							{#each rows as row, rowIndex}
 								<tr
 									data-table-row={rowIndex}
-									class={rowIndex < headerRows ? 'bg-blue-50/60 dark:bg-blue-950/30' : ''}
+									class={rowIndex < headerRows ? 'bg-[var(--cobalt-subtle)]' : ''}
 								>
 									<td
-										class="relative box-border px-0.5 py-1 border border-border dark:border-[#3f3f46] text-xs font-semibold tabular-nums text-muted-foreground text-center group {rowIndex < headerRows ? 'bg-blue-100 dark:bg-blue-900/40' : 'bg-[#f4f4f5] dark:bg-[#27272a]'}"
+										class="relative box-border px-0.5 py-1 border border-border text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none {rowIndex < headerRows ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/30'}"
 										style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
 									>
 										<span class="block leading-none">{rowIndex + 1}</span>
@@ -461,9 +462,12 @@
 									{#each row as cell, colIndex}
 										{#if !cell.isMerged}
 											<td
-												class="p-0 border border-border dark:border-[#3f3f46] relative align-middle"
-												class:bg-blue-50={isSelected(rowIndex, colIndex)}
-												class:dark:bg-[#1e3a5f]={isSelected(rowIndex, colIndex)}
+												class="p-0 border border-border relative align-middle transition-colors"
+												class:bg-[var(--cobalt-subtle)]={isSelected(rowIndex, colIndex) && uiTheme.theme === 'avant-garde'}
+												class:shadow-[inset_0_0_0_1.5px_#0202f1]={isSelected(rowIndex, colIndex) && uiTheme.theme === 'avant-garde'}
+												class:bg-blue-50={isSelected(rowIndex, colIndex) && uiTheme.theme === 'classic'}
+												class:dark:bg-[#1e3a5f]={isSelected(rowIndex, colIndex) && uiTheme.theme === 'classic'}
+												class:z-10={isSelected(rowIndex, colIndex)}
 												class:font-bold={cell.isBold}
 												class:italic={cell.isItalic}
 												style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
@@ -478,7 +482,7 @@
 												<textarea
 													rows="1"
 													cols="1"
-													class="w-full min-w-0 px-2.5 py-2 text-sm bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
+													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
 													style="vertical-align: middle; min-height: 1.5em;"
 													class:text-left={cell.align === 'left'}
 													class:text-center={cell.align === 'center' || !cell.align}
@@ -505,18 +509,18 @@
 					{#if headerAdjustMode}
 						<div
 							data-header-adjust
-							class="pointer-events-none absolute z-20 rounded-sm border-2 border-blue-500 bg-blue-500/10"
+							class="pointer-events-none absolute z-20 rounded-[1px] border-2 border-[var(--cobalt)] bg-[var(--cobalt-subtle)]"
 							style:top="{headerBox.top}px"
 							style:left="{headerBox.left}px"
 							style:width="{headerBox.width}px"
 							style:height="{headerBox.height}px"
 						>
-							<span class="absolute top-1 left-1 rounded bg-blue-500 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white">
+							<span class="absolute top-1 left-1 rounded-[1px] bg-[var(--cobalt)] px-1.5 py-0.5 text-[9px] font-terminal uppercase tracking-widest text-white">
 								Header
 							</span>
 							<button
 								type="button"
-								class="pointer-events-auto absolute bottom-0 left-1/2 z-30 h-2.5 w-8 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-full border-2 border-white bg-blue-500 shadow"
+								class="pointer-events-auto absolute bottom-0 left-1/2 z-30 h-2 w-8 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-[1px] border border-white bg-[var(--cobalt)] shadow-sm"
 								aria-label="Resize header rows"
 								onmousedown={handleHeaderDragStart}
 							></button>
@@ -524,7 +528,7 @@
 					{/if}
 					</div>
 				</ContextMenu.Trigger>
-				<ContextMenu.Content class="w-56">
+				<ContextMenu.Content class="w-56 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
 					<ContextMenu.Group>
 						<ContextMenu.Item inset disabled={!canMerge} onclick={onMergeCells}>
 							Merge cells
@@ -545,7 +549,7 @@
 					<ContextMenu.Separator />
 					<ContextMenu.Sub>
 						<ContextMenu.SubTrigger inset>Insert</ContextMenu.SubTrigger>
-						<ContextMenu.SubContent class="w-56">
+						<ContextMenu.SubContent class="w-56 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
 							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertRowAbove}>
 								Insert Row Above
 							</ContextMenu.Item>

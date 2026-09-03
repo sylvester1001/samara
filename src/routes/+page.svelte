@@ -22,6 +22,7 @@
 	import { generateLatexTable } from "$lib/utils/export-latex";
 	import { isSegmentTrimmed, type LineEdge } from "$lib/utils/table-geometry";
 	import type { TableStyle, CanvasConfig } from "$lib/types";
+	import { uiTheme } from "$lib/stores/ui-theme.svelte.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
 	import * as Popover from "$lib/components/ui/popover/index.js";
@@ -417,19 +418,21 @@
 
 <AppSidebar.Provider>
 	<AppSidebar.Root collapsible="offcanvas">
-		<AppSidebar.Header class="h-16 shrink-0 justify-center px-4">
-			<AppSidebar.Menu>
-				<AppSidebar.MenuItem>
-					<AppSidebar.MenuButton size="lg">
-						<div
-							class="bg-foreground text-background flex size-8 items-center justify-center rounded-lg"
-						>
-							<Table2 class="size-4" />
-						</div>
-						<span class="text-sm font-semibold">Tablix</span>
-					</AppSidebar.MenuButton>
-				</AppSidebar.MenuItem>
-			</AppSidebar.Menu>
+		<AppSidebar.Header class="h-14 shrink-0 justify-center px-4 border-b border-sidebar-border bg-sidebar select-none">
+			<div class="flex items-center gap-2.5">
+				<div
+					class="text-white flex size-7 items-center justify-center rounded-[var(--radius)] shadow-xs transition-colors"
+					style:background-color={uiTheme.theme === 'avant-garde' ? '#0202f1' : 'var(--foreground)'}
+				>
+					<Table2 class="size-3.5" />
+				</div>
+				<div class="flex flex-col leading-none">
+					<span class="text-sm font-semibold {uiTheme.theme === 'avant-garde' ? 'font-editorial font-bold tracking-[0.16em] uppercase' : ''}">Tablix</span>
+					{#if uiTheme.theme === 'avant-garde'}
+						<span class="text-[9px] font-terminal tracking-wider text-muted-foreground uppercase">ACADEMIC // v0.1</span>
+					{/if}
+				</div>
+			</div>
 		</AppSidebar.Header>
 
 		<AppSidebar.Content class="px-2 pb-2">
@@ -471,9 +474,9 @@
 					class="min-w-[360px] min-h-0"
 				>
 					<div
-						class="p-4 min-h-0 min-w-0 bg-[#f4f4f5] dark:bg-[#0a0a0a] flex flex-col h-full"
+						class="p-3 min-h-0 min-w-0 bg-muted/15 flex flex-col h-full"
 					>
-						<div class="mb-3 shrink-0">
+						<div class="mb-2 shrink-0">
 							<EditToolbar
 								{hasSelection}
 								onAlignChange={handleAlignChange}
@@ -529,43 +532,52 @@
 					class="min-w-[360px] min-h-0"
 				>
 					<main
-						class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative flex flex-col preview-canvas"
+						class="h-full min-h-0 min-w-0 relative flex flex-col preview-canvas select-none"
 						bind:this={previewContainer}
 						onwheel={handlePreviewWheel}
 					>
-						<Badge
-							variant="outline"
-							class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10 bg-white dark:bg-[#18181b]"
-						>
-							Preview
-						</Badge>
-						<div class="absolute top-2 left-3 flex gap-1 z-10">
+						{#if uiTheme.theme === 'avant-garde'}
+							<div class="absolute top-3 right-3 z-10">
+								<span class="ticket-tag bg-background text-foreground border-border shadow-xs">
+									<span class="size-1.5 rounded-full bg-[#0202f1]"></span>
+									<span>PREVIEW // LIVE</span>
+								</span>
+							</div>
+						{:else}
+							<Badge
+								variant="outline"
+								class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10 bg-background"
+							>
+								Preview
+							</Badge>
+						{/if}
+						<div class="absolute top-3 left-3 flex gap-1 z-10">
 							<Button
 								variant="outline"
 								size="icon"
-								class="h-7 w-7 bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]"
+								class="h-7 w-7 rounded-[2px] border-border bg-background hover:bg-foreground hover:text-background transition-colors"
 								onclick={() => (previewZoom = 1)}
 							>
-								<RotateCcw class="h-3.5 w-3.5" />
+								<RotateCcw class="h-3 w-3" />
 							</Button>
 							<Button
 								variant="outline"
 								size="icon"
-								class="h-7 w-7 bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]"
+								class="h-7 w-7 rounded-[2px] border-border bg-background hover:bg-foreground hover:text-background transition-colors"
 								onclick={handleZoomOut}
 							>
-								<ZoomOut class="h-3.5 w-3.5" />
+								<ZoomOut class="h-3 w-3" />
 							</Button>
 							<Button
 								variant="outline"
 								size="icon"
-								class="h-7 w-7 bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]"
+								class="h-7 w-7 rounded-[2px] border-border bg-background hover:bg-foreground hover:text-background transition-colors"
 								onclick={handleZoomIn}
 							>
-								<ZoomIn class="h-3.5 w-3.5" />
+								<ZoomIn class="h-3 w-3" />
 							</Button>
 							<span
-								class="text-xs text-muted-foreground flex items-center px-2"
+								class="text-[11px] font-terminal text-muted-foreground flex items-center px-2 font-semibold"
 							>
 								{Math.round(previewZoom * 100)}%
 							</span>
@@ -595,18 +607,18 @@
 							</div>
 						</ScrollArea>
 						<div
-							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-6"
+							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-20"
 						>
 							<Popover.Root bind:open={exportPopoverOpen}>
 								<Popover.Trigger>
 									{#snippet child({ props })}
 										<Button
 											variant="default"
-											class="w-[140px] shadow-md"
+											class="w-[140px] shadow-md font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}"
 											{...props}
 										>
 											<ArrowRightFromLine
-												class="w-4 h-4 mr-1"
+												class="w-4 h-4 mr-1.5"
 											/>
 											Export Image
 										</Button>
@@ -635,7 +647,7 @@
 														onclick={() =>
 															(exportFormat =
 																"png")}
-														class="flex-1 h-8"
+														class="flex-1 h-8 {exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}"
 													>
 														PNG
 													</Button>
@@ -648,7 +660,7 @@
 														onclick={() =>
 															(exportFormat =
 																"svg")}
-														class="flex-1 h-8"
+														class="flex-1 h-8 {exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}"
 													>
 														SVG
 													</Button>
@@ -691,9 +703,12 @@
 											{/if}
 										</div>
 										<div class="flex justify-end">
-											<Button onclick={handleExport}
-												>Export</Button
+											<Button 
+												onclick={handleExport}
+												class={uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}
 											>
+												Export
+											</Button>
 										</div>
 									</div>
 								</Popover.Content>
@@ -703,10 +718,10 @@
 									{#snippet child({ props })}
 										<Button
 											variant="outline"
-											class="w-[140px] bg-white hover:bg-gray-100 dark:bg-[#18181b] dark:hover:bg-[#27272a]"
+											class="w-[140px] bg-background hover:bg-muted shadow-sm font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'hover:text-[#0202f1] hover:border-[#0202f1]' : ''}"
 											{...props}
 										>
-											<Code class="w-4 h-4 mr-1" />
+											<Code class="w-4 h-4 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'text-[#0202f1]' : ''}" />
 											Export LaTeX
 										</Button>
 									{/snippet}

@@ -18,6 +18,7 @@
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import type { TableData } from "$lib/types";
 	import { getSegmentLabel, isSegmentTrimmed } from "$lib/utils/table-geometry";
+	import { uiTheme } from "$lib/stores/ui-theme.svelte.js";
 
 	interface Props {
 		hasSelection?: boolean;
@@ -81,7 +82,7 @@
 
 <div class="flex flex-col gap-2">
 <div
-	class="flex items-center flex-wrap rounded-lg border border-border bg-white dark:bg-[#0a0a0a] px-2 py-1.5"
+	class="flex items-center flex-wrap rounded-[var(--radius)] border border-border bg-background px-1.5 py-1 gap-0.5"
 >
 	<AppTooltip
 		text="Align left"
@@ -90,8 +91,8 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" {...props}>
-				<TextAlignStart class="w-4 h-4" />
+			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+				<TextAlignStart class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
@@ -102,8 +103,8 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" {...props}>
-				<TextAlignCenter class="w-4 h-4" />
+			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+				<TextAlignCenter class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
@@ -114,12 +115,14 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" {...props}>
-				<TextAlignEnd class="w-4 h-4" />
+			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+				<TextAlignEnd class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
-	<div class="h-6 border-l border-border dark:border-[#27272a] mx-1"></div>
+
+	<div class="h-5 w-px bg-border mx-1"></div>
+
 	<AppTooltip
 		text="Bold"
 		aria-label="Bold"
@@ -127,8 +130,8 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" {...props}>
-				<Bold class="w-4 h-4" />
+			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+				<Bold class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
@@ -139,8 +142,8 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" {...props}>
-				<Italic class="w-4 h-4" />
+			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+				<Italic class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
@@ -149,7 +152,7 @@
 		disabled={!hasSelection}
 		childProps={{
 			type: "color",
-			class: "ml-1 w-7 h-7 rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]",
+			class: "ml-0.5 w-6 h-6 rounded-[var(--radius)] cursor-pointer p-0.5 border border-border bg-background",
 			"aria-label": "Text color",
 			oninput: handleTextColorChange,
 		}}
@@ -163,7 +166,7 @@
 		disabled={!hasSelection}
 		childProps={{
 			type: "color",
-			class: "ml-2 w-7 h-7 rounded-md cursor-pointer p-0.5 bg-white dark:bg-[#0a0a0a]",
+			class: "ml-1 w-6 h-6 rounded-[var(--radius)] cursor-pointer p-0.5 border border-border bg-background",
 			"aria-label": "Cell background",
 			oninput: handleBackgroundColorChange,
 		}}
@@ -172,9 +175,9 @@
 			<input {...props} />
 		{/snippet}
 	</AppTooltip>
-	<div
-		class="ml-3 h-6 border-l border-border dark:border-[#27272a] mx-1"
-	></div>
+
+	<div class="h-5 w-px bg-border mx-1"></div>
+
 	<AppTooltip
 		text="Merge cells"
 		aria-label="Merge cells"
@@ -182,9 +185,8 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="sm" {...props}>
-				<TableCellsMerge />
-				<!-- Merge -->
+			<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+				<TableCellsMerge class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
@@ -195,15 +197,14 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="sm" {...props}>
-				<TableCellsSplit />
-				<!-- Unmerge -->
+			<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+				<TableCellsSplit class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
-	<div
-		class="ml-3 h-6 border-l border-border dark:border-[#27272a] mx-1"
-	></div>
+
+	<div class="h-5 w-px bg-border mx-1"></div>
+
 	<AppTooltip
 		text="Insert Formula"
 		aria-label="Insert Formula"
@@ -211,38 +212,39 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="sm" {...props}>
-				<Sigma class="w-4 h-4 mr-1" />
+			<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] text-xs hover:bg-foreground hover:text-background {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : ''}" {...props}>
+				<Sigma class="w-3.5 h-3.5 mr-1" />
 				Formula
 			</Button>
 		{/snippet}
 	</AppTooltip>
-	<div
-		class="ml-3 h-6 border-l border-border dark:border-[#27272a] mx-1"
-	></div>
+
+	<div class="h-5 w-px bg-border mx-1"></div>
+
 	<Button
 		data-header-adjust-toggle
 		variant={headerAdjustMode ? "default" : "ghost"}
 		size="sm"
+		class="h-7 px-2.5 rounded-[var(--radius)] text-xs {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : ''} {headerAdjustMode ? 'bg-[var(--cobalt)] text-white hover:bg-[var(--cobalt-hover)]' : 'hover:bg-foreground hover:text-background'}"
 		onclick={onToggleHeaderAdjust}
 	>
-		<PanelTop class="w-4 h-4 mr-1" />
+		<PanelTop class="w-3.5 h-3.5 mr-1" />
 		Header
 	</Button>
-	<div
-		class="ml-3 h-6 border-l border-border dark:border-[#27272a] mx-1"
-	></div>
+
+	<div class="h-5 w-px bg-border mx-1"></div>
+
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}
-				<Button variant="ghost" size="sm" {...props}>
-					<Minus class="w-4 h-4 mr-1" />
+				<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] text-xs hover:bg-foreground hover:text-background {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : ''}" {...props}>
+					<Minus class="w-3.5 h-3.5 mr-1" />
 					Line
-					<ChevronDown class="w-3.5 h-3.5 ml-0.5 opacity-70" />
+					<ChevronDown class="w-3 h-3 ml-0.5 opacity-70" />
 				</Button>
 			{/snippet}
 		</DropdownMenu.Trigger>
-		<DropdownMenu.Content align="start" class="w-52">
+		<DropdownMenu.Content align="start" class="w-52 rounded-[var(--radius)] border-border {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
 			<DropdownMenu.Group>
 				<DropdownMenu.Item
 					disabled={!hasSelection}
@@ -277,13 +279,13 @@
 	</DropdownMenu.Root>
 </div>
 {#if lineHint || segments.length}
-	<div class="flex flex-wrap items-center gap-2 min-h-7 px-1">
+	<div class="flex flex-wrap items-center gap-1.5 min-h-6 px-0.5">
 		{#if lineHint}
-			<span class="text-xs text-muted-foreground">{lineHint}</span>
+			<span class="text-[11px] font-terminal uppercase tracking-wider text-muted-foreground">{lineHint}</span>
 		{/if}
 		{#each segments as segment, index}
 			<div
-				class="inline-flex items-center gap-1 rounded-md border border-border bg-white dark:bg-[#0a0a0a] px-2 py-1 text-xs {activeSegmentIndex === index ? 'border-blue-500 text-blue-700 dark:text-blue-300' : 'text-foreground'}"
+				class="inline-flex items-center gap-1.5 rounded-[1px] border {activeSegmentIndex === index ? 'border-[var(--cobalt)] bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'border-border bg-background text-foreground'} px-2 py-0.5 text-[11px] font-terminal uppercase tracking-wider"
 			>
 				<button
 					type="button"
@@ -294,7 +296,7 @@
 				</button>
 				<button
 					type="button"
-					class="text-muted-foreground hover:text-destructive"
+					class="text-muted-foreground hover:text-destructive transition-colors"
 					onclick={() => onRemoveSegment?.(index)}
 					aria-label="Remove line"
 				>
