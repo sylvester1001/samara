@@ -35,9 +35,27 @@
 	}: Props = $props();
 
 	const fontOptions = [
-		{ value: 'computer-modern', label: 'Computer Modern' },
-		{ value: 'times', label: 'Times New Roman' },
-		{ value: 'arial', label: 'Arial' }
+		{
+			value: 'computer-modern',
+			label: 'Computer Modern',
+			fontFamily: '"CMU Serif", Georgia, serif',
+			tag: 'LaTeX Serif',
+			sample: 'Academic Specimen'
+		},
+		{
+			value: 'times',
+			label: 'Times New Roman',
+			fontFamily: '"Times New Roman", Times, serif',
+			tag: 'Classic Serif',
+			sample: 'Academic Specimen'
+		},
+		{
+			value: 'arial',
+			label: 'Arial',
+			fontFamily: 'Arial, Helvetica, sans-serif',
+			tag: 'Clean Sans',
+			sample: 'Academic Specimen'
+		}
 	];
 
 	const canvasPresets = [
@@ -195,13 +213,38 @@
 		<div class="flex flex-col gap-2.5 pt-3 {uiTheme.theme === 'avant-garde' ? 'border-t border-border/40' : 'border-t border-border/60'}">
 			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Font</Label>
 			<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
-				<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">
-					{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || 'Select font'}
+				<Select.Trigger class="w-full h-9 text-sm bg-background">
+					<span
+						class="text-sm truncate font-medium"
+						style:font-family={fontOptions.find(o => o.value === tableStyle.fontFamily)?.fontFamily}
+					>
+						{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || 'Select font'}
+					</span>
 				</Select.Trigger>
-				<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
+				<Select.Content side="bottom" align="start" sideOffset={4} class="w-[280px]">
 					<Select.Group>
 						{#each fontOptions as option}
-							<Select.Item value={option.value}>{option.label}</Select.Item>
+							<Select.Item value={option.value} label={option.label} class="py-2 px-2.5">
+								<div class="flex flex-col gap-0.5 w-full pr-4">
+									<div class="flex items-center justify-between">
+										<span
+											class="text-sm font-semibold text-foreground tracking-normal"
+											style:font-family={option.fontFamily}
+										>
+											{option.label}
+										</span>
+										<span class="text-[9px] font-terminal text-muted-foreground uppercase tracking-wider opacity-70">
+											{option.tag}
+										</span>
+									</div>
+									<span
+										class="text-xs text-muted-foreground/90 tracking-normal"
+										style:font-family={option.fontFamily}
+									>
+										Aa Bb Gg 123 — {option.sample}
+									</span>
+								</div>
+							</Select.Item>
 						{/each}
 					</Select.Group>
 				</Select.Content>
