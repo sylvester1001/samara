@@ -378,7 +378,12 @@ html, body {
   min-width: 200px;
   position: relative;
   border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.25s ease;
+}
+
+:global(.dark) .canvas-wrapper {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
 .canvas-wrapper:hover {

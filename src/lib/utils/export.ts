@@ -23,7 +23,10 @@ export async function exportToPng(
 	const dataUrl = await toPng(element, {
 		pixelRatio,
 		backgroundColor: includeBackground ? backgroundColor : undefined,
-		filter: filterExportElements
+		filter: filterExportElements,
+		style: {
+			boxShadow: 'none'
+		}
 	});
 
 	return dataUrl;
@@ -37,7 +40,10 @@ export async function exportToSvg(
 
 	const dataUrl = await toSvg(element, {
 		backgroundColor: includeBackground ? backgroundColor : undefined,
-		filter: filterExportElements
+		filter: filterExportElements,
+		style: {
+			boxShadow: 'none'
+		}
 	});
 
 	return dataUrl;

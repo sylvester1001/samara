@@ -532,7 +532,7 @@
 					class="min-w-[360px] min-h-0"
 				>
 					<main
-						class="h-full min-h-0 min-w-0 relative flex flex-col preview-canvas select-none"
+						class="h-full min-h-0 min-w-0 bg-[#fafafa] dark:bg-[#18181b] relative flex flex-col preview-canvas select-none"
 						bind:this={previewContainer}
 						onwheel={handlePreviewWheel}
 					>
