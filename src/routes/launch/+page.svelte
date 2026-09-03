@@ -11,8 +11,8 @@
 	} from 'lucide-svelte';
 
 	const links = {
-		repo: 'https://github.com/your-org/tablix',
-		download: 'https://github.com/your-org/tablix/releases',
+		repo: 'https://github.com/sylvester1001/samara',
+		download: 'https://github.com/sylvester1001/samara/releases',
 		screenshot: '/UI-screenshot.png'
 	};
 
@@ -36,7 +36,7 @@
 </script>
 
 <svelte:head>
-	<title>Tablix - Academic table editor</title>
+	<title>Samara - Academic table editor</title>
 	<meta
 		name="description"
 		content="A modern table editor for academic work. Create beautiful tables with LaTeX-quality output."
@@ -50,7 +50,7 @@
 				<div class="logo-icon">
 					<Table2 class="h-5 w-5" />
 				</div>
-				<span class="logo-text">Tablix</span>
+				<span class="logo-text">Samara</span>
 			</a>
 			<nav class="nav">
 				<Button variant="ghost" href={links.repo} class="nav-link">
@@ -90,7 +90,7 @@
 				<img
 					class="app-screenshot"
 					src={links.screenshot}
-					alt="Tablix UI screenshot"
+					alt="Samara UI screenshot"
 				/>
 			</div>
 		</section>
@@ -145,7 +145,7 @@
 
 	<footer class="footer">
 		<div class="container">
-			<span class="footer-text">Tablix © 2025</span>
+			<span class="footer-text">Samara © 2025</span>
 			<div class="footer-links">
 				<a href={links.repo} class="footer-link">GitHub</a>
 			</div>

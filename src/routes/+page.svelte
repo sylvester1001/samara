@@ -401,6 +401,10 @@
 
 <svelte:window onpaste={handleGlobalPaste} onkeydown={handleGlobalKeydown} />
 
+<svelte:head>
+	<title>Samara — Academic Table Editor</title>
+</svelte:head>
+
 <FormulaDialog
 	open={formulaDialogOpen}
 	initialValue={currentFormulaCell}
@@ -427,7 +431,7 @@
 					<Table2 class="size-3.5" />
 				</div>
 				<div class="flex flex-col leading-none">
-					<span class="text-sm font-semibold {uiTheme.theme === 'avant-garde' ? 'font-editorial font-bold tracking-[0.16em] uppercase' : ''}">Tablix</span>
+					<span class="text-sm font-semibold {uiTheme.theme === 'avant-garde' ? 'font-editorial font-bold tracking-[0.16em] uppercase' : ''}">Samara</span>
 					{#if uiTheme.theme === 'avant-garde'}
 						<span class="text-[9px] font-terminal tracking-wider text-muted-foreground uppercase">ACADEMIC // v0.1</span>
 					{/if}

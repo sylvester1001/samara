@@ -6,7 +6,7 @@
 		<script>
 			(function() {
 				try {
-					var theme = localStorage.getItem('tablix-ui-theme') || 'avant-garde';
+					var theme = localStorage.getItem('samara-ui-theme') || localStorage.getItem('tablix-ui-theme') || 'avant-garde';
 					document.documentElement.setAttribute('data-theme', theme);
 				} catch (e) {}
 			})();

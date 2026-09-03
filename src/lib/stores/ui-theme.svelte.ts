@@ -7,7 +7,7 @@ class UiThemeStore {
 
 	constructor() {
 		if (browser) {
-			const saved = localStorage.getItem('tablix-ui-theme') as UiTheme | null;
+			const saved = (localStorage.getItem('samara-ui-theme') || localStorage.getItem('tablix-ui-theme')) as UiTheme | null;
 			if (saved === 'classic' || saved === 'avant-garde') {
 				this.theme = saved;
 			}
@@ -18,7 +18,7 @@ class UiThemeStore {
 	setTheme(theme: UiTheme) {
 		this.theme = theme;
 		if (browser) {
-			localStorage.setItem('tablix-ui-theme', theme);
+			localStorage.setItem('samara-ui-theme', theme);
 			this.apply();
 		}
 	}

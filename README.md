@@ -1,6 +1,6 @@
 <div align="center">
 
-# Tablix
+# Samara
 
 一个所见即所得的学术表格编辑器。可视化地设计表格，然后一键导出为 LaTeX 代码或高清图片，不用再手写 `tabular` 命令。
 
@@ -28,7 +28,7 @@
 
 ## 截图
 
-![Tablix 界面截图](static/UI-screenshot.png)
+![Samara 界面截图](static/UI-screenshot.png)
 
 ## 快速开始
 
@@ -46,7 +46,7 @@ npm run dev
 
 ### 桌面应用（Tauri）
 
-Tablix 也以桌面应用的形式提供。使用前请先安装 [Tauri 环境依赖](https://v2.tauri.app/start/prerequisites/)（Rust 工具链及平台工具）。
+Samara 也以桌面应用的形式提供。使用前请先安装 [Tauri 环境依赖](https://v2.tauri.app/start/prerequisites/)（Rust 工具链及平台工具）。
 
 ```bash
 # 以开发模式运行桌面应用
@@ -68,7 +68,7 @@ npm run tauri:build
 ### 项目结构
 
 ```
-tablix/
+samara/
 ├── src/                     # Svelte 5 前端
 │   ├── lib/
 │   │   ├── components/      # UI 及表格编辑组件
@@ -126,7 +126,7 @@ tablix/
 - [x] PNG / SVG 图片导出
 - [x] CSV / Excel 导入与粘贴
 - [x] 公式插入（MathLive）
-- [ ] 原生文件保存 / 打开（`.tablix`）
+- [ ] 原生文件保存 / 打开（`.samara`）
 - [ ] 样式历史的撤销 / 重做
 - [ ] 更多画布预设与对齐参考线
 

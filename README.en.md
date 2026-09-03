@@ -1,6 +1,6 @@
 <div align="center">
 
-# Tablix
+# Samara
 
 A visual academic table editor. Design tables visually, then export them to LaTeX or high-resolution images in one click — no more hand-writing `tabular` markup.
 
@@ -28,7 +28,7 @@ A visual academic table editor. Design tables visually, then export them to LaTe
 
 ## Screenshot
 
-![Tablix UI screenshot](static/UI-screenshot.png)
+![Samara UI screenshot](static/UI-screenshot.png)
 
 ## Quick start
 
@@ -46,7 +46,7 @@ Open <http://localhost:5173> (or the URL shown in your terminal).
 
 ### Desktop app (Tauri)
 
-Tablix is also available as a desktop application. You'll need the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) (Rust toolchain + platform tools) installed first.
+Samara is also available as a desktop application. You'll need the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) (Rust toolchain + platform tools) installed first.
 
 ```bash
 # Run the desktop app in development
@@ -68,7 +68,7 @@ npm run tauri:build
 ### Project structure
 
 ```
-tablix/
+samara/
 ├── src/                     # Svelte 5 frontend
 │   ├── lib/
 │   │   ├── components/      # UI + table editor components
@@ -126,7 +126,7 @@ Editing logic lives in a single reactive store — [`src/lib/stores/table.svelte
 - [x] PNG / SVG image export
 - [x] CSV / Excel import & paste
 - [x] Formula insertion (MathLive)
-- [ ] Native file save / open (`.tablix`)
+- [ ] Native file save / open (`.samara`)
 - [ ] Undo/redo for style history
 - [ ] More canvas presets & alignment guides
 
