@@ -22,62 +22,97 @@
 		canUndo = false,
 		canRedo = false
 	}: Props = $props();
+
+	function handleDragMouseDown(e: MouseEvent) {
+		if (e.button !== 0) return;
+		const target = e.target as HTMLElement | null;
+		if (target?.closest('button, a, input, select, textarea, [role="button"]')) {
+			return;
+		}
+		e.preventDefault();
+		if (isTauri) {
+			import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+				getCurrentWindow().startDragging();
+			}).catch(() => {});
+		}
+	}
+
+	function handleDragDblClick(e: MouseEvent) {
+		const target = e.target as HTMLElement | null;
+		if (target?.closest('button, a, input, select, textarea, [role="button"]')) {
+			return;
+		}
+		if (isTauri) {
+			import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
+				getCurrentWindow().toggleMaximize();
+			}).catch(() => {});
+		}
+	}
 </script>
 
-<header data-tauri-drag-region class="flex items-center h-14 px-4 border-b border-border bg-background gap-4 overflow-hidden w-full box-border select-none">
-	<div class="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
-		<div class="flex items-center gap-2 min-w-0">
-			<SidebarTrigger class="h-8 w-8 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-md hover:bg-muted'}" />
+<header
+	data-tauri-drag-region
+	onmousedown={handleDragMouseDown}
+	ondblclick={handleDragDblClick}
+	class="flex items-center h-14 px-4 border-b border-border bg-background gap-4 overflow-hidden w-full box-border select-none"
+>
+	<div class="flex items-center gap-2 min-w-0 shrink-0 select-none">
+		<SidebarTrigger class="h-8 w-8 transition-colors select-none {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-md hover:bg-muted'}" />
 
-			<div class="w-px h-5 bg-border mx-1"></div>
+		<div class="w-px h-5 bg-border mx-1"></div>
 
-			<!-- Action Buttons -->
+		<!-- Action Buttons -->
+		<button
+			type="button"
+			class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
+			onclick={onImport}
+		>
+			<Download class="shrink-0 w-3.5 h-3.5" />
+			<span class="select-none">Import</span>
+		</button>
+
+		<button
+			type="button"
+			class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
+			onclick={onNewTable}
+		>
+			<FilePlus class="shrink-0 w-3.5 h-3.5" />
+			<span class="select-none">New</span>
+		</button>
+
+		<div class="w-px h-5 bg-border mx-1"></div>
+
+		<div class="inline-flex border border-border overflow-hidden select-none {uiTheme.theme === 'classic' ? 'rounded-md' : ''}">
 			<button
 				type="button"
-				class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
-				onclick={onImport}
+				class="h-8 w-8 inline-flex items-center justify-center bg-background text-foreground transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none border-r border-border select-none {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-muted'}"
+				onclick={onUndo}
+				disabled={!canUndo}
+				title="Undo (Ctrl+Z)"
+				aria-label="Undo"
 			>
-				<Download class="shrink-0 w-3.5 h-3.5" />
-				<span>Import</span>
+				<Undo2 class="w-3.5 h-3.5" />
 			</button>
-
 			<button
 				type="button"
-				class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
-				onclick={onNewTable}
+				class="h-8 w-8 inline-flex items-center justify-center bg-background text-foreground transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-muted'}"
+				onclick={onRedo}
+				disabled={!canRedo}
+				title="Redo (Ctrl+Y)"
+				aria-label="Redo"
 			>
-				<FilePlus class="shrink-0 w-3.5 h-3.5" />
-				<span>New</span>
+				<Redo2 class="w-3.5 h-3.5" />
 			</button>
-
-			<div class="w-px h-5 bg-border mx-1"></div>
-
-			<div class="inline-flex border border-border overflow-hidden {uiTheme.theme === 'classic' ? 'rounded-md' : ''}">
-				<button
-					type="button"
-					class="h-8 w-8 inline-flex items-center justify-center bg-background text-foreground transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none border-r border-border {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-muted'}"
-					onclick={onUndo}
-					disabled={!canUndo}
-					title="Undo (Ctrl+Z)"
-					aria-label="Undo"
-				>
-					<Undo2 class="w-3.5 h-3.5" />
-				</button>
-				<button
-					type="button"
-					class="h-8 w-8 inline-flex items-center justify-center bg-background text-foreground transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-muted'}"
-					onclick={onRedo}
-					disabled={!canRedo}
-					title="Redo (Ctrl+Y)"
-					aria-label="Redo"
-				>
-					<Redo2 class="w-3.5 h-3.5" />
-				</button>
-			</div>
 		</div>
 	</div>
 
-	<div class="flex items-center gap-2 shrink-0">
+	<!-- Draggable middle region -->
+	<div
+		data-tauri-drag-region
+		class="flex-1 h-full min-w-0 select-none self-stretch"
+	></div>
+
+	<div class="flex items-center gap-2 shrink-0 select-none">
 		<!-- Theme Style Switcher: Classic / Avant-Garde -->
 		<button
 			type="button"
@@ -87,13 +122,13 @@
 		>
 			{#if uiTheme.theme === 'avant-garde'}
 				<span class="size-2 rounded-full bg-[#0202f1] shrink-0"></span>
-				<span class="font-terminal text-[11px] uppercase tracking-wider font-semibold text-foreground">Avant-Garde</span>
+				<span class="font-terminal text-[11px] uppercase tracking-wider font-semibold text-foreground select-none">Avant-Garde</span>
 			{:else}
 				<span class="size-2 rounded-full bg-muted-foreground/60 shrink-0"></span>
-				<span class="text-xs text-muted-foreground font-medium">Classic</span>
+				<span class="text-xs text-muted-foreground font-medium select-none">Classic</span>
 			{/if}
 		</button>
 
-		<ThemeToggle variant="outline" class="h-8 w-8 rounded-[var(--radius)] border-border hover:bg-foreground hover:text-background transition-colors" />
+		<ThemeToggle variant="outline" class="h-8 w-8 rounded-[var(--radius)] border-border hover:bg-foreground hover:text-background transition-colors select-none" />
 	</div>
 </header>

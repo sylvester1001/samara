@@ -725,3 +725,11 @@ html[data-theme="avant-garde"] [data-highlighted][data-destructive] {
   background-color: #dc2626 !important;
   color: #ffffff !important;
 }
+
+/* Ensure all elements inside tauri drag regions cannot trigger text selection */
+[data-tauri-drag-region],
+[data-tauri-drag-region] * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
