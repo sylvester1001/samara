@@ -435,7 +435,7 @@
 			</div>
 		</AppSidebar.Header>
 
-		<AppSidebar.Content class="px-2.5 py-3">
+		<AppSidebar.Content class="px-4 py-5">
 			<SettingsSidebar
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}

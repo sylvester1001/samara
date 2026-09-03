@@ -27,7 +27,7 @@
 	type="single"
 	{value}
 	onValueChange={handleChange}
-	class="grid w-full grid-cols-3 gap-2"
+	class="grid w-full grid-cols-3 gap-2 p-0.5"
 >
 	{#each presets as preset}
 		<ToggleGroup.Item
@@ -37,7 +37,7 @@
 				'ml-0 flex h-auto min-w-0 flex-col gap-1.5 rounded-[2px] border border-border bg-background p-1.5 shadow-none transition-all',
 				'first:ml-0 first:rounded-[2px] last:rounded-[2px]',
 				'hover:border-foreground/40 hover:text-foreground',
-				'data-[state=on]:border-[var(--cobalt)] data-[state=on]:ring-1 data-[state=on]:ring-[var(--cobalt)] data-[state=on]:bg-[var(--cobalt-subtle)]/30'
+				'data-[state=on]:border-[var(--cobalt)] data-[state=on]:shadow-[inset_0_0_0_1.5px_var(--cobalt)] data-[state=on]:bg-[var(--cobalt-subtle)]/30'
 			)}
 		>
 			<div class="flex aspect-[5/4] w-full items-center justify-center overflow-hidden rounded-[1px] bg-muted/40 p-1.5">
