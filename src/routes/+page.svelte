@@ -36,6 +36,7 @@
 		RotateCcw,
 	} from "lucide-svelte";
 	import BrandLogo from "$lib/components/BrandLogo.svelte";
+	import { isMac, isTauri } from "$lib/stores/platform.svelte.js";
 	import LogoShowcaseDialog from "$lib/components/LogoShowcaseDialog.svelte";
 
 	let logoShowcaseOpen = $state(false);
@@ -428,7 +429,7 @@
 
 <AppSidebar.Provider>
 	<AppSidebar.Root collapsible="offcanvas">
-		<AppSidebar.Header class="h-14 shrink-0 justify-center px-4 border-b border-sidebar-border bg-sidebar select-none">
+		<AppSidebar.Header data-tauri-drag-region class="{isMac && isTauri ? 'pt-[38px]' : ''} shrink-0 justify-center px-4 pb-1 bg-sidebar select-none">
 			<button
 				type="button"
 				class="flex items-center gap-2.5 group cursor-pointer text-left -ml-1.5 px-1.5 py-1 rounded-[var(--radius)] hover:bg-muted/50 transition-colors w-full"
@@ -463,7 +464,7 @@
 			bind:currentFont={activeBrandFont}
 		/>
 
-		<AppSidebar.Content class="px-4 py-5">
+		<AppSidebar.Content class="px-4 pt-3 pb-5">
 			<SettingsSidebar
 				tableStyle={tableStore.tableStyle}
 				canvasConfig={tableStore.canvasConfig}

@@ -13,6 +13,9 @@
     "windows": [
       {
         "title": "Samara",
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay",
+        "trafficLightPosition": { "x": 16, "y": 18 },
         "width": 1200,
         "height": 800,
         "minWidth": 1000,

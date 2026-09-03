@@ -3,6 +3,7 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { SidebarTrigger } from '$lib/components/ui/sidebar/index.js';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
+	import { isMac, isTauri } from '$lib/stores/platform.svelte.js';
 
 	interface Props {
 		onImport?: () => void;
@@ -23,7 +24,7 @@
 	}: Props = $props();
 </script>
 
-<header class="flex items-center h-14 px-4 border-b border-border bg-background gap-4 overflow-hidden w-full box-border select-none">
+<header data-tauri-drag-region class="flex items-center h-14 px-4 border-b border-border bg-background gap-4 overflow-hidden w-full box-border select-none">
 	<div class="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
 		<div class="flex items-center gap-2 min-w-0">
 			<SidebarTrigger class="h-8 w-8 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-md hover:bg-muted'}" />
