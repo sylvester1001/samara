@@ -35,6 +35,12 @@
 		ZoomOut,
 		RotateCcw,
 	} from "lucide-svelte";
+	import BrandLogo from "$lib/components/BrandLogo.svelte";
+	import LogoShowcaseDialog from "$lib/components/LogoShowcaseDialog.svelte";
+
+	let logoShowcaseOpen = $state(false);
+	let activeLogoVariant = $state<'user-samara' | 'engraved-single' | 'engraved-dual'>('user-samara');
+	let activeBrandFont = $state<'baskerville' | 'garamond' | 'mono'>('garamond');
 
 	let tableElement: HTMLElement | null = $state(null);
 	let previewContainer: HTMLElement;
@@ -423,21 +429,39 @@
 <AppSidebar.Provider>
 	<AppSidebar.Root collapsible="offcanvas">
 		<AppSidebar.Header class="h-14 shrink-0 justify-center px-4 border-b border-sidebar-border bg-sidebar select-none">
-			<div class="flex items-center gap-2.5">
-				<div
-					class="text-white flex size-7 items-center justify-center rounded-[var(--radius)] shadow-xs transition-colors"
-					style:background-color={uiTheme.theme === 'avant-garde' ? '#0202f1' : 'var(--foreground)'}
-				>
-					<Table2 class="size-3.5" />
+			<button
+				type="button"
+				class="flex items-center gap-2.5 group cursor-pointer text-left -ml-1.5 px-1.5 py-1 rounded-[var(--radius)] hover:bg-muted/50 transition-colors w-full"
+				onclick={() => (logoShowcaseOpen = true)}
+				title="Click to preview & choose Logo / Typography"
+			>
+				<div class="flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+					<BrandLogo
+						variant={activeLogoVariant}
+						class="w-7 h-4.5"
+						color={uiTheme.theme === 'avant-garde' ? '#0202f1' : 'currentColor'}
+					/>
 				</div>
-				<div class="flex flex-col leading-none">
-					<span class="text-sm font-semibold {uiTheme.theme === 'avant-garde' ? 'font-editorial font-bold tracking-[0.16em] uppercase' : ''}">Samara</span>
+				<div class="flex flex-col leading-none grow min-w-0">
+					{#if activeBrandFont === 'baskerville'}
+						<span class="text-[15px] font-baskerville font-bold tracking-tight text-foreground truncate">Samara</span>
+					{:else if activeBrandFont === 'garamond'}
+						<span class="text-[17px] font-garamond font-semibold tracking-wide text-foreground truncate">Samara</span>
+					{:else}
+						<span class="text-[13px] font-mono-brand font-semibold tracking-wider text-foreground truncate">samara</span>
+					{/if}
 					{#if uiTheme.theme === 'avant-garde'}
-						<span class="text-[9px] font-terminal tracking-wider text-muted-foreground uppercase">ACADEMIC // v0.1</span>
+						<span class="text-[8.5px] font-terminal tracking-wider text-muted-foreground uppercase mt-0.5">ACADEMIC // v0.1</span>
 					{/if}
 				</div>
-			</div>
+			</button>
 		</AppSidebar.Header>
+
+		<LogoShowcaseDialog
+			bind:open={logoShowcaseOpen}
+			bind:currentVariant={activeLogoVariant}
+			bind:currentFont={activeBrandFont}
+		/>
 
 		<AppSidebar.Content class="px-4 py-5">
 			<SettingsSidebar
