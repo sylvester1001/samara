@@ -733,3 +733,27 @@ html[data-theme="avant-garde"] [data-highlighted][data-destructive] {
   user-select: none !important;
 }
 
+/* Ensure all buttons and button-like controls are strictly unselectable across the app */
+button,
+button *,
+[role="button"],
+[role="button"] *,
+[data-slot="button"],
+[data-slot="button"] *,
+[unselectable="on"],
+[unselectable="on"] * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Preserve text selection inside editable inputs and textareas */
+textarea,
+input[type="text"],
+input[type="number"],
+input[type="search"],
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="color"]) {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+
+

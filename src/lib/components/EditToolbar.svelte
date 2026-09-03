@@ -85,9 +85,10 @@
 	}
 </script>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 select-none" unselectable="on">
 <div
-	class="flex items-center flex-wrap px-2 py-1 gap-0.5 {uiTheme.theme === 'avant-garde' ? 'border-b border-border bg-background' : 'rounded-[var(--radius)] border border-border bg-background'}"
+	class="flex items-center flex-wrap px-2 py-1 gap-0.5 select-none {uiTheme.theme === 'avant-garde' ? 'border-b border-border bg-background' : 'rounded-[var(--radius)] border border-border bg-background'}"
+	unselectable="on"
 >
 	<AppTooltip
 		text="Align left"
@@ -315,24 +316,27 @@
 	</DropdownMenu.Root>
 </div>
 {#if lineHint || segments.length}
-	<div class="flex flex-wrap items-center gap-1.5 min-h-6 px-0.5">
+	<div class="flex flex-wrap items-center gap-1.5 min-h-6 px-0.5 select-none" unselectable="on">
 		{#if lineHint}
-			<span class="text-[11px] font-terminal uppercase tracking-wider text-muted-foreground">{lineHint}</span>
+			<span class="text-[11px] font-terminal uppercase tracking-wider text-muted-foreground select-none">{lineHint}</span>
 		{/if}
 		{#each segments as segment, index}
 			<div
-				class="inline-flex items-center gap-1.5 rounded-[1px] border {activeSegmentIndex === index ? (uiTheme.theme === 'avant-garde' ? 'border-[var(--cobalt)] bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'border-foreground bg-muted text-foreground font-bold') : 'border-border bg-background text-foreground'} px-2 py-0.5 text-[11px] font-terminal uppercase tracking-wider"
+				class="inline-flex items-center gap-1.5 rounded-[1px] border {activeSegmentIndex === index ? (uiTheme.theme === 'avant-garde' ? 'border-[var(--cobalt)] bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'border-foreground bg-muted text-foreground font-bold') : 'border-border bg-background text-foreground'} px-2 py-0.5 text-[11px] font-terminal uppercase tracking-wider select-none"
+				unselectable="on"
 			>
 				<button
 					type="button"
-					class="max-w-32 truncate"
+					class="max-w-32 truncate select-none"
+					unselectable="on"
 					onclick={() => onSelectSegment?.(index)}
 				>
 					{tableData ? getSegmentLabel(tableData, segment) : `Line ${index + 1}`}
 				</button>
 				<button
 					type="button"
-					class="text-muted-foreground hover:text-destructive transition-colors"
+					class="text-muted-foreground hover:text-destructive transition-colors select-none"
+					unselectable="on"
 					onclick={() => onRemoveSegment?.(index)}
 					aria-label="Remove line"
 				>

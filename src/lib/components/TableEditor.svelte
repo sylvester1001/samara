@@ -431,9 +431,9 @@
 	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both">
 		<div class="p-4 w-full">
 			<ContextMenu.Root>
-				<ContextMenu.Trigger class="block w-full" oncontextmenu={handleContextMenu}>
-					<div class="relative w-full" bind:this={gridWrap}>
-					<table class="w-full border-collapse table-fixed select-none">
+				<ContextMenu.Trigger class="block w-full select-none" oncontextmenu={handleContextMenu} unselectable="on">
+					<div class="relative w-full select-none" bind:this={gridWrap} unselectable="on">
+					<table class="w-full border-collapse table-fixed select-none" unselectable="on">
 						<colgroup>
 							<col style="width: {rowGutterWidth};" />
 							{#each columnCharWidths as width}
@@ -548,7 +548,7 @@
 							style:width="{headerBox.width}px"
 							style:height="{headerBox.height}px"
 						>
-							<span class="absolute top-1 left-1 rounded-[1px] {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)] text-white' : 'bg-foreground text-background'} px-1.5 py-0.5 text-[9px] font-terminal uppercase tracking-widest">
+							<span class="absolute top-1 left-1 rounded-[1px] select-none {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)] text-white' : 'bg-foreground text-background'} px-1.5 py-0.5 text-[9px] font-terminal uppercase tracking-widest" unselectable="on">
 								Header
 							</span>
 							<button

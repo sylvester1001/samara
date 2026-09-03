@@ -503,7 +503,8 @@
 					class="min-w-[360px] min-h-0"
 				>
 					<div
-						class="p-3 min-h-0 min-w-0 bg-muted/15 flex flex-col h-full"
+						class="p-3 min-h-0 min-w-0 bg-muted/15 flex flex-col h-full select-none"
+						unselectable="on"
 					>
 						<div class="mb-2 shrink-0">
 							<EditToolbar
