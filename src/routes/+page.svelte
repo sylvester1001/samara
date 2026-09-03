@@ -555,7 +555,7 @@
 							<Button
 								variant="outline"
 								size="icon"
-								class="h-7 w-7 rounded-[2px] border-border bg-background hover:bg-foreground hover:text-background transition-colors"
+								class="h-7 w-7 border-border bg-background transition-colors {uiTheme.theme === 'avant-garde' ? 'preview-zoom-btn rounded-none hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-foreground hover:text-background'}"
 								onclick={() => (previewZoom = 1)}
 							>
 								<RotateCcw class="h-3 w-3" />
@@ -563,7 +563,7 @@
 							<Button
 								variant="outline"
 								size="icon"
-								class="h-7 w-7 rounded-[2px] border-border bg-background hover:bg-foreground hover:text-background transition-colors"
+								class="h-7 w-7 border-border bg-background transition-colors {uiTheme.theme === 'avant-garde' ? 'preview-zoom-btn rounded-none hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-foreground hover:text-background'}"
 								onclick={handleZoomOut}
 							>
 								<ZoomOut class="h-3 w-3" />
@@ -571,7 +571,7 @@
 							<Button
 								variant="outline"
 								size="icon"
-								class="h-7 w-7 rounded-[2px] border-border bg-background hover:bg-foreground hover:text-background transition-colors"
+								class="h-7 w-7 border-border bg-background transition-colors {uiTheme.theme === 'avant-garde' ? 'preview-zoom-btn rounded-none hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-foreground hover:text-background'}"
 								onclick={handleZoomIn}
 							>
 								<ZoomIn class="h-3 w-3" />
@@ -607,18 +607,19 @@
 							</div>
 						</ScrollArea>
 						<div
-							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-20"
+							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20"
 						>
 							<Popover.Root bind:open={exportPopoverOpen}>
 								<Popover.Trigger>
 									{#snippet child({ props })}
 										<Button
 											variant="default"
-											class="w-[140px] shadow-md font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}"
+											class="w-[144px] h-9 shadow-lg font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal text-xs uppercase tracking-[0.14em] font-bold' : ''}"
+											style={uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; border: 1px solid #0202f1 !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
 											{...props}
 										>
 											<ArrowRightFromLine
-												class="w-4 h-4 mr-1.5"
+												class="w-3.5 h-3.5 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'stroke-[2.5]' : ''}"
 											/>
 											Export Image
 										</Button>
@@ -626,7 +627,7 @@
 								</Popover.Trigger>
 								<Popover.Content
 									align="center"
-									class="w-64"
+									class="w-64 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}"
 									onanimationend={handleExportPopoverAnimationEnd}
 								>
 									<div class="grid gap-4">
@@ -634,7 +635,7 @@
 											<div
 												class="grid grid-cols-3 items-center gap-4"
 											>
-												<Label>Format</Label>
+												<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Format</Label>
 												<div
 													class="col-span-2 flex gap-1"
 												>
@@ -647,7 +648,8 @@
 														onclick={() =>
 															(exportFormat =
 																"png")}
-														class="flex-1 h-8 {exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}"
+														class="flex-1 h-8 {exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
+														style={exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
 													>
 														PNG
 													</Button>
@@ -660,7 +662,8 @@
 														onclick={() =>
 															(exportFormat =
 																"svg")}
-														class="flex-1 h-8 {exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}"
+														class="flex-1 h-8 {exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
+														style={exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
 													>
 														SVG
 													</Button>
@@ -670,7 +673,7 @@
 												<div
 													class="grid grid-cols-3 items-center gap-4"
 												>
-													<Label>DPI</Label>
+													<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>DPI</Label>
 													<Select.Root
 														type="single"
 														value={String(
@@ -679,7 +682,7 @@
 														onValueChange={handleDpiChange}
 													>
 														<Select.Trigger
-															class="col-span-2 h-8"
+															class="col-span-2 h-8 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}"
 														>
 															{dpiOptions.find(
 																(o) =>
@@ -688,7 +691,7 @@
 															)?.label ||
 																"Select DPI"}
 														</Select.Trigger>
-														<Select.Content>
+														<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
 															{#each dpiOptions as option}
 																<Select.Item
 																	value={String(
@@ -705,7 +708,8 @@
 										<div class="flex justify-end">
 											<Button 
 												onclick={handleExport}
-												class={uiTheme.theme === 'avant-garde' ? 'export-img-btn' : ''}
+												class={uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal text-xs uppercase tracking-wider font-bold' : ''}
+												style={uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; border: 1px solid #0202f1 !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
 											>
 												Export
 											</Button>
@@ -718,10 +722,11 @@
 									{#snippet child({ props })}
 										<Button
 											variant="outline"
-											class="w-[140px] bg-background hover:bg-muted shadow-sm font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'hover:text-[#0202f1] hover:border-[#0202f1]' : ''}"
+											class="w-[144px] h-9 bg-background hover:bg-muted shadow-lg font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'hover:text-[#0202f1] hover:border-[#0202f1] font-terminal text-xs uppercase tracking-[0.14em] font-bold' : ''}"
+											style={uiTheme.theme === 'avant-garde' ? 'font-family: "JetBrains Mono", monospace !important;' : undefined}
 											{...props}
 										>
-											<Code class="w-4 h-4 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'text-[#0202f1]' : ''}" />
+											<Code class="w-3.5 h-3.5 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'text-[#0202f1] stroke-[2.5]' : ''}" />
 											Export LaTeX
 										</Button>
 									{/snippet}

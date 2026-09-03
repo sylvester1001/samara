@@ -84,116 +84,170 @@
    100% 直角 (Sharp 90° Angles, Zero Border-Radius)
    ========================================================= */
 html[data-theme="avant-garde"],
-:root[data-theme="avant-garde"] {
+html:not([data-theme="classic"]),
+:root[data-theme="avant-garde"],
+:root:not([data-theme="classic"]) {
   --radius: 0px !important;
   --cobalt: #0202f1 !important;
   --cobalt-hover: #0000d0 !important;
   --cobalt-subtle: rgba(2, 2, 241, 0.08) !important;
-  --cobalt-border: rgba(2, 2, 241, 0.4) !important;
+  --cobalt-border: rgba(2, 2, 241, 0.35) !important;
 
-  --background: #fafafc !important;
-  --foreground: #0a0a0e !important;
+  --background: #ffffff !important;
+  --foreground: #08080a !important;
   --card: #ffffff !important;
-  --card-foreground: #0a0a0e !important;
+  --card-foreground: #08080a !important;
   --popover: #ffffff !important;
-  --popover-foreground: #0a0a0e !important;
+  --popover-foreground: #08080a !important;
   --primary: #0202f1 !important;
   --primary-foreground: #ffffff !important;
-  --secondary: #f0f0f4 !important;
-  --secondary-foreground: #0a0a0e !important;
-  --muted: #f4f4f8 !important;
-  --muted-foreground: #5e5e6a !important;
+  --secondary: #f4f4f5 !important;
+  --secondary-foreground: #08080a !important;
+  --muted: #f4f4f5 !important;
+  --muted-foreground: #606066 !important;
   --accent: rgba(2, 2, 241, 0.08) !important;
   --accent-foreground: #0202f1 !important;
-  --border: rgba(10, 10, 14, 0.15) !important;
-  --input: rgba(10, 10, 14, 0.18) !important;
+  --border: rgba(0, 0, 0, 0.08) !important;
+  --input: rgba(0, 0, 0, 0.12) !important;
   --ring: #0202f1 !important;
-  --sidebar: #f8f8fb !important;
-  --sidebar-foreground: #0a0a0e !important;
+  --sidebar: #ffffff !important;
+  --sidebar-foreground: #08080a !important;
   --sidebar-primary: #0202f1 !important;
   --sidebar-primary-foreground: #ffffff !important;
-  --sidebar-accent: #ececf2 !important;
-  --sidebar-accent-foreground: #0a0a0e !important;
-  --sidebar-border: rgba(10, 10, 14, 0.15) !important;
+  --sidebar-accent: #f4f4f5 !important;
+  --sidebar-accent-foreground: #08080a !important;
+  --sidebar-border: rgba(0, 0, 0, 0.08) !important;
   --sidebar-ring: #0202f1 !important;
 }
 
 html[data-theme="avant-garde"].dark,
-:root[data-theme="avant-garde"].dark {
+html:not([data-theme="classic"]).dark,
+:root[data-theme="avant-garde"].dark,
+:root:not([data-theme="classic"]).dark {
   --radius: 0px !important;
   --cobalt: #0202f1 !important;
   --cobalt-hover: #1e24ff !important;
   --cobalt-subtle: rgba(2, 2, 241, 0.25) !important;
   --cobalt-border: rgba(90, 110, 255, 0.5) !important;
 
-  --background: #08080c !important;
-  --foreground: #f6f6fa !important;
-  --card: #101016 !important;
-  --card-foreground: #f6f6fa !important;
-  --popover: #121218 !important;
-  --popover-foreground: #f6f6fa !important;
+  --background: #000000 !important;
+  --foreground: #f4f4f6 !important;
+  --card: #08080a !important;
+  --card-foreground: #f4f4f6 !important;
+  --popover: #0c0c0e !important;
+  --popover-foreground: #f4f4f6 !important;
   --primary: #0202f1 !important;
   --primary-foreground: #ffffff !important;
-  --secondary: #181820 !important;
-  --secondary-foreground: #f6f6fa !important;
-  --muted: #16161e !important;
-  --muted-foreground: #888898 !important;
+  --secondary: #121216 !important;
+  --secondary-foreground: #f4f4f6 !important;
+  --muted: #121216 !important;
+  --muted-foreground: #82828e !important;
   --accent: rgba(2, 2, 241, 0.2) !important;
   --accent-foreground: #8a96ff !important;
-  --border: rgba(255, 255, 255, 0.15) !important;
-  --input: rgba(255, 255, 255, 0.18) !important;
+  --border: rgba(255, 255, 255, 0.10) !important;
+  --input: rgba(255, 255, 255, 0.14) !important;
   --ring: #0202f1 !important;
-  --sidebar: #0d0d12 !important;
-  --sidebar-foreground: #f6f6fa !important;
+  --sidebar: #000000 !important;
+  --sidebar-foreground: #f4f4f6 !important;
   --sidebar-primary: #0202f1 !important;
   --sidebar-primary-foreground: #ffffff !important;
-  --sidebar-accent: #1a1a24 !important;
-  --sidebar-accent-foreground: #f6f6fa !important;
-  --sidebar-border: rgba(255, 255, 255, 0.15) !important;
+  --sidebar-accent: #121216 !important;
+  --sidebar-accent-foreground: #f4f4f6 !important;
+  --sidebar-border: rgba(255, 255, 255, 0.10) !important;
   --sidebar-ring: #0202f1 !important;
 }
 
 /* Enforce 100% 直角 (sharp 90-degree corners) across EVERYTHING in Avant-Garde mode */
 html[data-theme="avant-garde"],
+html:not([data-theme="classic"]),
 html[data-theme="avant-garde"] *,
+html:not([data-theme="classic"]) *,
 html[data-theme="avant-garde"] *::before,
-html[data-theme="avant-garde"] *::after {
+html:not([data-theme="classic"]) *::before,
+html[data-theme="avant-garde"] *::after,
+html:not([data-theme="classic"]) *::after {
   border-radius: 0px !important;
+}
+
+/* Ghost buttons in Avant-Garde: ABSOLUTELY NO BORDER */
+html[data-theme="avant-garde"] [data-slot="button"][data-variant="ghost"],
+html:not([data-theme="classic"]) [data-slot="button"][data-variant="ghost"],
+html[data-theme="avant-garde"] button[data-variant="ghost"],
+html:not([data-theme="classic"]) button[data-variant="ghost"],
+html[data-theme="avant-garde"] [data-variant="ghost"],
+html:not([data-theme="classic"]) [data-variant="ghost"],
+html[data-theme="avant-garde"] [data-slot="sidebar-trigger"],
+html:not([data-theme="classic"]) [data-slot="sidebar-trigger"] {
+  border: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Primary Button in Avant-Garde mode: Pure #0202f1 with white text */
 html[data-theme="avant-garde"] [data-slot="button"][data-variant="default"],
+html:not([data-theme="classic"]) [data-slot="button"][data-variant="default"],
 html[data-theme="avant-garde"] button.bg-primary,
-html[data-theme="avant-garde"] .export-img-btn {
+html:not([data-theme="classic"]) button.bg-primary,
+html[data-theme="avant-garde"] .export-img-btn,
+html:not([data-theme="classic"]) .export-img-btn {
   background-color: #0202f1 !important;
   color: #ffffff !important;
   border: 1px solid #0202f1 !important;
 }
 
 html[data-theme="avant-garde"] [data-slot="button"][data-variant="default"]:hover,
+html:not([data-theme="classic"]) [data-slot="button"][data-variant="default"]:hover,
 html[data-theme="avant-garde"] button.bg-primary:hover,
-html[data-theme="avant-garde"] .export-img-btn:hover {
+html:not([data-theme="classic"]) button.bg-primary:hover,
+html[data-theme="avant-garde"] .export-img-btn:hover,
+html:not([data-theme="classic"]) .export-img-btn:hover {
   background-color: #0000d0 !important;
   border-color: #0000d0 !important;
 }
 
 /* Outline Buttons in Avant-Garde */
-html[data-theme="avant-garde"] [data-slot="button"][data-variant="outline"] {
-  border-color: rgba(10, 10, 14, 0.2) !important;
+html[data-theme="avant-garde"] [data-slot="button"][data-variant="outline"],
+html:not([data-theme="classic"]) [data-slot="button"][data-variant="outline"] {
+  border-color: rgba(0, 0, 0, 0.14) !important;
 }
 
-html[data-theme="avant-garde"].dark [data-slot="button"][data-variant="outline"] {
-  border-color: rgba(255, 255, 255, 0.2) !important;
+html[data-theme="avant-garde"].dark [data-slot="button"][data-variant="outline"],
+html:not([data-theme="classic"]).dark [data-slot="button"][data-variant="outline"] {
+  border-color: rgba(255, 255, 255, 0.16) !important;
 }
 
 /* Ticket Buttons in Toolbar */
-html[data-theme="avant-garde"] .ticket-btn:hover {
+html[data-theme="avant-garde"] .ticket-btn:hover,
+html:not([data-theme="classic"]) .ticket-btn:hover {
   background-color: #0202f1 !important;
   color: #ffffff !important;
   border-color: #0202f1 !important;
 }
 
+/* Preview Zoom Buttons Hover in Avant-Garde */
+html[data-theme="avant-garde"] .preview-zoom-btn:hover,
+html:not([data-theme="classic"]) .preview-zoom-btn:hover {
+  background-color: #0202f1 !important;
+  color: #ffffff !important;
+  border-color: #0202f1 !important;
+}
+
+/* Terminal Monospace Font Rules */
+.font-terminal,
+html[data-theme="avant-garde"] .font-terminal,
+html:not([data-theme="classic"]) .font-terminal {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace !important;
+}
+
+.font-editorial,
+html[data-theme="avant-garde"] .font-editorial,
+html:not([data-theme="classic"]) .font-editorial {
+  font-family: 'CMU Serif', 'Times New Roman', Georgia, serif !important;
+}
+
 @theme inline {
+  --font-terminal: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  --font-editorial: 'CMU Serif', 'Times New Roman', Georgia, serif;
   --radius-sm: 1px;
   --radius-md: var(--radius);
   --radius-lg: 3px;

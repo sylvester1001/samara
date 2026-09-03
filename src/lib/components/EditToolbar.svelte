@@ -14,6 +14,8 @@
 		Minus,
 		ChevronDown,
 		X,
+		Baseline,
+		PaintBucket,
 	} from "lucide-svelte";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import type { TableData } from "$lib/types";
@@ -69,12 +71,15 @@
 	const shorterChecked = $derived(isSegmentTrimmed(activeSegment));
 	const canToggleShorter = $derived(activeSegmentIndex != null);
 
+	let textColorInput = $state<HTMLInputElement>();
+	let bgColorInput = $state<HTMLInputElement>();
+
 	function handleTextColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		onTextColorChange?.(target.value);
 	}
 
-	function handleBackgroundColorChange(e: Event) {
+	function handleBgColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		onBackgroundColorChange?.(target.value);
 	}
@@ -82,7 +87,7 @@
 
 <div class="flex flex-col gap-2">
 <div
-	class="flex items-center flex-wrap rounded-[var(--radius)] border border-border bg-background px-1.5 py-1 gap-0.5"
+	class="flex items-center flex-wrap px-2 py-1 gap-0.5 {uiTheme.theme === 'avant-garde' ? 'border-b border-border bg-background' : 'rounded-[var(--radius)] border border-border bg-background'}"
 >
 	<AppTooltip
 		text="Align left"
@@ -91,7 +96,7 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+			<Button variant="ghost" size="icon" class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<TextAlignStart class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
@@ -103,7 +108,7 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+			<Button variant="ghost" size="icon" class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<TextAlignCenter class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
@@ -115,13 +120,13 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+			<Button variant="ghost" size="icon" class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<TextAlignEnd class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
 
-	<div class="h-5 w-px bg-border mx-1"></div>
+	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<AppTooltip
 		text="Bold"
@@ -130,7 +135,7 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+			<Button variant="ghost" size="icon" class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<Bold class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
@@ -142,41 +147,72 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="icon" class="h-7 w-7 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+			<Button variant="ghost" size="icon" class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<Italic class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
+
+	<div class="h-4 w-px bg-border/80 mx-1"></div>
+
 	<AppTooltip
 		text="Text color"
+		aria-label="Text color"
 		disabled={!hasSelection}
-		childProps={{
-			type: "color",
-			class: "ml-0.5 w-6 h-6 rounded-[var(--radius)] cursor-pointer p-0.5 border border-border bg-background",
-			"aria-label": "Text color",
-			oninput: handleTextColorChange,
-		}}
 	>
 		{#snippet children({ props })}
-			<input {...props} />
+			<div class="relative inline-flex items-center">
+				<Button
+					variant="ghost"
+					size="icon"
+					class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}"
+					disabled={!hasSelection}
+					onclick={() => textColorInput?.click()}
+					{...props}
+				>
+					<Baseline class="w-3.5 h-3.5" />
+				</Button>
+				<input
+					bind:this={textColorInput}
+					type="color"
+					value="#000000"
+					class="sr-only"
+					onchange={handleTextColorChange}
+					tabindex={-1}
+				/>
+			</div>
 		{/snippet}
 	</AppTooltip>
 	<AppTooltip
-		text="Cell background"
+		text="Background color"
+		aria-label="Background color"
 		disabled={!hasSelection}
-		childProps={{
-			type: "color",
-			class: "ml-1 w-6 h-6 rounded-[var(--radius)] cursor-pointer p-0.5 border border-border bg-background",
-			"aria-label": "Cell background",
-			oninput: handleBackgroundColorChange,
-		}}
 	>
 		{#snippet children({ props })}
-			<input {...props} />
+			<div class="relative inline-flex items-center">
+				<Button
+					variant="ghost"
+					size="icon"
+					class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}"
+					disabled={!hasSelection}
+					onclick={() => bgColorInput?.click()}
+					{...props}
+				>
+					<PaintBucket class="w-3.5 h-3.5" />
+				</Button>
+				<input
+					bind:this={bgColorInput}
+					type="color"
+					value="#ffffff"
+					class="sr-only"
+					onchange={handleBgColorChange}
+					tabindex={-1}
+				/>
+			</div>
 		{/snippet}
 	</AppTooltip>
 
-	<div class="h-5 w-px bg-border mx-1"></div>
+	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<AppTooltip
 		text="Merge cells"
@@ -185,7 +221,7 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+			<Button variant="ghost" size="sm" class="h-7 px-2 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<TableCellsMerge class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
@@ -197,13 +233,13 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] hover:bg-foreground hover:text-background" {...props}>
+			<Button variant="ghost" size="sm" class="h-7 px-2 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<TableCellsSplit class="w-3.5 h-3.5" />
 			</Button>
 		{/snippet}
 	</AppTooltip>
 
-	<div class="h-5 w-px bg-border mx-1"></div>
+	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<AppTooltip
 		text="Insert Formula"
@@ -212,39 +248,39 @@
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
-			<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] text-xs hover:bg-foreground hover:text-background {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : ''}" {...props}>
+			<Button variant="ghost" size="sm" class="h-7 px-2 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<Sigma class="w-3.5 h-3.5 mr-1" />
 				Formula
 			</Button>
 		{/snippet}
 	</AppTooltip>
 
-	<div class="h-5 w-px bg-border mx-1"></div>
+	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<Button
 		data-header-adjust-toggle
 		variant={headerAdjustMode ? "default" : "ghost"}
 		size="sm"
-		class="h-7 px-2.5 rounded-[var(--radius)] text-xs {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : ''} {headerAdjustMode ? 'bg-[var(--cobalt)] text-white hover:bg-[var(--cobalt-hover)]' : 'hover:bg-foreground hover:text-background'}"
+		class="h-7 px-2.5 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : 'rounded-[var(--radius)]'} {headerAdjustMode ? 'bg-[#0202f1] text-white hover:bg-[#0000d0]' : (uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-foreground hover:text-background')}"
 		onclick={onToggleHeaderAdjust}
 	>
 		<PanelTop class="w-3.5 h-3.5 mr-1" />
 		Header
 	</Button>
 
-	<div class="h-5 w-px bg-border mx-1"></div>
+	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}
-				<Button variant="ghost" size="sm" class="h-7 px-2 rounded-[var(--radius)] text-xs hover:bg-foreground hover:text-background {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : ''}" {...props}>
+				<Button variant="ghost" size="sm" class="h-7 px-2 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 					<Minus class="w-3.5 h-3.5 mr-1" />
 					Line
 					<ChevronDown class="w-3 h-3 ml-0.5 opacity-70" />
 				</Button>
 			{/snippet}
 		</DropdownMenu.Trigger>
-		<DropdownMenu.Content align="start" class="w-52 rounded-[var(--radius)] border-border {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
+		<DropdownMenu.Content align="start" class="w-52 border-border {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : 'rounded-[var(--radius)]'}">
 			<DropdownMenu.Group>
 				<DropdownMenu.Item
 					disabled={!hasSelection}

@@ -26,7 +26,7 @@
 <header class="flex items-center h-14 px-4 border-b border-border bg-background gap-4 overflow-hidden w-full box-border select-none">
 	<div class="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
 		<div class="flex items-center gap-2 min-w-0">
-			<SidebarTrigger class="h-8 w-8 border border-border transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}" />
+			<SidebarTrigger class="h-8 w-8 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-md hover:bg-muted'}" />
 
 			{#if uiTheme.theme === 'avant-garde'}
 				<div class="hidden sm:flex items-center gap-1.5 px-2 py-0.5 border border-border bg-muted/40 text-[11px] font-terminal uppercase tracking-widest text-muted-foreground select-none">

@@ -159,16 +159,19 @@
 	}
 </script>
 
-{#snippet sectionWrapper(title: string, tag: string | null, content: any)}
+{#snippet sectionWrapper(title: string, tag: string | null, index: string, content: any)}
 	{#if uiTheme.theme === 'avant-garde'}
-		<div class="border border-border bg-background select-none">
-			<div class="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/25">
-				<span class="text-[11px] font-terminal uppercase font-bold tracking-widest text-foreground">{title}</span>
+		<div class="pt-3 pb-4 border-b border-border/70 last:border-b-0 select-none">
+			<div class="flex items-center justify-between mb-3 px-1">
+				<div class="flex items-center gap-2">
+					<span class="text-[10px] font-terminal font-bold text-[#0202f1] tracking-wider">{index} //</span>
+					<span class="text-[11px] font-terminal font-bold uppercase tracking-[0.16em] text-foreground">{title}</span>
+				</div>
 				{#if tag}
-					<span class="text-[9px] font-terminal uppercase font-bold text-[#0202f1] tracking-wider">{tag}</span>
+					<span class="text-[9px] font-terminal font-bold text-muted-foreground/80 tracking-widest">{tag}</span>
 				{/if}
 			</div>
-			<div class="flex flex-col gap-4 p-3">
+			<div class="flex flex-col gap-4 px-1">
 				{@render content()}
 			</div>
 		</div>
@@ -182,17 +185,17 @@
 	{/if}
 {/snippet}
 
-<div class="flex flex-col gap-3">
+<div class="flex flex-col {uiTheme.theme === 'avant-garde' ? 'gap-0' : 'gap-3'}">
 	{#snippet tableStyleContent()}
 		<div class="flex flex-col gap-2">
-			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Preset</Label>
+			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Preset</Label>
 			<PresetPicker value={tableStyle.preset} onValueChange={onPresetChange} />
 		</div>
 
-		<div class="flex flex-col gap-3 pt-3 border-t border-border/60">
-			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Font</Label>
+		<div class="flex flex-col gap-2.5 pt-3 {uiTheme.theme === 'avant-garde' ? 'border-t border-border/40' : 'border-t border-border/60'}">
+			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Font</Label>
 			<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
-				<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
+				<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">
 					{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || 'Select font'}
 				</Select.Trigger>
 				<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
@@ -204,7 +207,7 @@
 				</Select.Content>
 			</Select.Root>
 			<div class="flex items-center gap-3">
-				<span class="text-xs text-muted-foreground shrink-0 w-8 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : ''}">Size</span>
+				<span class="text-xs text-muted-foreground shrink-0 w-8 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[10px] uppercase tracking-wider' : ''}">Size</span>
 				<Slider
 					class="flex-1"
 					type="single"
@@ -214,29 +217,29 @@
 					step={1}
 					onValueChange={handleFontSizeChange}
 				/>
-				<span class="text-xs text-muted-foreground shrink-0 w-8 text-right {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] font-semibold' : ''}">{tableStyle.fontSize}pt</span>
+				<span class="text-xs text-muted-foreground shrink-0 w-8 text-right {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] font-semibold text-foreground' : ''}">{tableStyle.fontSize}pt</span>
 			</div>
 		</div>
 
-		<div class="flex flex-col gap-2 pt-3 border-t border-border/60">
-			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Spacing</Label>
+		<div class="flex flex-col gap-2 pt-3 {uiTheme.theme === 'avant-garde' ? 'border-t border-border/40' : 'border-t border-border/60'}">
+			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Spacing</Label>
 			<div class="flex flex-col gap-1.5">
-				<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase' : ''}">Cell Padding</span>
+				<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-wider' : ''}">Cell Padding</span>
 				<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full gap-1">
-					<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1 {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider h-7' : ''}">Compact</ToggleGroup.Item>
-					<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1 {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider h-7' : ''}">Normal</ToggleGroup.Item>
-					<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1 {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider h-7' : ''}">Loose</ToggleGroup.Item>
+					<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1 {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider h-7 data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : ''}">Compact</ToggleGroup.Item>
+					<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1 {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider h-7 data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : ''}">Normal</ToggleGroup.Item>
+					<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1 {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider h-7 data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : ''}">Loose</ToggleGroup.Item>
 				</ToggleGroup.Root>
 			</div>
 		</div>
 
-		<div class="flex flex-col gap-2.5 pt-3 border-t border-border/60">
-			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Rules</Label>
+		<div class="flex flex-col gap-2.5 pt-3 {uiTheme.theme === 'avant-garde' ? 'border-t border-border/40' : 'border-t border-border/60'}">
+			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Rules</Label>
 			<div class="grid grid-cols-2 gap-2.5">
 				<div class="flex flex-col gap-1">
-					<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase' : ''}">Top</span>
+					<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-wider' : ''}">Top</span>
 					<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
-						<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
+						<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
 						<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
 							<Select.Group>
 								{#each topBorderOptions as option}
@@ -247,9 +250,9 @@
 					</Select.Root>
 				</div>
 				<div class="flex flex-col gap-1">
-					<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase' : ''}">Bottom</span>
+					<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-wider' : ''}">Bottom</span>
 					<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
-						<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
+						<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
 						<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
 							<Select.Group>
 								{#each bottomBorderOptions as option}
@@ -260,9 +263,9 @@
 					</Select.Root>
 				</div>
 				<div class="flex flex-col gap-1">
-					<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase' : ''}">Header</span>
+					<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-wider' : ''}">Header</span>
 					<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
-						<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
+						<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
 						<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
 							<Select.Group>
 								{#each borderOptions as option}
@@ -274,9 +277,9 @@
 				</div>
 				{#if tableStyle.preset !== 'booktabs'}
 					<div class="flex flex-col gap-1">
-						<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase' : ''}">Vertical</span>
+						<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-wider' : ''}">Vertical</span>
 						<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
-							<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
+							<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
 							<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
 								<Select.Group>
 									{#each borderOptions as option}
@@ -287,9 +290,9 @@
 						</Select.Root>
 					</div>
 					<div class="flex flex-col gap-1">
-						<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase' : ''}">Horizontal</span>
+						<span class="text-xs text-muted-foreground {uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-wider' : ''}">Horizontal</span>
 						<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
-							<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
+							<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
 							<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
 								<Select.Group>
 									{#each borderOptions as option}
@@ -303,28 +306,28 @@
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Table Style', '[ SPEC ]', tableStyleContent)}
+	{@render sectionWrapper('Table Style', '[ SPEC ]', '01', tableStyleContent)}
 
 	{#snippet structureContent()}
-		<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Resize Lock</Label>
+		<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Resize Lock</Label>
 		<div class="grid grid-cols-2 gap-3">
-			<div class="flex items-center justify-between border border-border/80 px-2 py-1.5 bg-muted/10">
-				<span class="text-xs {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase' : ''}">Column</span>
+			<div class="flex items-center justify-between border border-border/80 px-2.5 py-1.5 bg-muted/20">
+				<span class="text-xs {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider font-semibold' : ''}">Column</span>
 				<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
 			</div>
-			<div class="flex items-center justify-between border border-border/80 px-2 py-1.5 bg-muted/10">
-				<span class="text-xs {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase' : ''}">Row</span>
+			<div class="flex items-center justify-between border border-border/80 px-2.5 py-1.5 bg-muted/20">
+				<span class="text-xs {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider font-semibold' : ''}">Row</span>
 				<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Structure', '[ LOCK ]', structureContent)}
+	{@render sectionWrapper('Structure', '[ LOCK ]', '02', structureContent)}
 
 	{#snippet canvasContent()}
 		<div class="flex flex-col gap-2">
-			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Size Preset</Label>
+			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Size Preset</Label>
 			<Select.Root type="single" value={canvasPreset} onValueChange={handleCanvasPresetChange}>
-				<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
+				<Select.Trigger class="w-full {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}">
 					{canvasPresets.find(o => o.value === canvasPreset)?.label || 'Auto'}
 				</Select.Trigger>
 				<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
@@ -339,10 +342,10 @@
 
 		{#if canvasPreset === 'custom'}
 			<div class="flex flex-col gap-2">
-				<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Custom Width (px)</Label>
+				<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Custom Width (px)</Label>
 				<Input
 					type="number"
-					class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}
+					class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}
 					value={customWidth}
 					onchange={handleCustomWidthChange}
 					min={200}
@@ -350,10 +353,10 @@
 				/>
 			</div>
 			<div class="flex flex-col gap-2">
-				<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Custom Height (px)</Label>
+				<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Custom Height (px)</Label>
 				<Input
 					type="number"
-					class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}
+					class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs bg-background' : ''}
 					value={customHeight}
 					onchange={handleCustomHeightChange}
 					min={200}
@@ -362,8 +365,8 @@
 			</div>
 		{/if}
 
-		<div class="flex flex-col gap-2 pt-2 border-t border-border/60">
-			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Background</Label>
+		<div class="flex flex-col gap-2 pt-2 {uiTheme.theme === 'avant-garde' ? 'border-t border-border/40' : 'border-t border-border/60'}">
+			<Label class={uiTheme.theme === 'avant-garde' ? 'text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold' : ''}>Background</Label>
 			<input
 				type="color"
 				class="w-full h-8 border border-border cursor-pointer p-0.5 bg-background"
@@ -372,5 +375,5 @@
 			/>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Canvas', '[ VIEW ]', canvasContent)}
+	{@render sectionWrapper('Canvas', '[ VIEW ]', '03', canvasContent)}
 </div>

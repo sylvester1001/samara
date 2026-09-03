@@ -8,7 +8,10 @@
 	let { children } = $props();
 
 	$effect(() => {
-		uiTheme.apply();
+		const current = uiTheme.theme;
+		if (typeof document !== 'undefined') {
+			document.documentElement.setAttribute('data-theme', current);
+		}
 	});
 </script>
 
