@@ -177,18 +177,17 @@
 	}
 </script>
 
-{#snippet sectionWrapper(title: string, tag: string | null, index: string, content: any)}
+{#snippet sectionWrapper(title: string, index: string, content: any)}
 	{#if uiTheme.theme === 'avant-garde'}
 		<div class="pt-3.5 pb-4.5 border-b border-border/60 last:border-b-0 select-none first:pt-0 px-1">
-			<!-- 机能风色块标签：鲜明一级标题 (Klein Blue Hero Block) -->
-			<div class="flex items-center justify-between w-full bg-[#0202f1] text-white px-2.5 py-1.5 mb-3.5 select-none shadow-xs">
-				<div class="flex items-center gap-2">
-					<span class="text-[10px] font-terminal font-bold tracking-wider opacity-90">{index} //</span>
-					<span class="text-[11px] font-terminal font-bold uppercase tracking-[0.16em]">{title}</span>
+			<!-- 机能风胶囊标签 (Compact Pill Tag)：精准垂直居中（全大写等宽字体光学微调 top-[1px]） -->
+			<div class="flex items-center mb-3">
+				<div class="inline-flex items-center justify-center bg-[#0202f1] text-white h-[20px] px-2 rounded-[1px] shadow-xs">
+					<span class="relative top-[1px] text-[10px] font-terminal font-bold tracking-[0.12em] leading-none uppercase flex items-center gap-1.5">
+						<span class="opacity-80 font-normal">{index} //</span>
+						<span>{title}</span>
+					</span>
 				</div>
-				{#if tag}
-					<span class="text-[9px] font-terminal font-semibold tracking-widest text-white/80">{tag}</span>
-				{/if}
 			</div>
 			<div class="flex flex-col gap-3">
 				{@render content()}
@@ -369,7 +368,7 @@
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Table Style', '[ SPEC ]', '01', tableStyleContent)}
+	{@render sectionWrapper('Table Style', '01', tableStyleContent)}
 
 	{#snippet structureContent()}
 		<div class="flex flex-col gap-2">
@@ -389,7 +388,7 @@
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Structure', '[ LOCK ]', '02', structureContent)}
+	{@render sectionWrapper('Structure', '02', structureContent)}
 
 	{#snippet canvasContent()}
 		<div class="flex flex-col gap-3">
@@ -450,5 +449,5 @@
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Canvas', '[ VIEW ]', '03', canvasContent)}
+	{@render sectionWrapper('Canvas', '03', canvasContent)}
 </div>
