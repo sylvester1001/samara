@@ -438,7 +438,7 @@
 				<div class="flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
 					<BrandLogo
 						variant={activeLogoVariant}
-						class="w-7 h-4.5"
+						class={activeLogoVariant === 'user-samara' ? 'w-[39px] h-[24px]' : 'size-6'}
 						color={uiTheme.theme === 'avant-garde' ? '#0202f1' : 'currentColor'}
 					/>
 				</div>
