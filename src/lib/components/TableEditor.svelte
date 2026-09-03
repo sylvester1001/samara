@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import TableSizeSelector from './TableSizeSelector.svelte';
-	import { Plus } from 'lucide-svelte';
+	import { Plus, X } from 'lucide-svelte';
 	import { tick } from 'svelte';
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
 	import type { Cell } from '$lib/types';
@@ -374,6 +374,24 @@
 		return selectedSet.has(`${rowIndex}:${colIndex}`);
 	}
 
+	function handleSelectColumn(colIndex: number) {
+		const cells: { row: number; col: number }[] = [];
+		for (let r = 0; r < rowCount; r++) {
+			cells.push({ row: r, col: colIndex });
+		}
+		selectionAnchor = { row: 0, col: colIndex };
+		onSelectionChange(cells);
+	}
+
+	function handleSelectRow(rowIndex: number) {
+		const cells: { row: number; col: number }[] = [];
+		for (let c = 0; c < colCount; c++) {
+			cells.push({ row: rowIndex, col: c });
+		}
+		selectionAnchor = { row: rowIndex, col: 0 };
+		onSelectionChange(cells);
+	}
+
 	function handleEditorClick(e: MouseEvent) {
 		if (selectedCells.length === 0) return;
 		const target = e.target as HTMLElement;
@@ -430,14 +448,24 @@
 								></th>
 								{#each rows[0] || [] as _, colIndex}
 									<th
-										class="relative px-2 py-1.5 bg-muted/30 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none"
+										class="relative px-2 py-1.5 bg-muted/30 hover:bg-muted/60 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none cursor-pointer transition-colors"
+										onclick={() => handleSelectColumn(colIndex)}
+										title="Select Column {String.fromCharCode(65 + colIndex)}"
 									>
 										<span class="block">{String.fromCharCode(65 + colIndex)}</span>
-										<button 
-											class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
-											onclick={() => onDeleteColumn(colIndex)}
-											title="Delete Column"
-										>x</button>
+										{#if colCount > 1}
+											<button 
+												type="button"
+												class="header-delete-btn absolute top-1/2 -translate-y-1/2 right-1 size-4 flex items-center justify-center rounded-[2px] text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 opacity-0 transition-all cursor-pointer pointer-events-none hover:pointer-events-auto" 
+												onclick={(e) => {
+													e.stopPropagation();
+													onDeleteColumn(colIndex);
+												}}
+												title="Delete Column {String.fromCharCode(65 + colIndex)}"
+											>
+												<X class="size-2.5 stroke-[2.2]" />
+											</button>
+										{/if}
 									</th>
 								{/each}
 							</tr>
@@ -449,15 +477,25 @@
 									class={rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)]' : 'bg-muted/40') : ''}
 								>
 									<td
-										class="relative box-border px-0.5 py-1 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
+										class="relative box-border px-0.5 py-1 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none cursor-pointer hover:bg-muted/50 transition-colors {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
 										style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
+										onclick={() => handleSelectRow(rowIndex)}
+										title="Select Row {rowIndex + 1}"
 									>
-										<span class="block leading-none">{rowIndex + 1}</span>
-										<button 
-											class="absolute top-0.5 right-0.5 w-4 h-4 p-0 text-[10px] leading-none text-muted-foreground bg-transparent border-none rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-all hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950" 
-											onclick={() => onDeleteRow(rowIndex)}
-											title="Delete Row"
-										>x</button>
+										<span class="row-header-num block leading-none transition-opacity">{rowIndex + 1}</span>
+										{#if rowCount > 1}
+											<button 
+												type="button"
+												class="header-delete-btn absolute inset-0 m-auto size-4 flex items-center justify-center rounded-[2px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 opacity-0 transition-all cursor-pointer pointer-events-none hover:pointer-events-auto" 
+												onclick={(e) => {
+													e.stopPropagation();
+													onDeleteRow(rowIndex);
+												}}
+												title="Delete Row {rowIndex + 1}"
+											>
+												<X class="size-2.5 stroke-[2.2]" />
+											</button>
+										{/if}
 									</td>
 									{#each row as cell, colIndex}
 										{#if !cell.isMerged}
@@ -572,3 +610,14 @@
 		</div>
 	</ScrollArea>
 </div>
+
+<style>
+	:global(.table-editor th:hover .header-delete-btn),
+	:global(.table-editor td:hover .header-delete-btn) {
+		opacity: 1 !important;
+		pointer-events: auto !important;
+	}
+	:global(.table-editor td:hover .row-header-num) {
+		opacity: 0 !important;
+	}
+</style>
