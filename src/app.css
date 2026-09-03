@@ -696,9 +696,13 @@ html[data-theme="avant-garde"].dark [role="menu"] {
 
 html[data-theme="avant-garde"] [data-highlighted],
 html[data-theme="avant-garde"] [data-highlighted]:not([data-disabled]) {
-  background-color: #0202f1 !important;
-  color: #ffffff !important;
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
   border-radius: 1px !important;
+}
+
+html[data-theme="avant-garde"] [data-highlighted] svg {
+  color: var(--accent-foreground) !important;
 }
 
 html[data-theme="avant-garde"] [data-highlighted][data-destructive] {
