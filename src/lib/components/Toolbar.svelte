@@ -28,13 +28,6 @@
 		<div class="flex items-center gap-2 min-w-0">
 			<SidebarTrigger class="h-8 w-8 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-md hover:bg-muted'}" />
 
-			{#if uiTheme.theme === 'avant-garde'}
-				<div class="hidden sm:flex items-center gap-1.5 px-2 py-0.5 border border-border bg-muted/40 text-[11px] font-terminal uppercase tracking-widest text-muted-foreground select-none">
-					<span class="size-1.5 bg-[#0202f1] inline-block animate-pulse"></span>
-					<span>Academic Studio</span>
-				</div>
-			{/if}
-
 			<div class="w-px h-5 bg-border mx-1"></div>
 
 			<!-- Action Buttons -->
@@ -43,7 +36,7 @@
 				class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
 				onclick={onImport}
 			>
-				<Download class="shrink-0 w-3.5 h-3.5 {uiTheme.theme === 'avant-garde' ? 'text-[#0202f1]' : ''}" />
+				<Download class="shrink-0 w-3.5 h-3.5" />
 				<span>Import</span>
 			</button>
 
@@ -52,7 +45,7 @@
 				class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
 				onclick={onNewTable}
 			>
-				<FilePlus class="shrink-0 w-3.5 h-3.5 {uiTheme.theme === 'avant-garde' ? 'text-[#0202f1]' : ''}" />
+				<FilePlus class="shrink-0 w-3.5 h-3.5" />
 				<span>New</span>
 			</button>
 
