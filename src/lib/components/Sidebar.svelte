@@ -205,12 +205,9 @@
 
 <div class="flex flex-col {uiTheme.theme === 'avant-garde' ? 'gap-0' : 'gap-3'}">
 	{#snippet tableStyleContent()}
-		<!-- Preset Archetype -->
+		<!-- Preset -->
 		<div class="flex flex-col gap-1.5">
-			<div class="flex items-center justify-between">
-				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Table Archetype</span>
-				<span class="text-[9px] font-terminal uppercase text-muted-foreground/60">PRESET</span>
-			</div>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Preset</span>
 			<PresetPicker value={tableStyle.preset} onValueChange={onPresetChange} />
 		</div>
 
@@ -218,10 +215,7 @@
 
 		<!-- Typography & Size -->
 		<div class="flex flex-col gap-2">
-			<div class="flex items-center justify-between">
-				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Font Family</span>
-				<span class="text-[9px] font-terminal text-muted-foreground/60 uppercase">SPECIMEN</span>
-			</div>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Font</span>
 			<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
 				<Select.Trigger class="w-full h-8 text-sm bg-background border-border/80">
 					<span
@@ -276,12 +270,9 @@
 
 		<div class="h-px bg-border/50 my-1"></div>
 
-		<!-- Cell Spacing -->
+		<!-- Cell Padding -->
 		<div class="flex flex-col gap-1.5">
-			<div class="flex items-center justify-between">
-				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Cell Padding</span>
-				<span class="text-[9px] font-terminal text-muted-foreground/60 uppercase">SPACING</span>
-			</div>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Cell Padding</span>
 			<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full gap-1.5">
 				<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1] bg-background">Compact</ToggleGroup.Item>
 				<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1] bg-background">Normal</ToggleGroup.Item>
@@ -291,12 +282,9 @@
 
 		<div class="h-px bg-border/50 my-1"></div>
 
-		<!-- Line Rules -->
+		<!-- Border Rules -->
 		<div class="flex flex-col gap-2">
-			<div class="flex items-center justify-between">
-				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Border Rules</span>
-				<span class="text-[9px] font-terminal text-muted-foreground/60 uppercase">STROKES</span>
-			</div>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Border Rules</span>
 			<div class="grid grid-cols-2 gap-2.5">
 				<div class="flex flex-col gap-1">
 					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Top Rule</span>
@@ -372,10 +360,7 @@
 
 	{#snippet structureContent()}
 		<div class="flex flex-col gap-2">
-			<div class="flex items-center justify-between">
-				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Resize Constraints</span>
-				<span class="text-[9px] font-terminal text-muted-foreground/60 uppercase">LOCKS</span>
-			</div>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Resize Lock</span>
 			<div class="grid grid-cols-2 gap-2.5">
 				<div class="flex items-center justify-between border border-border/80 px-3 py-2 bg-background">
 					<span class="text-xs font-terminal uppercase tracking-wider font-semibold">Column</span>
