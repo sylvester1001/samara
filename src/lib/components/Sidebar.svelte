@@ -285,15 +285,45 @@
 		<!-- Border Rules -->
 		<div class="flex flex-col gap-2">
 			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Border Rules</span>
+			{#snippet borderItem(option: { value: BorderStyle; label: string })}
+				<Select.Item value={option.value} label={option.label} class="flex items-center justify-between gap-3 w-full text-xs font-terminal cursor-pointer">
+					<span class="truncate font-medium">{option.label}</span>
+					<div class="w-8 mr-2.5 flex items-center justify-center shrink-0">
+						{#if option.value === 'none'}
+							<span class="text-[9px] text-muted-foreground/50 tracking-wider">NONE</span>
+						{:else if option.value === 'thin'}
+							<div class="w-full h-[1px] bg-foreground/75"></div>
+						{:else if option.value === 'thick'}
+							<div class="w-full h-[2.5px] bg-foreground"></div>
+						{:else if option.value === 'double'}
+							<div class="w-full flex flex-col gap-[1.5px]">
+								<div class="w-full h-[1px] bg-foreground/85"></div>
+								<div class="w-full h-[1px] bg-foreground/85"></div>
+							</div>
+						{:else if option.value === 'thick-thin'}
+							<div class="w-full flex flex-col gap-[1.5px]">
+								<div class="w-full h-[2px] bg-foreground"></div>
+								<div class="w-full h-[1px] bg-foreground/75"></div>
+							</div>
+						{:else if option.value === 'thin-thick'}
+							<div class="w-full flex flex-col gap-[1.5px]">
+								<div class="w-full h-[1px] bg-foreground/75"></div>
+								<div class="w-full h-[2px] bg-foreground"></div>
+							</div>
+						{/if}
+					</div>
+				</Select.Item>
+			{/snippet}
+
 			<div class="grid grid-cols-2 gap-2.5">
 				<div class="flex flex-col gap-1">
 					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Top Rule</span>
 					<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
 						<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
-						<Select.Content class="font-terminal text-xs">
+						<Select.Content class="font-terminal text-xs min-w-[155px]">
 							<Select.Group>
 								{#each topBorderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
+									{@render borderItem(option)}
 								{/each}
 							</Select.Group>
 						</Select.Content>
@@ -303,10 +333,10 @@
 					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Bottom Rule</span>
 					<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
 						<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
-						<Select.Content class="font-terminal text-xs">
+						<Select.Content class="font-terminal text-xs min-w-[155px]">
 							<Select.Group>
 								{#each bottomBorderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
+									{@render borderItem(option)}
 								{/each}
 							</Select.Group>
 						</Select.Content>
@@ -316,10 +346,10 @@
 					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Header Separator</span>
 					<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
 						<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
-						<Select.Content class="font-terminal text-xs">
+						<Select.Content class="font-terminal text-xs min-w-[155px]">
 							<Select.Group>
 								{#each borderOptions as option}
-									<Select.Item value={option.value}>{option.label}</Select.Item>
+									{@render borderItem(option)}
 								{/each}
 							</Select.Group>
 						</Select.Content>
@@ -330,10 +360,10 @@
 						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Vertical</span>
 						<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
 							<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
-							<Select.Content class="font-terminal text-xs">
+							<Select.Content class="font-terminal text-xs min-w-[155px]">
 								<Select.Group>
 									{#each borderOptions as option}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
+										{@render borderItem(option)}
 									{/each}
 								</Select.Group>
 							</Select.Content>
@@ -343,10 +373,10 @@
 						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Horizontal</span>
 						<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
 							<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
-							<Select.Content class="font-terminal text-xs">
+							<Select.Content class="font-terminal text-xs min-w-[155px]">
 								<Select.Group>
 									{#each borderOptions as option}
-										<Select.Item value={option.value}>{option.label}</Select.Item>
+										{@render borderItem(option)}
 									{/each}
 								</Select.Group>
 							</Select.Content>
