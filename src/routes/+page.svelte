@@ -551,33 +551,36 @@
 								Preview
 							</Badge>
 						{/if}
-						<div class="absolute top-3 left-3 flex gap-1 z-10">
+						<div class="absolute top-3 left-3 flex items-center gap-0.5 z-10">
 							<Button
-								variant="outline"
+								variant="ghost"
 								size="icon"
-								class="h-7 w-7 border-border bg-background transition-colors {uiTheme.theme === 'avant-garde' ? 'preview-zoom-btn rounded-none hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-foreground hover:text-background'}"
+								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
 								onclick={() => (previewZoom = 1)}
+								title="Reset Zoom"
 							>
-								<RotateCcw class="h-3 w-3" />
+								<RotateCcw class="h-3.5 w-3.5" />
 							</Button>
 							<Button
-								variant="outline"
+								variant="ghost"
 								size="icon"
-								class="h-7 w-7 border-border bg-background transition-colors {uiTheme.theme === 'avant-garde' ? 'preview-zoom-btn rounded-none hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-foreground hover:text-background'}"
+								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
 								onclick={handleZoomOut}
+								title="Zoom Out"
 							>
-								<ZoomOut class="h-3 w-3" />
+								<ZoomOut class="h-3.5 w-3.5" />
 							</Button>
 							<Button
-								variant="outline"
+								variant="ghost"
 								size="icon"
-								class="h-7 w-7 border-border bg-background transition-colors {uiTheme.theme === 'avant-garde' ? 'preview-zoom-btn rounded-none hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-foreground hover:text-background'}"
+								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
 								onclick={handleZoomIn}
+								title="Zoom In"
 							>
-								<ZoomIn class="h-3 w-3" />
+								<ZoomIn class="h-3.5 w-3.5" />
 							</Button>
 							<span
-								class="text-[11px] font-terminal text-muted-foreground flex items-center px-2 font-semibold"
+								class="text-[11px] font-terminal text-muted-foreground flex items-center px-1.5 font-semibold select-none"
 							>
 								{Math.round(previewZoom * 100)}%
 							</span>
