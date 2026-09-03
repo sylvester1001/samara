@@ -386,9 +386,9 @@
 	}
 </script>
 
-<svelte:window onkeydown={handleHeaderAdjustKeydown} />
+<svelte:window onmouseup={handleMouseUp} onkeydown={handleHeaderAdjustKeydown} />
 
-<div class="table-editor flex flex-col h-full bg-background rounded-[2px] border border-border overflow-hidden" onmousedown={handleEditorClick} onmouseup={handleMouseUp} onmouseleave={handleMouseUp}>
+<div class="table-editor flex flex-col h-full bg-background rounded-[2px] border border-border overflow-hidden" onmousedown={handleEditorClick}>
 	<div class="flex justify-between items-center px-4 py-2 bg-muted/25 border-b border-border shrink-0 relative z-0">
 		<div class="flex items-center gap-2.5">
 			<TableSizeSelector
@@ -415,7 +415,7 @@
 			<ContextMenu.Root>
 				<ContextMenu.Trigger class="block w-full" oncontextmenu={handleContextMenu}>
 					<div class="relative w-full" bind:this={gridWrap}>
-					<table class="w-full border-collapse table-fixed">
+					<table class="w-full border-collapse table-fixed select-none">
 						<colgroup>
 							<col style="width: {rowGutterWidth};" />
 							{#each columnCharWidths as width}
@@ -425,12 +425,12 @@
 						<thead>
 							<tr>
 								<th
-									class="box-border bg-muted/40 p-0 border-b border-r border-border"
+									class="box-border bg-muted/40 p-0 border-b border-r border-zinc-200 dark:border-zinc-800"
 									style="width: {rowGutterWidth};"
 								></th>
 								{#each rows[0] || [] as _, colIndex}
 									<th
-										class="relative px-2 py-1.5 bg-muted/30 border border-border text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none"
+										class="relative px-2 py-1.5 bg-muted/30 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none"
 									>
 										<span class="block">{String.fromCharCode(65 + colIndex)}</span>
 										<button 
@@ -449,7 +449,7 @@
 									class={rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)]' : 'bg-muted/40') : ''}
 								>
 									<td
-										class="relative box-border px-0.5 py-1 border border-border text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
+										class="relative box-border px-0.5 py-1 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
 										style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
 									>
 										<span class="block leading-none">{rowIndex + 1}</span>
@@ -462,7 +462,7 @@
 									{#each row as cell, colIndex}
 										{#if !cell.isMerged}
 											<td
-												class="p-0 border border-border relative align-middle transition-colors {isSelected(rowIndex, colIndex) ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)]' : 'bg-blue-50 dark:bg-[#1e3a5f]') : ''}"
+												class="p-0 relative align-middle {isSelected(rowIndex, colIndex) ? 'bg-blue-50/90 dark:bg-[#1e3a5f]/80 border border-blue-200/90 dark:border-[#2d5282]' : 'border border-zinc-200 dark:border-zinc-800'}"
 												class:font-bold={cell.isBold}
 												class:italic={cell.isItalic}
 												style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
@@ -477,7 +477,7 @@
 												<textarea
 													rows="1"
 													cols="1"
-													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden"
+													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden {isDragging ? 'pointer-events-none select-none' : ''}"
 													style="vertical-align: middle; min-height: 1.5em;"
 													class:text-left={cell.align === 'left'}
 													class:text-center={cell.align === 'center' || !cell.align}
