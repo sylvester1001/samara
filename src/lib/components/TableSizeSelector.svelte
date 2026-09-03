@@ -69,10 +69,10 @@
 			</Button>
 		{/snippet}
 	</Popover.Trigger>
-	<Popover.Content align="start" class="w-auto p-3">
+	<Popover.Content align="start" class="w-auto p-2.5 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
 		<div class="flex flex-col gap-2">
-			<div class="text-sm font-medium text-center text-foreground">
-				{displayRows} x {displayCols}
+			<div class="text-xs font-medium text-center text-foreground {uiTheme.theme === 'avant-garde' ? 'font-terminal font-semibold uppercase tracking-wider' : ''}">
+				{displayRows} × {displayCols}
 			</div>
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->

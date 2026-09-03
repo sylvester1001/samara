@@ -224,12 +224,49 @@ html:not([data-theme="classic"]) .ticket-btn:hover {
   border-color: #0202f1 !important;
 }
 
-/* Preview Zoom Buttons Hover in Avant-Garde */
-html[data-theme="avant-garde"] .preview-zoom-btn:hover,
-html:not([data-theme="classic"]) .preview-zoom-btn:hover {
-  background-color: #0202f1 !important;
-  color: #ffffff !important;
-  border-color: #0202f1 !important;
+/* Flyout / Dropdown / Menu / Popover typography scale matching outside buttons */
+html[data-theme="avant-garde"] [data-slot="dropdown-menu-item"],
+html:not([data-theme="classic"]) [data-slot="dropdown-menu-item"],
+html[data-theme="avant-garde"] [data-slot="dropdown-menu-checkbox-item"],
+html:not([data-theme="classic"]) [data-slot="dropdown-menu-checkbox-item"],
+html[data-theme="avant-garde"] [data-slot="dropdown-menu-sub-trigger"],
+html:not([data-theme="classic"]) [data-slot="dropdown-menu-sub-trigger"],
+html[data-theme="avant-garde"] [data-slot="dropdown-menu-label"],
+html:not([data-theme="classic"]) [data-slot="dropdown-menu-label"],
+html[data-theme="avant-garde"] [data-slot="select-item"],
+html:not([data-theme="classic"]) [data-slot="select-item"],
+html[data-theme="avant-garde"] [data-slot="select-label"],
+html:not([data-theme="classic"]) [data-slot="select-label"],
+html[data-theme="avant-garde"] [data-slot="context-menu-item"],
+html:not([data-theme="classic"]) [data-slot="context-menu-item"],
+html[data-theme="avant-garde"] [data-slot="context-menu-checkbox-item"],
+html:not([data-theme="classic"]) [data-slot="context-menu-checkbox-item"],
+html[data-theme="avant-garde"] [data-slot="context-menu-sub-trigger"],
+html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"],
+html[data-theme="avant-garde"] [data-slot="context-menu-label"],
+html:not([data-theme="classic"]) [data-slot="context-menu-label"],
+html[data-theme="avant-garde"] [data-slot="popover-content"] label,
+html:not([data-theme="classic"]) [data-slot="popover-content"] label,
+html[data-theme="avant-garde"] [data-slot="popover-content"],
+html:not([data-theme="classic"]) [data-slot="popover-content"] {
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
+
+html[data-theme="avant-garde"] [data-slot="dropdown-menu-item"] svg,
+html:not([data-theme="classic"]) [data-slot="dropdown-menu-item"] svg,
+html[data-theme="avant-garde"] [data-slot="dropdown-menu-checkbox-item"] svg,
+html:not([data-theme="classic"]) [data-slot="dropdown-menu-checkbox-item"] svg,
+html[data-theme="avant-garde"] [data-slot="dropdown-menu-sub-trigger"] svg,
+html:not([data-theme="classic"]) [data-slot="dropdown-menu-sub-trigger"] svg,
+html[data-theme="avant-garde"] [data-slot="select-item"] svg,
+html:not([data-theme="classic"]) [data-slot="select-item"] svg,
+html[data-theme="avant-garde"] [data-slot="context-menu-item"] svg,
+html:not([data-theme="classic"]) [data-slot="context-menu-item"] svg,
+html[data-theme="avant-garde"] [data-slot="context-menu-sub-trigger"] svg,
+html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"] svg {
+  width: 0.875rem !important;
+  height: 0.875rem !important;
 }
 
 /* Terminal Monospace Font Rules */
