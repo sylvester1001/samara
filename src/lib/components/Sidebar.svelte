@@ -9,6 +9,7 @@
 	import PresetPicker from '$lib/components/PresetPicker.svelte';
 	import type { TableStyle, CanvasConfig, BorderStyle } from '$lib/types';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
+	import { isWindows } from '$lib/stores/platform.svelte.js';
 
 	interface Props {
 		tableStyle: TableStyle;
@@ -180,10 +181,10 @@
 {#snippet sectionWrapper(title: string, index: string, content: any)}
 	{#if uiTheme.theme === 'avant-garde'}
 		<div class="pt-3.5 pb-4.5 border-b border-border/60 last:border-b-0 select-none first:pt-0 px-1">
-			<!-- 机能风胶囊标签 (Compact Pill Tag)：精准垂直居中（全大写等宽字体光学微调 top-[1px]） -->
+			<!-- 机能风胶囊标签 (Compact Pill Tag)：精准垂直居中（跨平台光学对齐，Mac 无需额外下移 1px） -->
 			<div class="flex items-center mb-3">
 				<div class="inline-flex items-center justify-center bg-[#0202f1] text-white h-[20px] px-2 rounded-[1px] shadow-xs">
-					<span class="relative top-[1px] text-[10px] font-terminal font-bold tracking-[0.12em] leading-none uppercase flex items-center gap-1.5">
+					<span class="{isWindows ? 'relative top-[1px]' : ''} text-[10px] font-terminal font-bold tracking-[0.12em] leading-none uppercase flex items-center gap-1.5">
 						<span class="opacity-80 font-normal">{index} //</span>
 						<span>{title}</span>
 					</span>
