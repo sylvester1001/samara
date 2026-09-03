@@ -462,7 +462,7 @@
 									{#each row as cell, colIndex}
 										{#if !cell.isMerged}
 											<td
-												class="p-0 border border-border relative align-middle transition-colors {isSelected(rowIndex, colIndex) ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] shadow-[inset_0_0_0_1.5px_#0202f1] z-10' : 'bg-muted/70 dark:bg-muted/50 shadow-[inset_0_0_0_1.5px_currentColor] z-10') : ''}"
+												class="p-0 border border-border relative align-middle transition-colors {isSelected(rowIndex, colIndex) ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)]' : 'bg-blue-50 dark:bg-[#1e3a5f]') : ''}"
 												class:font-bold={cell.isBold}
 												class:italic={cell.isItalic}
 												style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
