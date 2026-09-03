@@ -446,10 +446,10 @@
 							{#each rows as row, rowIndex}
 								<tr
 									data-table-row={rowIndex}
-									class={rowIndex < headerRows ? 'bg-[var(--cobalt-subtle)]' : ''}
+									class={rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)]' : 'bg-muted/40') : ''}
 								>
 									<td
-										class="relative box-border px-0.5 py-1 border border-border text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none {rowIndex < headerRows ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/30'}"
+										class="relative box-border px-0.5 py-1 border border-border text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
 										style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
 									>
 										<span class="block leading-none">{rowIndex + 1}</span>
@@ -462,12 +462,7 @@
 									{#each row as cell, colIndex}
 										{#if !cell.isMerged}
 											<td
-												class="p-0 border border-border relative align-middle transition-colors"
-												class:bg-[var(--cobalt-subtle)]={isSelected(rowIndex, colIndex) && uiTheme.theme === 'avant-garde'}
-												class:shadow-[inset_0_0_0_1.5px_#0202f1]={isSelected(rowIndex, colIndex) && uiTheme.theme === 'avant-garde'}
-												class:bg-blue-50={isSelected(rowIndex, colIndex) && uiTheme.theme === 'classic'}
-												class:dark:bg-[#1e3a5f]={isSelected(rowIndex, colIndex) && uiTheme.theme === 'classic'}
-												class:z-10={isSelected(rowIndex, colIndex)}
+												class="p-0 border border-border relative align-middle transition-colors {isSelected(rowIndex, colIndex) ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] shadow-[inset_0_0_0_1.5px_#0202f1] z-10' : 'bg-muted/70 dark:bg-muted/50 shadow-[inset_0_0_0_1.5px_currentColor] z-10') : ''}"
 												class:font-bold={cell.isBold}
 												class:italic={cell.isItalic}
 												style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
@@ -509,18 +504,18 @@
 					{#if headerAdjustMode}
 						<div
 							data-header-adjust
-							class="pointer-events-none absolute z-20 rounded-[1px] border-2 border-[var(--cobalt)] bg-[var(--cobalt-subtle)]"
+							class="pointer-events-none absolute z-20 rounded-[1px] border-2 {uiTheme.theme === 'avant-garde' ? 'border-[var(--cobalt)] bg-[var(--cobalt-subtle)]' : 'border-foreground bg-foreground/10'}"
 							style:top="{headerBox.top}px"
 							style:left="{headerBox.left}px"
 							style:width="{headerBox.width}px"
 							style:height="{headerBox.height}px"
 						>
-							<span class="absolute top-1 left-1 rounded-[1px] bg-[var(--cobalt)] px-1.5 py-0.5 text-[9px] font-terminal uppercase tracking-widest text-white">
+							<span class="absolute top-1 left-1 rounded-[1px] {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)] text-white' : 'bg-foreground text-background'} px-1.5 py-0.5 text-[9px] font-terminal uppercase tracking-widest">
 								Header
 							</span>
 							<button
 								type="button"
-								class="pointer-events-auto absolute bottom-0 left-1/2 z-30 h-2 w-8 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-[1px] border border-white bg-[var(--cobalt)] shadow-sm"
+								class="pointer-events-auto absolute bottom-0 left-1/2 z-30 h-2 w-8 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-[1px] border border-white {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)]' : 'bg-foreground'} shadow-sm"
 								aria-label="Resize header rows"
 								onmousedown={handleHeaderDragStart}
 							></button>

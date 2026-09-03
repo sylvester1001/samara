@@ -261,7 +261,7 @@
 		data-header-adjust-toggle
 		variant={headerAdjustMode ? "default" : "ghost"}
 		size="sm"
-		class="h-7 px-2.5 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : 'rounded-[var(--radius)]'} {headerAdjustMode ? 'bg-[#0202f1] text-white hover:bg-[#0000d0]' : (uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-foreground hover:text-background')}"
+		class="h-7 px-2.5 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : 'rounded-[var(--radius)]'} {headerAdjustMode ? (uiTheme.theme === 'avant-garde' ? 'bg-[#0202f1] text-white hover:bg-[#0000d0]' : 'bg-foreground text-background hover:bg-foreground/90') : (uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-muted')}"
 		onclick={onToggleHeaderAdjust}
 	>
 		<PanelTop class="w-3.5 h-3.5 mr-1" />
@@ -273,7 +273,7 @@
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}
-				<Button variant="ghost" size="sm" class="h-7 px-2 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
+				<Button variant="ghost" size="sm" class="h-7 px-2 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}" {...props}>
 					<Minus class="w-3.5 h-3.5 mr-1" />
 					Line
 					<ChevronDown class="w-3 h-3 ml-0.5 opacity-70" />
@@ -321,7 +321,7 @@
 		{/if}
 		{#each segments as segment, index}
 			<div
-				class="inline-flex items-center gap-1.5 rounded-[1px] border {activeSegmentIndex === index ? 'border-[var(--cobalt)] bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'border-border bg-background text-foreground'} px-2 py-0.5 text-[11px] font-terminal uppercase tracking-wider"
+				class="inline-flex items-center gap-1.5 rounded-[1px] border {activeSegmentIndex === index ? (uiTheme.theme === 'avant-garde' ? 'border-[var(--cobalt)] bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'border-foreground bg-muted text-foreground font-bold') : 'border-border bg-background text-foreground'} px-2 py-0.5 text-[11px] font-terminal uppercase tracking-wider"
 			>
 				<button
 					type="button"

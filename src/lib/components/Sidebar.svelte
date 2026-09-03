@@ -274,9 +274,9 @@
 		<div class="flex flex-col gap-1.5">
 			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Cell Padding</span>
 			<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full gap-1.5">
-				<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1] bg-background">Compact</ToggleGroup.Item>
-				<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1] bg-background">Normal</ToggleGroup.Item>
-				<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1] bg-background">Loose</ToggleGroup.Item>
+				<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">Compact</ToggleGroup.Item>
+				<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">Normal</ToggleGroup.Item>
+				<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">Loose</ToggleGroup.Item>
 			</ToggleGroup.Root>
 		</div>
 
