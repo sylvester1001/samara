@@ -10,6 +10,7 @@
 	import type { TableStyle, CanvasConfig, BorderStyle } from '$lib/types';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 	import { isWindows } from '$lib/stores/platform.svelte.js';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		tableStyle: TableStyle;
@@ -35,51 +36,51 @@
 		onLockRowResizeChange
 	}: Props = $props();
 
-	const fontOptions = [
+	const fontOptions = $derived([
 		{
 			value: 'computer-modern',
 			label: 'Computer Modern',
-			fontFamily: '"CMU Serif", Georgia, serif',
-			tag: 'LaTeX Serif',
-			sample: 'Academic Specimen'
+			fontFamily: '"CMU Serif", var(--font-cjk), Georgia, serif',
+			tag: t('sidebar.fontTagLatex'),
+			sample: t('sidebar.fontSample')
 		},
 		{
 			value: 'times',
 			label: 'Times New Roman',
-			fontFamily: '"Times New Roman", Times, serif',
-			tag: 'Classic Serif',
-			sample: 'Academic Specimen'
+			fontFamily: '"Times New Roman", Times, var(--font-cjk), serif',
+			tag: t('sidebar.fontTagClassic'),
+			sample: t('sidebar.fontSample')
 		},
 		{
 			value: 'arial',
 			label: 'Arial',
-			fontFamily: 'Arial, Helvetica, sans-serif',
-			tag: 'Clean Sans',
-			sample: 'Academic Specimen'
+			fontFamily: 'Arial, Helvetica, var(--font-cjk), sans-serif',
+			tag: t('sidebar.fontTagSans'),
+			sample: t('sidebar.fontSample')
 		}
-	];
+	]);
 
-	const canvasPresets = [
-		{ value: 'auto', label: 'Auto' },
-		{ value: 'ppt', label: 'PPT 16:9 (1920 x 1080)' },
-		{ value: 'a4', label: 'A4 (794 x 1123)' },
-		{ value: 'custom', label: 'Custom' }
-	];
+	const canvasPresets = $derived([
+		{ value: 'auto', label: t('sidebar.canvasAuto') },
+		{ value: 'ppt', label: t('sidebar.canvasPpt') },
+		{ value: 'a4', label: t('sidebar.canvasA4') },
+		{ value: 'custom', label: t('sidebar.canvasCustom') }
+	]);
 
-	const borderOptions: { value: BorderStyle; label: string }[] = [
-		{ value: 'none', label: 'None' },
-		{ value: 'thin', label: 'Light' },
-		{ value: 'thick', label: 'Heavy' },
-		{ value: 'double', label: 'Double' }
-	];
-	const topBorderOptions: { value: BorderStyle; label: string }[] = [
+	const borderOptions = $derived([
+		{ value: 'none' as BorderStyle, label: t('sidebar.borderNone') },
+		{ value: 'thin' as BorderStyle, label: t('sidebar.borderLight') },
+		{ value: 'thick' as BorderStyle, label: t('sidebar.borderHeavy') },
+		{ value: 'double' as BorderStyle, label: t('sidebar.borderDouble') }
+	]);
+	const topBorderOptions = $derived([
 		...borderOptions,
-		{ value: 'thick-thin', label: 'Heavy-Light' }
-	];
-	const bottomBorderOptions: { value: BorderStyle; label: string }[] = [
+		{ value: 'thick-thin' as BorderStyle, label: t('sidebar.borderHeavyLight') }
+	]);
+	const bottomBorderOptions = $derived([
 		...borderOptions,
-		{ value: 'thin-thick', label: 'Light-Heavy' }
-	];
+		{ value: 'thin-thick' as BorderStyle, label: t('sidebar.borderLightHeavy') }
+	]);
 
 	let canvasPreset = $state('auto');
 	let customWidth = $state(800);
@@ -173,7 +174,11 @@
 	}
 
 	function getBorderLabel(value: BorderStyle) {
-		const allOptions = [...borderOptions, { value: 'thick-thin', label: 'Heavy-Light' }, { value: 'thin-thick', label: 'Light-Heavy' }];
+		const allOptions = [
+			...borderOptions,
+			{ value: 'thick-thin' as BorderStyle, label: t('sidebar.borderHeavyLight') },
+			{ value: 'thin-thick' as BorderStyle, label: t('sidebar.borderLightHeavy') }
+		];
 		return allOptions.find((option) => option.value === value)?.label ?? value;
 	}
 </script>
@@ -208,7 +213,7 @@
 	{#snippet tableStyleContent()}
 		<!-- Preset -->
 		<div class="flex flex-col gap-1.5">
-			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Preset</span>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">{t('sidebar.preset')}</span>
 			<PresetPicker value={tableStyle.preset} onValueChange={onPresetChange} />
 		</div>
 
@@ -216,14 +221,14 @@
 
 		<!-- Typography & Size -->
 		<div class="flex flex-col gap-2">
-			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Font</span>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">{t('sidebar.font')}</span>
 			<Select.Root type="single" value={tableStyle.fontFamily} onValueChange={handleFontChange}>
 				<Select.Trigger class="w-full h-8 text-sm bg-background border-border/80">
 					<span
 						class="text-sm truncate font-medium"
 						style:font-family={fontOptions.find(o => o.value === tableStyle.fontFamily)?.fontFamily}
 					>
-						{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || 'Select font'}
+						{fontOptions.find(o => o.value === tableStyle.fontFamily)?.label || t('sidebar.selectFont')}
 					</span>
 				</Select.Trigger>
 				<Select.Content side="bottom" align="start" sideOffset={4} class="w-[280px]">
@@ -255,14 +260,14 @@
 				</Select.Content>
 			</Select.Root>
 			<div class="flex items-center gap-3 pt-1">
-				<span class="text-xs text-muted-foreground shrink-0 w-8 font-terminal text-[10px] uppercase tracking-wider">Size</span>
+				<span class="text-xs text-muted-foreground shrink-0 w-8 font-terminal text-[10px] uppercase tracking-wider">{t('sidebar.size')}</span>
 				<div class="relative flex-1 flex items-center py-1">
 					<!-- 12pt Center Benchmark Notch (工业标定刻度线) -->
 					<button
 						type="button"
 						class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-5 flex flex-col items-center justify-between pointer-events-auto cursor-pointer z-0 group"
 						onclick={() => handleFontSizeChange?.(12)}
-						title="Default: 12pt (Click to reset)"
+						title={t('sidebar.fontSizeDefault')}
 					>
 						<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
 						<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
@@ -281,7 +286,7 @@
 					type="button"
 					class="text-xs text-muted-foreground shrink-0 w-8 text-right font-terminal text-[11px] font-semibold transition-colors {tableStyle.fontSize === 12 ? 'text-foreground' : 'text-primary hover:underline cursor-pointer'}"
 					onclick={() => handleFontSizeChange?.(12)}
-					title={tableStyle.fontSize === 12 ? "Default: 12pt" : "Click to reset to default (12pt)"}
+					title={tableStyle.fontSize === 12 ? t('sidebar.fontSizeDefaultShort') : t('sidebar.fontSizeReset')}
 				>
 					{tableStyle.fontSize}pt
 				</button>
@@ -292,11 +297,11 @@
 
 		<!-- Cell Padding -->
 		<div class="flex flex-col gap-1.5">
-			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Cell Padding</span>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">{t('sidebar.cellPadding')}</span>
 			<ToggleGroup.Root variant="outline" type="single" value={typeof tableStyle.padding === 'string' ? tableStyle.padding : 'normal'} onValueChange={(v) => v && handlePaddingChange(v)} class="w-full gap-1.5">
-				<ToggleGroup.Item value="compact" aria-label="Compact" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">Compact</ToggleGroup.Item>
-				<ToggleGroup.Item value="normal" aria-label="Normal" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">Normal</ToggleGroup.Item>
-				<ToggleGroup.Item value="loose" aria-label="Loose" class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">Loose</ToggleGroup.Item>
+				<ToggleGroup.Item value="compact" aria-label={t('sidebar.compact')} class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">{t('sidebar.compact')}</ToggleGroup.Item>
+				<ToggleGroup.Item value="normal" aria-label={t('sidebar.normal')} class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">{t('sidebar.normal')}</ToggleGroup.Item>
+				<ToggleGroup.Item value="loose" aria-label={t('sidebar.loose')} class="flex-1 h-8 text-[11px] font-terminal uppercase tracking-wider {uiTheme.theme === 'avant-garde' ? 'data-[state=on]:bg-[#0202f1] data-[state=on]:text-white data-[state=on]:border-[#0202f1]' : 'data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:border-foreground'} bg-background">{t('sidebar.loose')}</ToggleGroup.Item>
 			</ToggleGroup.Root>
 		</div>
 
@@ -304,13 +309,13 @@
 
 		<!-- Border Rules -->
 		<div class="flex flex-col gap-2">
-			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Border Rules</span>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">{t('sidebar.borderRules')}</span>
 			{#snippet borderItem(option: { value: BorderStyle; label: string })}
 				<Select.Item value={option.value} label={option.label} class="flex items-center justify-between gap-3 w-full text-xs font-terminal cursor-pointer">
 					<span class="truncate font-medium">{option.label}</span>
 					<div class="w-8 mr-2.5 flex items-center justify-center shrink-0">
 						{#if option.value === 'none'}
-							<span class="text-[9px] text-muted-foreground/50 tracking-wider">NONE</span>
+							<span class="text-[9px] text-muted-foreground/50 tracking-wider">{t('sidebar.borderNonePreview')}</span>
 						{:else if option.value === 'thin'}
 							<div class="w-full h-[1px] bg-foreground/75"></div>
 						{:else if option.value === 'thick'}
@@ -337,7 +342,7 @@
 
 			<div class="grid grid-cols-2 gap-2.5">
 				<div class="flex flex-col gap-1">
-					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Top Rule</span>
+					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">{t('sidebar.topRule')}</span>
 					<Select.Root type="single" value={tableStyle.borders.top} onValueChange={(v) => handleBorderChange('top', v)}>
 						<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.top)}</Select.Trigger>
 						<Select.Content class="font-terminal text-xs min-w-[155px]">
@@ -350,7 +355,7 @@
 					</Select.Root>
 				</div>
 				<div class="flex flex-col gap-1">
-					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Bottom Rule</span>
+					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">{t('sidebar.bottomRule')}</span>
 					<Select.Root type="single" value={tableStyle.borders.bottom} onValueChange={(v) => handleBorderChange('bottom', v)}>
 						<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.bottom)}</Select.Trigger>
 						<Select.Content class="font-terminal text-xs min-w-[155px]">
@@ -363,7 +368,7 @@
 					</Select.Root>
 				</div>
 				<div class="flex flex-col gap-1 col-span-2">
-					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Header Separator</span>
+					<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">{t('sidebar.headerSeparator')}</span>
 					<Select.Root type="single" value={tableStyle.borders.headerBottom} onValueChange={(v) => handleBorderChange('headerBottom', v)}>
 						<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.headerBottom)}</Select.Trigger>
 						<Select.Content class="font-terminal text-xs min-w-[155px]">
@@ -377,7 +382,7 @@
 				</div>
 				{#if tableStyle.preset !== 'booktabs'}
 					<div class="flex flex-col gap-1">
-						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Vertical</span>
+						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">{t('sidebar.vertical')}</span>
 						<Select.Root type="single" value={tableStyle.borders.vertical} onValueChange={(v) => handleBorderChange('vertical', v)}>
 							<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.vertical)}</Select.Trigger>
 							<Select.Content class="font-terminal text-xs min-w-[155px]">
@@ -390,7 +395,7 @@
 						</Select.Root>
 					</div>
 					<div class="flex flex-col gap-1">
-						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Horizontal</span>
+						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">{t('sidebar.horizontal')}</span>
 						<Select.Root type="single" value={tableStyle.borders.horizontal} onValueChange={(v) => handleBorderChange('horizontal', v)}>
 							<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">{getBorderLabel(tableStyle.borders.horizontal)}</Select.Trigger>
 							<Select.Content class="font-terminal text-xs min-w-[155px]">
@@ -406,32 +411,32 @@
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Table Style', '01', tableStyleContent)}
+	{@render sectionWrapper(t('sidebar.tableStyle'), '01', tableStyleContent)}
 
 	{#snippet structureContent()}
 		<div class="flex flex-col gap-2">
-			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Resize Lock</span>
+			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">{t('sidebar.resizeLock')}</span>
 			<div class="grid grid-cols-2 gap-2.5">
 				<div class="flex items-center justify-between border border-border/80 px-3 py-2 bg-background">
-					<span class="text-xs font-terminal uppercase tracking-wider font-semibold">Column</span>
+					<span class="text-xs font-terminal uppercase tracking-wider font-semibold">{t('sidebar.column')}</span>
 					<Switch checked={lockColumnResize} onCheckedChange={(v) => onLockColumnResizeChange?.(v)} />
 				</div>
 				<div class="flex items-center justify-between border border-border/80 px-3 py-2 bg-background">
-					<span class="text-xs font-terminal uppercase tracking-wider font-semibold">Row</span>
+					<span class="text-xs font-terminal uppercase tracking-wider font-semibold">{t('sidebar.row')}</span>
 					<Switch checked={lockRowResize} onCheckedChange={(v) => onLockRowResizeChange?.(v)} />
 				</div>
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Structure', '02', structureContent)}
+	{@render sectionWrapper(t('sidebar.structure'), '02', structureContent)}
 
 	{#snippet canvasContent()}
 		<div class="flex flex-col gap-3">
 			<div class="flex flex-col gap-1.5">
-				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Size Preset</span>
+				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">{t('sidebar.sizePreset')}</span>
 				<Select.Root type="single" value={canvasPreset} onValueChange={handleCanvasPresetChange}>
 					<Select.Trigger class="w-full h-8 font-terminal text-xs bg-background border-border/80">
-						{canvasPresets.find(o => o.value === canvasPreset)?.label || 'Auto'}
+						{canvasPresets.find(o => o.value === canvasPreset)?.label || t('sidebar.canvasAuto')}
 					</Select.Trigger>
 					<Select.Content class="font-terminal text-xs">
 						<Select.Group>
@@ -446,7 +451,7 @@
 			{#if canvasPreset === 'custom'}
 				<div class="grid grid-cols-2 gap-2.5">
 					<div class="flex flex-col gap-1">
-						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Width (px)</span>
+						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">{t('sidebar.widthPx')}</span>
 						<Input
 							type="number"
 							class="h-8 font-terminal text-xs bg-background border-border/80"
@@ -457,7 +462,7 @@
 						/>
 					</div>
 					<div class="flex flex-col gap-1">
-						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">Height (px)</span>
+						<span class="text-[10px] font-terminal uppercase tracking-wider text-muted-foreground">{t('sidebar.heightPx')}</span>
 						<Input
 							type="number"
 							class="h-8 font-terminal text-xs bg-background border-border/80"
@@ -471,7 +476,7 @@
 			{/if}
 
 			<div class="flex items-center justify-between pt-2 border-t border-border/40">
-				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">Background Color</span>
+				<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold">{t('sidebar.backgroundColor')}</span>
 				<div class="flex items-center gap-2">
 					<input
 						type="color"
@@ -484,5 +489,5 @@
 			</div>
 		</div>
 	{/snippet}
-	{@render sectionWrapper('Canvas', '03', canvasContent)}
+	{@render sectionWrapper(t('sidebar.canvas'), '03', canvasContent)}
 </div>

@@ -26,9 +26,9 @@
 
 	// ========== Constants ==========
 	const FONT_FAMILY_MAP: Record<string, string> = {
-		'computer-modern': '"CMU Serif", serif',
-		times: '"Times New Roman", Times, serif',
-		arial: 'Arial, Helvetica, sans-serif'
+		'computer-modern': '"CMU Serif", var(--font-cjk), serif',
+		times: '"Times New Roman", Times, var(--font-cjk), serif',
+		arial: 'Arial, Helvetica, var(--font-cjk), sans-serif'
 	};
 
 	const PADDING_MAP: Record<string, number> = {

@@ -2,6 +2,7 @@
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import "mathlive";
+    import { t } from "$lib/i18n";
 
     interface Props {
         open: boolean;
@@ -64,9 +65,9 @@
         onOpenAutoFocus={(e) => e.preventDefault()}
     >
         <Dialog.Header>
-            <Dialog.Title>Insert Formula</Dialog.Title>
+            <Dialog.Title>{t('formula.title')}</Dialog.Title>
             <Dialog.Description>
-                Edit your math formula using the visual editor below.
+                {t('formula.description')}
             </Dialog.Description>
         </Dialog.Header>
 
@@ -84,9 +85,9 @@
 
         <Dialog.Footer>
             <Button variant="outline" onclick={() => onOpenChange(false)}
-                >Cancel</Button
+                >{t('common.cancel')}</Button
             >
-            <Button onclick={handleConfirm}>Insert Formula</Button>
+            <Button onclick={handleConfirm}>{t('formula.confirm')}</Button>
         </Dialog.Footer>
     </Dialog.Content>
 </Dialog.Root>

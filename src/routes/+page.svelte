@@ -38,6 +38,7 @@
 	import BrandLogo from "$lib/components/BrandLogo.svelte";
 	import { isMac, isTauri } from "$lib/stores/platform.svelte.js";
 	import LogoShowcaseDialog from "$lib/components/LogoShowcaseDialog.svelte";
+	import { t } from "$lib/i18n";
 
 	let logoShowcaseOpen = $state(false);
 	let activeLogoVariant = $state<'user-samara' | 'engraved-single' | 'engraved-dual'>('user-samara');
@@ -126,7 +127,7 @@
 	function handleSelectionChange(cells: { row: number; col: number }[]) {
 		tableStore.setSelectedCells(cells);
 		if (cells.length > 0) {
-			lineHint = "";
+			selectCellHint = false;
 		}
 		syncActiveSegment();
 	}
@@ -169,7 +170,7 @@
 
 	let headerAdjustMode = $state(false);
 	let activeSegmentIndex = $state<number | null>(null);
-	let lineHint = $state("");
+	let selectCellHint = $state(false);
 	let lineShorter = $state(true);
 
 	function syncActiveSegment() {
@@ -186,10 +187,10 @@
 
 	function handleAddLine(edge: LineEdge) {
 		if (tableStore.selectedCells.length === 0) {
-			lineHint = "Select a cell first";
+			selectCellHint = true;
 			return;
 		}
-		lineHint = "";
+		selectCellHint = false;
 		const shorter =
 			activeSegmentIndex != null
 				? isSegmentTrimmed(
@@ -409,7 +410,7 @@
 <svelte:window onpaste={handleGlobalPaste} onkeydown={handleGlobalKeydown} />
 
 <svelte:head>
-	<title>Samara — Academic Table Editor</title>
+	<title>{t('preview.documentTitle')}</title>
 </svelte:head>
 
 <FormulaDialog
@@ -434,7 +435,7 @@
 				type="button"
 				class="flex items-center gap-2.5 group cursor-pointer text-left -ml-1.5 px-1.5 py-1 rounded-[var(--radius)] hover:bg-muted/50 transition-colors w-full"
 				onclick={() => (logoShowcaseOpen = true)}
-				title="Click to preview & choose Logo / Typography"
+				title={t('preview.logoHint')}
 			>
 				<div class="flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
 					<BrandLogo
@@ -452,7 +453,7 @@
 						<span class="text-[13px] font-mono-brand font-semibold tracking-wider text-foreground truncate">samara</span>
 					{/if}
 					{#if uiTheme.theme === 'avant-garde'}
-						<span class="text-[8.5px] font-terminal tracking-wider text-muted-foreground uppercase mt-0.5">ACADEMIC // v0.1</span>
+						<span class="text-[8.5px] font-terminal tracking-wider text-muted-foreground uppercase mt-0.5">{t('preview.academicTag')}</span>
 					{/if}
 				</div>
 			</button>
@@ -522,7 +523,7 @@
 									(headerAdjustMode = !headerAdjustMode)}
 								tableData={tableStore.tableData}
 								{activeSegmentIndex}
-								{lineHint}
+								lineHint={selectCellHint ? t('preview.selectCellFirst') : ""}
 								onAddLine={handleAddLine}
 								onShorterChange={handleShorterChange}
 								onRemoveSegment={handleRemoveSegment}
@@ -570,7 +571,7 @@
 							<div class="absolute top-3 right-3 z-10">
 								<span class="ticket-tag bg-background text-foreground border-border shadow-xs">
 									<span class="size-1.5 rounded-full bg-[#0202f1]"></span>
-									<span>PREVIEW // LIVE</span>
+									<span>{t('preview.live')}</span>
 								</span>
 							</div>
 						{:else}
@@ -578,7 +579,7 @@
 								variant="outline"
 								class="absolute top-2 right-3 text-[11px] font-medium uppercase tracking-wide z-10 bg-background"
 							>
-								Preview
+								{t('preview.preview')}
 							</Badge>
 						{/if}
 						<div class="absolute top-3 left-3 flex items-center gap-0.5 z-10">
@@ -587,7 +588,7 @@
 								size="icon"
 								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
 								onclick={() => (previewZoom = 1)}
-								title="Reset Zoom"
+								title={t('preview.resetZoom')}
 							>
 								<RotateCcw class="h-3.5 w-3.5" />
 							</Button>
@@ -596,7 +597,7 @@
 								size="icon"
 								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
 								onclick={handleZoomOut}
-								title="Zoom Out"
+								title={t('preview.zoomOut')}
 							>
 								<ZoomOut class="h-3.5 w-3.5" />
 							</Button>
@@ -605,7 +606,7 @@
 								size="icon"
 								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
 								onclick={handleZoomIn}
-								title="Zoom In"
+								title={t('preview.zoomIn')}
 							>
 								<ZoomIn class="h-3.5 w-3.5" />
 							</Button>
@@ -648,13 +649,13 @@
 										<Button
 											variant="default"
 											class="w-[144px] h-9 shadow-lg font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal text-xs uppercase tracking-[0.14em] font-bold' : ''}"
-											style={uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; border: 1px solid #0202f1 !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
+											style={uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; border: 1px solid #0202f1 !important; font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
 											{...props}
 										>
 											<ArrowRightFromLine
 												class="w-3.5 h-3.5 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'stroke-[2.5]' : ''}"
 											/>
-											Export Image
+											{t('preview.exportImage')}
 										</Button>
 									{/snippet}
 								</Popover.Trigger>
@@ -668,7 +669,7 @@
 											<div
 												class="grid grid-cols-3 items-center gap-4"
 											>
-												<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>Format</Label>
+												<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>{t('preview.format')}</Label>
 												<div
 													class="col-span-2 flex gap-1"
 												>
@@ -682,7 +683,7 @@
 															(exportFormat =
 																"png")}
 														class="flex-1 h-8 {exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
-														style={exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
+														style={exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
 													>
 														PNG
 													</Button>
@@ -696,7 +697,7 @@
 															(exportFormat =
 																"svg")}
 														class="flex-1 h-8 {exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
-														style={exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
+														style={exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
 													>
 														SVG
 													</Button>
@@ -706,7 +707,7 @@
 												<div
 													class="grid grid-cols-3 items-center gap-4"
 												>
-													<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>DPI</Label>
+													<Label class={uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal uppercase tracking-wider text-muted-foreground' : ''}>{t('preview.dpi')}</Label>
 													<Select.Root
 														type="single"
 														value={String(
@@ -722,7 +723,7 @@
 																	o.value ===
 																	exportDpi,
 															)?.label ||
-																"Select DPI"}
+																t('preview.selectDpi')}
 														</Select.Trigger>
 														<Select.Content class={uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}>
 															{#each dpiOptions as option}
@@ -742,9 +743,9 @@
 											<Button 
 												onclick={handleExport}
 												class={uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal text-xs uppercase tracking-wider font-bold' : ''}
-												style={uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; border: 1px solid #0202f1 !important; font-family: "JetBrains Mono", monospace !important;' : undefined}
+												style={uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; border: 1px solid #0202f1 !important; font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
 											>
-												Export
+												{t('preview.export')}
 											</Button>
 										</div>
 									</div>
@@ -756,11 +757,11 @@
 										<Button
 											variant="outline"
 											class="w-[144px] h-9 bg-background hover:bg-muted shadow-lg font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'hover:text-[#0202f1] hover:border-[#0202f1] font-terminal text-xs uppercase tracking-[0.14em] font-bold' : ''}"
-											style={uiTheme.theme === 'avant-garde' ? 'font-family: "JetBrains Mono", monospace !important;' : undefined}
+											style={uiTheme.theme === 'avant-garde' ? 'font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
 											{...props}
 										>
 											<Code class="w-3.5 h-3.5 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'text-[#0202f1] stroke-[2.5]' : ''}" />
-											Export LaTeX
+											{t('preview.exportLatex')}
 										</Button>
 									{/snippet}
 								</Popover.Trigger>
@@ -770,20 +771,20 @@
 									class="w-56"
 								>
 									<div class="grid gap-2">
-										<p class="text-sm text-muted-foreground mb-2">Choose export format:</p>
+										<p class="text-sm text-muted-foreground mb-2">{t('preview.chooseFormat')}</p>
 										<Button
 											variant="outline"
 											class="w-full justify-start"
 											onclick={() => handleExportLatex(true)}
 										>
-											With Styles
+											{t('preview.withStyles')}
 										</Button>
 										<Button
 											variant="outline"
 											class="w-full justify-start"
 											onclick={() => handleExportLatex(false)}
 										>
-											Plain (No Styles)
+											{t('preview.plain')}
 										</Button>
 									</div>
 								</Popover.Content>

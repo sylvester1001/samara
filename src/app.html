@@ -11,6 +11,10 @@
 				try {
 					var theme = localStorage.getItem('samara-ui-theme') || localStorage.getItem('tablix-ui-theme') || 'avant-garde';
 					document.documentElement.setAttribute('data-theme', theme);
+					var locale = localStorage.getItem('samara-locale');
+					if (locale === 'zh-CN' || locale === 'zh-TW' || locale === 'en') {
+						document.documentElement.setAttribute('lang', locale);
+					}
 				} catch (e) {}
 			})();
 		</script>

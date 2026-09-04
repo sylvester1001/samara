@@ -21,6 +21,7 @@
 	import type { TableData } from "$lib/types";
 	import { getSegmentLabel, isSegmentTrimmed } from "$lib/utils/table-geometry";
 	import { uiTheme } from "$lib/stores/ui-theme.svelte.js";
+	import { t } from "$lib/i18n";
 
 	interface Props {
 		hasSelection?: boolean;
@@ -91,8 +92,8 @@
 	unselectable="on"
 >
 	<AppTooltip
-		text="Align left"
-		aria-label="Align left"
+		text={t('edit.alignLeft')}
+		aria-label={t('edit.alignLeft')}
 		onclick={() => onAlignChange?.("left")}
 		disabled={!hasSelection}
 	>
@@ -103,8 +104,8 @@
 		{/snippet}
 	</AppTooltip>
 	<AppTooltip
-		text="Align center"
-		aria-label="Align center"
+		text={t('edit.alignCenter')}
+		aria-label={t('edit.alignCenter')}
 		onclick={() => onAlignChange?.("center")}
 		disabled={!hasSelection}
 	>
@@ -115,8 +116,8 @@
 		{/snippet}
 	</AppTooltip>
 	<AppTooltip
-		text="Align right"
-		aria-label="Align right"
+		text={t('edit.alignRight')}
+		aria-label={t('edit.alignRight')}
 		onclick={() => onAlignChange?.("right")}
 		disabled={!hasSelection}
 	>
@@ -130,8 +131,8 @@
 	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<AppTooltip
-		text="Bold"
-		aria-label="Bold"
+		text={t('edit.bold')}
+		aria-label={t('edit.bold')}
 		onclick={onToggleBold}
 		disabled={!hasSelection}
 	>
@@ -142,8 +143,8 @@
 		{/snippet}
 	</AppTooltip>
 	<AppTooltip
-		text="Italic"
-		aria-label="Italic"
+		text={t('edit.italic')}
+		aria-label={t('edit.italic')}
 		onclick={onToggleItalic}
 		disabled={!hasSelection}
 	>
@@ -157,8 +158,8 @@
 	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<AppTooltip
-		text="Text color"
-		aria-label="Text color"
+		text={t('edit.textColor')}
+		aria-label={t('edit.textColor')}
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
@@ -185,8 +186,8 @@
 		{/snippet}
 	</AppTooltip>
 	<AppTooltip
-		text="Background color"
-		aria-label="Background color"
+		text={t('edit.backgroundColor')}
+		aria-label={t('edit.backgroundColor')}
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
@@ -216,8 +217,8 @@
 	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<AppTooltip
-		text="Merge cells"
-		aria-label="Merge cells"
+		text={t('edit.mergeCells')}
+		aria-label={t('edit.mergeCells')}
 		onclick={onMergeCells}
 		disabled={!hasSelection}
 	>
@@ -228,8 +229,8 @@
 		{/snippet}
 	</AppTooltip>
 	<AppTooltip
-		text="Unmerge cells"
-		aria-label="Unmerge cells"
+		text={t('edit.unmergeCells')}
+		aria-label={t('edit.unmergeCells')}
 		onclick={onUnmergeCells}
 		disabled={!hasSelection}
 	>
@@ -243,15 +244,15 @@
 	<div class="h-4 w-px bg-border/80 mx-1"></div>
 
 	<AppTooltip
-		text="Insert Formula"
-		aria-label="Insert Formula"
+		text={t('edit.insertFormula')}
+		aria-label={t('edit.insertFormula')}
 		onclick={onInsertFormula}
 		disabled={!hasSelection}
 	>
 		{#snippet children({ props })}
 			<Button variant="ghost" size="sm" class="h-7 px-2 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}" {...props}>
 				<Sigma class="w-3.5 h-3.5 mr-1" />
-				Formula
+				{t('edit.formula')}
 			</Button>
 		{/snippet}
 	</AppTooltip>
@@ -266,7 +267,7 @@
 		onclick={onToggleHeaderAdjust}
 	>
 		<PanelTop class="w-3.5 h-3.5 mr-1" />
-		Header
+		{t('edit.header')}
 	</Button>
 
 	<div class="h-4 w-px bg-border/80 mx-1"></div>
@@ -276,7 +277,7 @@
 			{#snippet child({ props })}
 				<Button variant="ghost" size="sm" class="h-7 px-2 text-xs transition-colors {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}" {...props}>
 					<Minus class="w-3.5 h-3.5 mr-1" />
-					Line
+					{t('edit.line')}
 					<ChevronDown class="w-3 h-3 ml-0.5 opacity-70" />
 				</Button>
 			{/snippet}
@@ -290,7 +291,7 @@
 						onAddLine?.("below");
 					}}
 				>
-					Below this cell
+					{t('edit.lineBelow')}
 				</DropdownMenu.Item>
 				<DropdownMenu.Item
 					disabled={!hasSelection}
@@ -299,7 +300,7 @@
 						onAddLine?.("above");
 					}}
 				>
-					Above this cell
+					{t('edit.lineAbove')}
 				</DropdownMenu.Item>
 			</DropdownMenu.Group>
 			<DropdownMenu.Separator />
@@ -309,7 +310,7 @@
 					checked={shorterChecked}
 					onCheckedChange={(checked) => onShorterChange?.(checked === true)}
 				>
-					Shorter than cell
+					{t('edit.shorterThanCell')}
 				</DropdownMenu.CheckboxItem>
 			</DropdownMenu.Group>
 		</DropdownMenu.Content>
@@ -331,14 +332,14 @@
 					unselectable="on"
 					onclick={() => onSelectSegment?.(index)}
 				>
-					{tableData ? getSegmentLabel(tableData, segment) : `Line ${index + 1}`}
+					{tableData ? getSegmentLabel(tableData, segment) : t('edit.lineN', { n: index + 1 })}
 				</button>
 				<button
 					type="button"
 					class="text-muted-foreground hover:text-destructive transition-colors select-none"
 					unselectable="on"
 					onclick={() => onRemoveSegment?.(index)}
-					aria-label="Remove line"
+					aria-label={t('edit.removeLine')}
 				>
 					<X class="w-3 h-3" />
 				</button>

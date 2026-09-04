@@ -2,6 +2,7 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import BrandLogo from './BrandLogo.svelte';
 	import { Check } from 'lucide-svelte';
+	import { t } from '$lib/i18n';
 
 	let {
 		open = $bindable(false),
@@ -13,47 +14,47 @@
 		currentFont?: 'baskerville' | 'garamond' | 'mono';
 	} = $props();
 
-	const variants: { id: 'user-samara' | 'engraved-single' | 'engraved-dual'; title: string; subtitle: string; desc: string }[] = [
+	const variants = $derived([
 		{
-			id: 'user-samara',
-			title: '交错对偶翅果标 (Twin Samaras)',
-			subtitle: 'Handcrafted Botanical Vector',
-			desc: '1:1 高清矢量重构自你提供的手绘插画：实心墨色种核、交错舒展的透光波浪翅膜、带微环的优雅果柄。神韵完整保留，无限放大不失真。'
+			id: 'user-samara' as const,
+			title: t('logo.twinTitle'),
+			subtitle: t('logo.twinSubtitle'),
+			desc: t('logo.twinDesc')
 		},
 		{
-			id: 'engraved-single',
-			title: '独羽垂悬标 (Solitary Samara)',
-			subtitle: 'Single Botanical Engraving',
-			desc: '单体翅果的核心骨架。顶部为细密螺旋纹种核，向下垂悬展开扇形薄翼，翼面布满精细手绘刻线。纯正博物学手绘质感。'
+			id: 'engraved-single' as const,
+			title: t('logo.singleTitle'),
+			subtitle: t('logo.singleSubtitle'),
+			desc: t('logo.singleDesc')
 		},
 		{
-			id: 'engraved-dual',
-			title: '对偶垂悬标 (Dual Samaras)',
-			subtitle: 'Paired Symmetrical Study',
-			desc: '两枚果实垂悬交织的瞬间。两翼在下方对称舒展，微呈 90° 扇面平衡，兼顾自然植物的野趣与学术图鉴的对称美。'
+			id: 'engraved-dual' as const,
+			title: t('logo.dualTitle'),
+			subtitle: t('logo.dualSubtitle'),
+			desc: t('logo.dualDesc')
 		}
-	];
+	]);
 
-	const fonts: { id: 'baskerville' | 'garamond' | 'mono'; label: string; preview: string; desc: string }[] = [
+	const fonts = $derived([
 		{
-			id: 'baskerville',
+			id: 'baskerville' as const,
 			label: 'Libre Baskerville',
 			preview: 'Samara',
-			desc: '英国剑桥大学出版社经典学术印刷体 — 敦厚、端庄、正统学术典籍感'
+			desc: t('logo.fontBaskerville')
 		},
 		{
-			id: 'garamond',
+			id: 'garamond' as const,
 			label: 'EB Garamond',
 			preview: 'Samara',
-			desc: '欧陆人文主义学术经典 — 笔触沉稳细腻，毫无轻浮脂粉气'
+			desc: t('logo.fontGaramond')
 		},
 		{
-			id: 'mono',
+			id: 'mono' as const,
 			label: 'JetBrains Mono',
 			preview: 'samara',
-			desc: '极客学术代码等宽体 — 古典版画图腾 + 现代学术编译器的反差美感'
+			desc: t('logo.fontMono')
 		}
-	];
+	]);
 </script>
 
 <Dialog.Root bind:open>
@@ -61,17 +62,17 @@
 		<Dialog.Header class="pb-2">
 			<Dialog.Title class="text-base font-terminal uppercase tracking-widest text-foreground flex items-center gap-2">
 				<span>✦</span>
-				<span>Samara Botanical Engraving Gallery</span>
+				<span>{t('logo.galleryTitle')}</span>
 			</Dialog.Title>
 			<Dialog.Description class="text-xs text-muted-foreground">
-				基于你所钟爱的自然线描手绘图，提炼出 3 款去繁就简的纯线描学术版画徽标。
+				{t('logo.galleryDesc')}
 			</Dialog.Description>
 		</Dialog.Header>
 
 		<!-- 1. Logo 图标方案对比 -->
 		<div class="space-y-3 pt-2">
 			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold block">
-				01 // Select Botanical Glyph
+				{t('logo.selectGlyph')}
 			</span>
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
 				{#each variants as item}
@@ -109,7 +110,7 @@
 		<!-- 2. 字标字体排版对比 -->
 		<div class="space-y-3 pt-3">
 			<span class="text-[10px] font-terminal uppercase tracking-widest text-muted-foreground font-semibold block">
-				02 // Select Academic Typography
+				{t('logo.selectType')}
 			</span>
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
 				{#each fonts as f}
@@ -159,7 +160,7 @@
 					{:else}
 						<span class="font-mono-brand text-sm font-semibold tracking-wider text-foreground">samara</span>
 					{/if}
-					<span class="text-[8.5px] font-terminal tracking-wider text-muted-foreground uppercase mt-0.5">ACADEMIC // v0.1</span>
+					<span class="text-[8.5px] font-terminal tracking-wider text-muted-foreground uppercase mt-0.5">{t('preview.academicTag')}</span>
 				</div>
 			</div>
 
@@ -168,7 +169,7 @@
 				class="px-4 py-1.5 rounded-[2px] bg-foreground text-background text-xs font-terminal uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer"
 				onclick={() => (open = false)}
 			>
-				Done
+				{t('common.done')}
 			</button>
 		</div>
 	</Dialog.Content>

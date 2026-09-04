@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Grid3x3 } from 'lucide-svelte';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		currentRows: number;
@@ -63,7 +64,7 @@
 				size="icon"
 				class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
 				{...props}
-				title="Table Size"
+				title={t('table.size')}
 			>
 				<Grid3x3 class="w-3.5 h-3.5" />
 			</Button>

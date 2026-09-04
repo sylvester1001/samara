@@ -1,15 +1,16 @@
 import { toast } from 'svelte-sonner';
 import { revealDownloadedFile } from '$lib/utils/downloads';
+import { t } from '$lib/i18n';
 
 export function showExportToast(filename: string) {
-	toast('Export complete', {
-		description: `${filename} downloaded`,
+	toast(t('toast.exportComplete'), {
+		description: t('toast.downloaded', { filename }),
 		action: {
-			label: 'Open folder',
+			label: t('toast.openFolder'),
 			onClick: async () => {
 				const opened = await revealDownloadedFile(filename);
 				if (!opened) {
-					toast('Unable to open downloads folder');
+					toast(t('toast.openFolderFailed'));
 				}
 			}
 		}

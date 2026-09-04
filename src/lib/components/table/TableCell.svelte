@@ -2,6 +2,7 @@
 	import type { Cell } from '$lib/types';
 	import { renderLatex } from '$lib/utils/katex';
 	import { tick } from 'svelte';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		cell: Cell;
@@ -69,7 +70,7 @@
 	}
 </style>
 
-<div class="cell-content" ondblclick={startEdit} role="textbox" aria-label="Table cell, double-click to edit" tabindex="0">
+<div class="cell-content" ondblclick={startEdit} role="textbox" aria-label={t('a11y.cellEdit')} tabindex="0">
 	{#if editing}
 		<textarea
 			class="cell-input"

@@ -9,6 +9,8 @@
 		Layers,
 		FileImage
 	} from 'lucide-svelte';
+	import { t } from '$lib/i18n';
+	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
 
 	const links = {
 		repo: 'https://github.com/sylvester1001/samara',
@@ -16,30 +18,30 @@
 		screenshot: '/UI-screenshot.png'
 	};
 
-	const features = [
+	const features = $derived([
 		{
-			title: 'Professional styling',
-			description: 'Choose from academic presets or customize every detail of your table design.',
+			title: t('launch.feature1Title'),
+			description: t('launch.feature1Desc'),
 			icon: Table2
 		},
 		{
-			title: 'Intuitive editing',
-			description: 'Merge cells, adjust spacing, and format content with simple drag-and-drop.',
+			title: t('launch.feature2Title'),
+			description: t('launch.feature2Desc'),
 			icon: Layers
 		},
 		{
-			title: 'Multiple export formats',
-			description: 'Generate LaTeX code, high-resolution images, or vector graphics instantly.',
+			title: t('launch.feature3Title'),
+			description: t('launch.feature3Desc'),
 			icon: FileImage
 		}
-	];
+	]);
 </script>
 
 <svelte:head>
-	<title>Samara - Academic table editor</title>
+	<title>{t('launch.title')}</title>
 	<meta
 		name="description"
-		content="A modern table editor for academic work. Create beautiful tables with LaTeX-quality output."
+		content={t('launch.description')}
 	/>
 </svelte:head>
 
@@ -53,9 +55,10 @@
 				<span class="logo-text">Samara</span>
 			</a>
 			<nav class="nav">
+				<LanguageSwitcher />
 				<Button variant="ghost" href={links.repo} class="nav-link">
 					<Github class="h-4 w-4" />
-					GitHub
+					{t('common.github')}
 				</Button>
 			</nav>
 		</div>
@@ -66,19 +69,19 @@
 			<div class="container">
 				<div class="hero-content">
 					<h1 class="hero-title">
-						Academic Tables, <span class="italic">Simplified</span>
+						{t('launch.heroTitleBefore')}<span class="italic">{t('launch.heroTitleEmphasis')}</span>
 					</h1>
 					<p class="hero-description">
-						Design publication-ready tables with an intuitive editor. Export to LaTeX, PNG, or SVG with pixel-perfect precision.
+						{t('launch.heroDescription')}
 					</p>
 					<div class="hero-actions">
 						<Button href="/" size="lg" class="btn-primary">
-							Open Editor
+							{t('launch.openEditor')}
 							<ArrowRight class="h-4 w-4" />
 						</Button>
 						<Button href={links.download} variant="outline" size="lg" class="btn-secondary">
 							<Download class="h-4 w-4" />
-							Get Desktop App
+							{t('launch.getDesktop')}
 						</Button>
 					</div>
 				</div>
@@ -90,7 +93,7 @@
 				<img
 					class="app-screenshot"
 					src={links.screenshot}
-					alt="Samara UI screenshot"
+					alt={t('a11y.screenshot')}
 				/>
 			</div>
 		</section>
@@ -98,9 +101,9 @@
 		<section class="features-section">
 			<div class="container">
 				<div class="features-header">
-					<h2 class="section-title">Designed for academic publishing</h2>
+					<h2 class="section-title">{t('launch.featuresTitle')}</h2>
 					<p class="section-description">
-						Professional table creation with the tools researchers actually need.
+						{t('launch.featuresSubtitle')}
 					</p>
 				</div>
 				<div class="features-grid">
@@ -123,18 +126,18 @@
 			<div class="container">
 				<Card.Root class="cta-card">
 					<Card.Content class="cta-content">
-						<h2 class="cta-title">Ready to create your next table?</h2>
+						<h2 class="cta-title">{t('launch.ctaTitle')}</h2>
 						<p class="cta-description">
-							Start editing in your browser or download the desktop application.
+							{t('launch.ctaDescription')}
 						</p>
 						<div class="cta-actions">
 							<Button href="/" size="lg" class="btn-primary">
-								Open Editor
+								{t('launch.openEditor')}
 								<ArrowRight class="h-4 w-4" />
 							</Button>
 							<Button href={links.download} variant="outline" size="lg" class="btn-secondary">
 								<Download class="h-4 w-4" />
-								Get Desktop App
+								{t('launch.getDesktop')}
 							</Button>
 						</div>
 					</Card.Content>
@@ -145,9 +148,9 @@
 
 	<footer class="footer">
 		<div class="container">
-			<span class="footer-text">Samara © 2025</span>
+			<span class="footer-text">{t('launch.footer')}</span>
 			<div class="footer-links">
-				<a href={links.repo} class="footer-link">GitHub</a>
+				<a href={links.repo} class="footer-link">{t('common.github')}</a>
 			</div>
 		</div>
 	</footer>
@@ -167,7 +170,7 @@
 	:global(body) {
 		background: #fafaf9;
 		color: #1c1917;
-		font-family: "CMU Sans Serif", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+		font-family: "CMU Sans Serif", var(--font-cjk), -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 		user-select: text;
 	}
 
@@ -256,7 +259,7 @@
 	}
 
 	.hero-title {
-		font-family: "CMU Serif", Georgia, serif;
+		font-family: "CMU Serif", var(--font-cjk), Georgia, serif;
 		font-size: clamp(2.5rem, 5vw, 3.5rem);
 		font-weight: 400;
 		line-height: 1.1;
@@ -309,7 +312,7 @@
 	}
 
 	.section-title {
-		font-family: "CMU Serif", Georgia, serif;
+		font-family: "CMU Serif", var(--font-cjk), Georgia, serif;
 		font-size: 2.5rem;
 		font-weight: 400;
 		color: #1c1917;
@@ -379,7 +382,7 @@
 	}
 
 	.cta-title {
-		font-family: "CMU Serif", Georgia, serif;
+		font-family: "CMU Serif", var(--font-cjk), Georgia, serif;
 		font-size: 2rem;
 		font-weight: 400;
 		color: #1c1917;

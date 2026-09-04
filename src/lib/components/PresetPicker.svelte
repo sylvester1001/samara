@@ -3,6 +3,7 @@
 	import { cn } from '$lib/utils.js';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 	import type { TableStyle } from '$lib/types';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		value: TableStyle['preset'];
@@ -11,11 +12,11 @@
 
 	let { value, onValueChange }: Props = $props();
 
-	const presets: { value: TableStyle['preset']; label: string }[] = [
-		{ value: 'booktabs', label: 'Booktabs' },
-		{ value: 'bordered', label: 'Bordered' },
-		{ value: 'minimal', label: 'Minimal' }
-	];
+	const presets = $derived([
+		{ value: 'booktabs' as TableStyle['preset'], label: t('preset.booktabs') },
+		{ value: 'bordered' as TableStyle['preset'], label: t('preset.bordered') },
+		{ value: 'minimal' as TableStyle['preset'], label: t('preset.minimal') }
+	]);
 
 	function handleChange(next: string | undefined) {
 		if (next === 'booktabs' || next === 'bordered' || next === 'minimal') {

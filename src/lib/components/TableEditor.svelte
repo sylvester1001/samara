@@ -7,6 +7,7 @@
 	import type { Cell } from '$lib/types';
 	import type { LineEdge } from '$lib/utils/table-geometry';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		rows: Cell[][];
@@ -418,13 +419,13 @@
 			<span class="text-[11px] font-terminal text-muted-foreground uppercase tracking-widest">{rowCount} × {colCount}</span>
 		</div>
 		<div class="flex gap-1.5">
-			<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddRow()} title="Add Row">
+			<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddRow()} title={t('table.addRow')}>
 				<Plus class="w-3 h-3" />
-				Row
+				{t('table.row')}
 			</button>
-			<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddColumn()} title="Add Column">
+			<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddColumn()} title={t('table.addColumn')}>
 				<Plus class="w-3 h-3" />
-				Col
+				{t('table.col')}
 			</button>
 		</div>
 	</div>
@@ -451,7 +452,7 @@
 									<th
 										class="relative px-2 py-1.5 bg-muted/30 hover:bg-muted/60 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none cursor-pointer transition-colors"
 										onclick={() => handleSelectColumn(colIndex)}
-										title="Select Column {String.fromCharCode(65 + colIndex)}"
+										title={t('table.selectColumn', { col: String.fromCharCode(65 + colIndex) })}
 									>
 										<span class="block">{String.fromCharCode(65 + colIndex)}</span>
 										{#if colCount > 1}
@@ -462,7 +463,7 @@
 													e.stopPropagation();
 													onDeleteColumn(colIndex);
 												}}
-												title="Delete Column {String.fromCharCode(65 + colIndex)}"
+												title={t('table.deleteColumn', { col: String.fromCharCode(65 + colIndex) })}
 											>
 												<X class="size-2.5 stroke-[2.2]" />
 											</button>
@@ -481,7 +482,7 @@
 										class="relative box-border px-0.5 py-1 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none cursor-pointer hover:bg-muted/50 transition-colors {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
 										style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
 										onclick={() => handleSelectRow(rowIndex)}
-										title="Select Row {rowIndex + 1}"
+										title={t('table.selectRow', { n: rowIndex + 1 })}
 									>
 										<span class="row-header-num block leading-none transition-opacity">{rowIndex + 1}</span>
 										{#if rowCount > 1}
@@ -492,7 +493,7 @@
 													e.stopPropagation();
 													onDeleteRow(rowIndex);
 												}}
-												title="Delete Row {rowIndex + 1}"
+												title={t('table.deleteRow', { n: rowIndex + 1 })}
 											>
 												<X class="size-2.5 stroke-[2.2]" />
 											</button>
@@ -550,12 +551,12 @@
 							style:height="{headerBox.height}px"
 						>
 							<span class="absolute top-1 left-1 rounded-[1px] select-none {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)] text-white' : 'bg-foreground text-background'} px-1.5 py-0.5 text-[9px] font-terminal uppercase tracking-widest" unselectable="on">
-								Header
+								{t('table.header')}
 							</span>
 							<button
 								type="button"
 								class="pointer-events-auto absolute bottom-0 left-1/2 z-30 h-2 w-8 -translate-x-1/2 translate-y-1/2 cursor-ns-resize rounded-[1px] border border-white {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)]' : 'bg-foreground'} shadow-sm"
-								aria-label="Resize header rows"
+								aria-label={t('a11y.resizeHeader')}
 								onmousedown={handleHeaderDragStart}
 							></button>
 						</div>
@@ -565,46 +566,46 @@
 				<ContextMenu.Content class="w-56 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
 					<ContextMenu.Group>
 						<ContextMenu.Item inset disabled={!canMerge} onclick={onMergeCells}>
-							Merge cells
+							{t('edit.mergeCells')}
 						</ContextMenu.Item>
 						<ContextMenu.Item inset disabled={!canUnmerge} onclick={onUnmergeCells}>
-							Unmerge cells
+							{t('edit.unmergeCells')}
 						</ContextMenu.Item>
 					</ContextMenu.Group>
 					<ContextMenu.Separator />
 					<ContextMenu.Group>
 						<ContextMenu.Item inset disabled={!canAddLine} onclick={() => onAddLine?.('below')}>
-							Line below
+							{t('table.lineBelow')}
 						</ContextMenu.Item>
 						<ContextMenu.Item inset disabled={!canAddLine} onclick={() => onAddLine?.('above')}>
-							Line above
+							{t('table.lineAbove')}
 						</ContextMenu.Item>
 					</ContextMenu.Group>
 					<ContextMenu.Separator />
 					<ContextMenu.Sub>
-						<ContextMenu.SubTrigger inset>Insert</ContextMenu.SubTrigger>
+						<ContextMenu.SubTrigger inset>{t('table.insert')}</ContextMenu.SubTrigger>
 						<ContextMenu.SubContent class="w-56 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
 							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertRowAbove}>
-								Insert Row Above
+								{t('table.insertRowAbove')}
 							</ContextMenu.Item>
 							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertRowBelow}>
-								Insert Row Below
+								{t('table.insertRowBelow')}
 							</ContextMenu.Item>
 							<ContextMenu.Separator />
 							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertColumnLeft}>
-								Insert Column Left
+								{t('table.insertColumnLeft')}
 							</ContextMenu.Item>
 							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertColumnRight}>
-								Insert Column Right
+								{t('table.insertColumnRight')}
 							</ContextMenu.Item>
 						</ContextMenu.SubContent>
 					</ContextMenu.Sub>
 					<ContextMenu.Separator />
 					<ContextMenu.Item inset variant="destructive" disabled={!canDeleteRow} onclick={handleDeleteRowContext}>
-						Delete Row
+						{t('table.deleteRowItem')}
 					</ContextMenu.Item>
 					<ContextMenu.Item inset variant="destructive" disabled={!canDeleteColumn} onclick={handleDeleteColumnContext}>
-						Delete Column
+						{t('table.deleteColumnItem')}
 					</ContextMenu.Item>
 				</ContextMenu.Content>
 			</ContextMenu.Root>

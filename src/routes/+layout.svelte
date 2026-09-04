@@ -15,6 +15,7 @@
 	import '@fontsource/jetbrains-mono/500.css';
 	import '@fontsource/jetbrains-mono/600.css';
 	import '@fontsource/jetbrains-mono/700.css';
+	import '$lib/styles/source-han-sans.css';
 	import 'computer-modern/cmu-serif.css';
 
 	import './layout.css';
@@ -22,6 +23,7 @@
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher, mode } from 'mode-watcher';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
+	import { i18n } from '$lib/i18n';
 
 	let { children } = $props();
 
@@ -30,6 +32,11 @@
 		if (typeof document !== 'undefined') {
 			document.documentElement.setAttribute('data-theme', current);
 		}
+	});
+
+	$effect(() => {
+		i18n.locale;
+		i18n.apply();
 	});
 </script>
 
