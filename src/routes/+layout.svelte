@@ -1,4 +1,22 @@
 <script lang="ts">
+	// Local Fonts (100% Offline & High Performance)
+	import '@fontsource/inter/400.css';
+	import '@fontsource/inter/500.css';
+	import '@fontsource/inter/600.css';
+	import '@fontsource/eb-garamond/400.css';
+	import '@fontsource/eb-garamond/500.css';
+	import '@fontsource/eb-garamond/600.css';
+	import '@fontsource/eb-garamond/700.css';
+	import '@fontsource/eb-garamond/500-italic.css';
+	import '@fontsource/libre-baskerville/400.css';
+	import '@fontsource/libre-baskerville/700.css';
+	import '@fontsource/libre-baskerville/400-italic.css';
+	import '@fontsource/jetbrains-mono/400.css';
+	import '@fontsource/jetbrains-mono/500.css';
+	import '@fontsource/jetbrains-mono/600.css';
+	import '@fontsource/jetbrains-mono/700.css';
+	import 'computer-modern/cmu-serif.css';
+
 	import './layout.css';
 	import '../app.css';
 	import { Toaster } from 'svelte-sonner';
