@@ -24,8 +24,8 @@ true_bbox = (cols[0], rows[0], cols[-1] + 1, rows[-1] + 1)
 cropped = logo.crop(true_bbox)
 vw, vh = cropped.size
 
-# 4. Scale logo to 640px width (fills center safe zone with balanced breathing room)
-target_w = 640
+# 4. Scale logo to 710px width (~11% larger, comfortably fills squircle safe zone)
+target_w = 710
 target_h = int(vh * (target_w / vw))
 resized = cropped.resize((target_w, target_h), Image.Resampling.LANCZOS)
 
