@@ -798,4 +798,53 @@ input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="c
   user-select: text !important;
 }
 
+/* =========================================================
+   Sonner Toast & Close Button Theme Integration
+   ========================================================= */
+[data-sonner-toast] {
+  font-family: inherit;
+  position: relative;
+}
+
+[data-sonner-toast] [data-close-button] {
+  position: absolute !important;
+  left: auto !important;
+  right: 8px !important;
+  top: 8px !important;
+  transform: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  z-index: 10 !important;
+}
+
+[data-sonner-toast]:hover [data-close-button],
+[data-sonner-toast] [data-close-button]:hover {
+  opacity: 1;
+}
+
+html[data-theme="avant-garde"] [data-sonner-toast],
+html:not([data-theme="classic"]) [data-sonner-toast] {
+  border-radius: 0px !important;
+  font-family: var(--font-cjk), "JetBrains Mono", monospace !important;
+}
+
+html[data-theme="avant-garde"] [data-sonner-toast] [data-close-button],
+html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button] {
+  border-radius: 0px !important;
+}
+
+html[data-theme="avant-garde"] [data-sonner-toast] [data-close-button]:hover,
+html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
+  background-color: #0202f1 !important;
+  color: #ffffff !important;
+  border-color: #0202f1 !important;
+}
+
+
 

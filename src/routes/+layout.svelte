@@ -28,6 +28,7 @@
 
 	import { onMount } from 'svelte';
 	import { isTauri } from '$lib/stores/platform.svelte.js';
+	import { X } from 'lucide-svelte';
 
 	let { children } = $props();
 
@@ -61,7 +62,16 @@
 	});
 </script>
 
+{#snippet closeIconSnippet()}
+	<X class="size-3 stroke-[2.2]" />
+{/snippet}
+
 <ModeWatcher />
-<Toaster theme={mode.current} />
+<Toaster
+	theme={mode.current}
+	closeButton={true}
+	duration={2500}
+	closeIcon={closeIconSnippet}
+/>
 {@render children()}
 
