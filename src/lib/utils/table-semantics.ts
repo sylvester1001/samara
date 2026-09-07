@@ -150,3 +150,17 @@ export function analyzeTableProfile(tableData: TableData): TableProfile {
 		hasMultilineCells
 	};
 }
+
+/**
+ * 检查一行中所有可见单元格是否具有完全相同且非空的背景色。
+ * 仅在整行颜色 100% 一致时返回颜色值，供 LaTeX 生成器输出 \rowcolor。
+ */
+export function getRowUniformBgColor(row: ResolvedCell[]): string | undefined {
+	const visibleCells = row.filter((c) => !c.isMerged);
+	if (visibleCells.length === 0) return undefined;
+	const firstBg = visibleCells[0].backgroundColor;
+	if (!firstBg || firstBg.trim() === '') return undefined;
+	const isAllSame = visibleCells.every((c) => c.backgroundColor === firstBg);
+	return isAllSame ? firstBg : undefined;
+}
+

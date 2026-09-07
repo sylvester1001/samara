@@ -3,6 +3,7 @@ import { escapeLatexText } from './latex-processor';
 import {
 	analyzeTableProfile,
 	resolveTableMatrix,
+	getRowUniformBgColor,
 	type ResolvedCell,
 	type TableProfile
 } from './table-semantics';
@@ -127,12 +128,17 @@ function wrapWithMakecell(cell: ResolvedCell, content: string): string {
 /**
  * 将内容包裹在布局命令中（处理 colspan, rowspan, cellcolor）
  */
-function wrapWithLayout(cell: ResolvedCell, innerContent: string): string {
+function wrapWithLayout(
+	cell: ResolvedCell,
+	innerContent: string,
+	suppressCellColor: boolean = false
+): string {
 	const { colspan, rowspan, backgroundColor } = cell;
 
-	const cellColorCmd = backgroundColor
-		? `\\cellcolor[HTML]{${formatColor(backgroundColor)}}`
-		: '';
+	const cellColorCmd =
+		!suppressCellColor && backgroundColor
+			? `\\cellcolor[HTML]{${formatColor(backgroundColor)}}`
+			: '';
 
 	let finalLatex = innerContent;
 
@@ -144,7 +150,7 @@ function wrapWithLayout(cell: ResolvedCell, innerContent: string): string {
 	// 2. 处理 Colspan
 	if (colspan > 1) {
 		finalLatex = `\\multicolumn{${colspan}}{c}{${cellColorCmd}${finalLatex}}`;
-	} else if (backgroundColor) {
+	} else if (cellColorCmd) {
 		finalLatex = `${cellColorCmd}${finalLatex}`;
 	}
 
@@ -210,6 +216,7 @@ export function generateLatexTable(
 			'\\usepackage{multirow}',
 			'\\usepackage{makecell}',
 			'\\usepackage{array}',
+			'\\usepackage{nicematrix}',
 			'\\usepackage{geometry}',
 			'\\geometry{margin=1in}',
 			''
@@ -256,7 +263,36 @@ export function generateLatexTable(
 			// 无样式模式，使用简单的 c 列
 			colSpec = Array(colCount).fill('c').join('');
 		}
-		output.push(`\\begin{tabular}{${colSpec}}`);
+		if (opts.includeStyles) {
+			output.push(`\\begin{NiceTabular}{${colSpec}}`);
+
+			// 收集所有整行与单元格背景色，放入 \CodeBefore 块中，实现颜色与单元格结构的彻底解耦
+			const codeBeforeLines: string[] = [];
+			for (let i = 0; i < matrix.length; i++) {
+				const row = matrix[i];
+				const uniformBg = getRowUniformBgColor(row);
+				if (uniformBg) {
+					codeBeforeLines.push(`  \\rowcolor[HTML]{${formatColor(uniformBg)}}{${i + 1}}`);
+				} else {
+					for (let j = 0; j < row.length; j++) {
+						const cell = row[j];
+						if (cell.backgroundColor) {
+							codeBeforeLines.push(
+								`  \\cellcolor[HTML]{${formatColor(cell.backgroundColor)}}{${i + 1}-${j + 1}}`
+							);
+						}
+					}
+				}
+			}
+
+			if (codeBeforeLines.length > 0) {
+				output.push('\\CodeBefore');
+				output.push(...codeBeforeLines);
+				output.push('\\Body');
+			}
+		} else {
+			output.push(`\\begin{tabular}{${colSpec}}`);
+		}
 	} else {
 		return '';
 	}
@@ -277,15 +313,18 @@ export function generateLatexTable(
 	for (let i = 0; i < matrix.length; i++) {
 		const row = matrix[i];
 		const rowCells: string[] = [];
+		const uniformBg = getRowUniformBgColor(row);
 
 		for (let j = 0; j < row.length; j++) {
 			const cell = row[j];
 			const coord = `${i}-${j}`;
 
 			if (spannedMatrix.has(coord)) {
-				const bgCmd = cell.backgroundColor
-					? `\\cellcolor[HTML]{${formatColor(cell.backgroundColor)}}`
-					: '';
+				// 在无样式模式下才需要局部背景色，有样式模式由 CodeBefore 集中处理
+				const bgCmd =
+					!opts.includeStyles && !uniformBg && cell.backgroundColor
+						? `\\cellcolor[HTML]{${formatColor(cell.backgroundColor)}}`
+						: '';
 				rowCells.push(bgCmd);
 				continue;
 			}
@@ -303,7 +342,7 @@ export function generateLatexTable(
 
 			let innerContent = renderCellContent(cell);
 			innerContent = wrapWithMakecell(cell, innerContent);
-			const latexFragment = wrapWithLayout(cell, innerContent);
+			const latexFragment = wrapWithLayout(cell, innerContent, Boolean(opts.includeStyles || uniformBg));
 			rowCells.push(latexFragment);
 
 			if (cell.colspan > 1) {
@@ -311,6 +350,10 @@ export function generateLatexTable(
 			}
 		}
 
+		// 无样式模式且整行同色时才输出 \rowcolor，有样式模式已在 CodeBefore 中统一处理
+		if (!opts.includeStyles && uniformBg) {
+			output.push(`\\rowcolor[HTML]{${formatColor(uniformBg)}}`);
+		}
 		output.push(rowCells.join(' & ') + ' \\\\');
 
 		const partialRules = getPartialRulesAt(data, i, isBooktabs);
@@ -335,7 +378,8 @@ export function generateLatexTable(
 		output.push(bottomBorderCmd);
 	}
 
-	output.push('\\end{tabular}');
+	const tabularEndEnv = opts.includeStyles ? 'NiceTabular' : 'tabular';
+	output.push(`\\end{${tabularEndEnv}}`);
 
 	if (opts.includeStyles && fontSize !== 12) {
 		output.push('}');
