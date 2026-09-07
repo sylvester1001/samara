@@ -6,6 +6,7 @@
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
 	import type { Cell } from '$lib/types';
 	import type { LineEdge } from '$lib/utils/table-geometry';
+	import { resolveCell } from '$lib/utils/table-semantics';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 	import { t } from '$lib/i18n';
 
@@ -499,16 +500,17 @@
 											</button>
 										{/if}
 									</td>
-									{#each row as cell, colIndex}
+									{#each row as rawCell, colIndex}
+										{@const cell = resolveCell(rawCell, rowIndex, colIndex, headerRows)}
 										{#if !cell.isMerged}
 											<td
 												class="p-0 relative align-middle {isSelected(rowIndex, colIndex) ? 'bg-blue-50/90 dark:bg-[#1e3a5f]/80 border border-blue-200/90 dark:border-[#2d5282]' : 'border border-zinc-200 dark:border-zinc-800'}"
-												class:font-bold={cell.isBold}
-												class:italic={cell.isItalic}
+												class:font-bold={cell.effectiveBold}
+												class:italic={cell.effectiveItalic}
 												style:background-color={!isSelected(rowIndex, colIndex) ? cell.backgroundColor : undefined}
 												style:color={cell.textColor}
-												colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
-												rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
+												colspan={cell.colspan > 1 ? cell.colspan : undefined}
+												rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
 												data-row={rowIndex}
 												data-col={colIndex}
 												onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
@@ -517,11 +519,11 @@
 												<textarea
 													rows="1"
 													cols="1"
-													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden {isDragging ? 'pointer-events-none select-none' : ''}"
+													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden {isDragging ? 'pointer-events-none select-none' : ''} {cell.effectiveBold ? 'font-bold' : ''}"
 													style="vertical-align: middle; min-height: 1.5em;"
-													class:text-left={cell.align === 'left'}
-													class:text-center={cell.align === 'center' || !cell.align}
-													class:text-right={cell.align === 'right' || cell.align === 'decimal'}
+													class:text-left={cell.effectiveAlign === 'left'}
+													class:text-center={cell.effectiveAlign === 'center'}
+													class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
 													data-row={rowIndex}
 													data-col={colIndex}
 													oninput={(e) => {

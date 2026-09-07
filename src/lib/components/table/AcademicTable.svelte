@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { TableData, TableStyle, CanvasConfig } from '$lib/types';
+	import { resolveTableMatrix } from '$lib/utils/table-semantics';
 	import TableCell from './TableCell.svelte';
 	import ColumnResizer from './ColumnResizer.svelte';
 	import RowResizer from './RowResizer.svelte';
@@ -97,6 +98,8 @@
 		const requested = tableData.headerRows ?? 1;
 		return Math.min(Math.max(1, requested), tableData.rows.length);
 	});
+
+	const resolvedMatrix = $derived(resolveTableMatrix(tableData));
 
 	// ========== Derived: Border Config ==========
 	const isBooktabs = $derived(tableStyle.preset === 'booktabs');
@@ -346,7 +349,7 @@
 				</colgroup>
 
 				<thead>
-					{#each tableData.rows.slice(0, headerRowCount) as row, rowIndex}
+					{#each resolvedMatrix.slice(0, headerRowCount) as row, rowIndex}
 						{@const visibleCells = row.map((c, i) => ({ cell: c, colIndex: i })).filter(x => !x.cell.isMerged)}
 						<tr 
 							style:height="{tableData.rowHeights[rowIndex] || 32}px"
@@ -356,22 +359,23 @@
 								{#if !cell.isMerged}
 									{@const isFirstCell = visibleCells[0]?.colIndex === colIndex}
 									{@const lastVisibleIdx = visibleCells[visibleCells.length - 1]?.colIndex ?? -1}
-									{@const cellEndCol = colIndex + (cell.colspan && cell.colspan > 1 ? cell.colspan - 1 : 0)}
+									{@const cellEndCol = colIndex + (cell.colspan > 1 ? cell.colspan - 1 : 0)}
 									{@const isLastCell = cellEndCol >= row.length - 1 || cellEndCol >= lastVisibleIdx + (row[lastVisibleIdx]?.colspan ?? 1) - 1}
 									<th
 										class="table-cell"
-										class:text-left={cell.align === 'left'}
-										class:text-center={cell.align === 'center' || !cell.align}
-										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
-										class:font-bold={cell.isBold}
-										class:italic={cell.isItalic}
+										class:text-left={cell.effectiveAlign === 'left'}
+										class:text-center={cell.effectiveAlign === 'center'}
+										class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
+										class:font-bold={cell.effectiveBold}
+										class:font-normal={!cell.effectiveBold}
+										class:italic={cell.effectiveItalic}
 										style:background-color={cell.backgroundColor}
 										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, isFirstCell, isLastCell)}
 										style:color={cell.textColor}
-										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
-										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
+										colspan={cell.colspan > 1 ? cell.colspan : undefined}
+										rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
 									>
-										<TableCell {cell} isHeader={true} onupdate={(content) => onCellUpdate?.(rowIndex, colIndex, content)} />
+										<TableCell cell={cell.raw} isHeader={true} onupdate={(content) => onCellUpdate?.(rowIndex, colIndex, content)} />
 									</th>
 								{/if}
 							{/each}
@@ -380,7 +384,7 @@
 				</thead>
 
 				<tbody>
-					{#each tableData.rows.slice(headerRowCount) as row, rowIndex}
+					{#each resolvedMatrix.slice(headerRowCount) as row, rowIndex}
 						{@const visibleCells = row.map((c, i) => ({ cell: c, colIndex: i })).filter(x => !x.cell.isMerged)}
 						<tr 
 							style:height="{tableData.rowHeights[rowIndex + headerRowCount] || 32}px"
@@ -390,22 +394,22 @@
 								{#if !cell.isMerged}
 									{@const isFirstCell = visibleCells[0]?.colIndex === colIndex}
 									{@const lastVisibleIdx = visibleCells[visibleCells.length - 1]?.colIndex ?? -1}
-									{@const cellEndCol = colIndex + (cell.colspan && cell.colspan > 1 ? cell.colspan - 1 : 0)}
+									{@const cellEndCol = colIndex + (cell.colspan > 1 ? cell.colspan - 1 : 0)}
 									{@const isLastCell = cellEndCol >= row.length - 1 || cellEndCol >= lastVisibleIdx + (row[lastVisibleIdx]?.colspan ?? 1) - 1}
 									<td
 										class="table-cell"
-										class:text-left={cell.align === 'left'}
-										class:text-center={cell.align === 'center' || !cell.align}
-										class:text-right={cell.align === 'right' || cell.align === 'decimal'}
-										class:font-bold={cell.isBold}
-										class:italic={cell.isItalic}
+										class:text-left={cell.effectiveAlign === 'left'}
+										class:text-center={cell.effectiveAlign === 'center'}
+										class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
+										class:font-bold={cell.effectiveBold}
+										class:italic={cell.effectiveItalic}
 										style:background-color={cell.backgroundColor}
 										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, isFirstCell, isLastCell)}
 										style:color={cell.textColor}
-										colspan={cell.colspan && cell.colspan > 1 ? cell.colspan : undefined}
-										rowspan={cell.rowspan && cell.rowspan > 1 ? cell.rowspan : undefined}
+										colspan={cell.colspan > 1 ? cell.colspan : undefined}
+										rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
 									>
-										<TableCell {cell} onupdate={(content) => onCellUpdate?.(rowIndex + headerRowCount, colIndex, content)} />
+										<TableCell cell={cell.raw} onupdate={(content) => onCellUpdate?.(rowIndex + headerRowCount, colIndex, content)} />
 									</td>
 								{/if}
 							{/each}
