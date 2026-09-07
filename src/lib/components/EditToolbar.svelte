@@ -75,6 +75,32 @@
 	let textColorInput = $state<HTMLInputElement>();
 	let bgColorInput = $state<HTMLInputElement>();
 
+	function openTextColorPicker() {
+		if (!hasSelection || !textColorInput) return;
+		try {
+			if ('showPicker' in textColorInput && typeof textColorInput.showPicker === 'function') {
+				textColorInput.showPicker();
+				return;
+			}
+		} catch (e) {
+			// fallback to click
+		}
+		textColorInput.click();
+	}
+
+	function openBgColorPicker() {
+		if (!hasSelection || !bgColorInput) return;
+		try {
+			if ('showPicker' in bgColorInput && typeof bgColorInput.showPicker === 'function') {
+				bgColorInput.showPicker();
+				return;
+			}
+		} catch (e) {
+			// fallback to click
+		}
+		bgColorInput.click();
+	}
+
 	function handleTextColorChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		onTextColorChange?.(target.value);
@@ -161,6 +187,7 @@
 		text={t('edit.textColor')}
 		aria-label={t('edit.textColor')}
 		disabled={!hasSelection}
+		onclick={openTextColorPicker}
 	>
 		{#snippet children({ props })}
 			<div class="relative inline-flex items-center">
@@ -169,8 +196,8 @@
 					size="icon"
 					class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}"
 					disabled={!hasSelection}
-					onclick={() => textColorInput?.click()}
 					{...props}
+					onclick={openTextColorPicker}
 				>
 					<Baseline class="w-3.5 h-3.5" />
 				</Button>
@@ -178,8 +205,9 @@
 					bind:this={textColorInput}
 					type="color"
 					value="#000000"
-					class="sr-only"
+					class="absolute inset-0 opacity-0 pointer-events-none w-full h-full"
 					onchange={handleTextColorChange}
+					oninput={handleTextColorChange}
 					tabindex={-1}
 				/>
 			</div>
@@ -189,6 +217,7 @@
 		text={t('edit.backgroundColor')}
 		aria-label={t('edit.backgroundColor')}
 		disabled={!hasSelection}
+		onclick={openBgColorPicker}
 	>
 		{#snippet children({ props })}
 			<div class="relative inline-flex items-center">
@@ -197,8 +226,8 @@
 					size="icon"
 					class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-foreground hover:text-background'}"
 					disabled={!hasSelection}
-					onclick={() => bgColorInput?.click()}
 					{...props}
+					onclick={openBgColorPicker}
 				>
 					<PaintBucket class="w-3.5 h-3.5" />
 				</Button>
@@ -206,8 +235,9 @@
 					bind:this={bgColorInput}
 					type="color"
 					value="#ffffff"
-					class="sr-only"
+					class="absolute inset-0 opacity-0 pointer-events-none w-full h-full"
 					onchange={handleBgColorChange}
+					oninput={handleBgColorChange}
 					tabindex={-1}
 				/>
 			</div>
