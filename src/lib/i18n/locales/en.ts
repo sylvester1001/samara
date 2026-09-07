@@ -147,7 +147,6 @@ export const en = {
 		downloadPlainTex: 'Download .tex (Plain, No Styles)',
 		selectCellFirst: 'Select a cell first',
 		documentTitle: 'Samara — Academic Table Editor',
-		logoHint: 'Click to preview & choose Logo / Typography',
 		academicTag: 'ACADEMIC // v0.1'
 	},
 	formula: {
@@ -188,29 +187,6 @@ export const en = {
 		ctaTitle: 'Ready to create your next table?',
 		ctaDescription: 'Start editing in your browser or download the desktop application.',
 		footer: 'Samara © 2025'
-	},
-	logo: {
-		galleryTitle: 'Samara Botanical Engraving Gallery',
-		galleryDesc:
-			'Three academic engraving marks distilled from a hand-drawn botanical study.',
-		selectGlyph: '01 // Select Botanical Glyph',
-		selectType: '02 // Select Academic Typography',
-		twinTitle: 'Twin Samaras',
-		twinSubtitle: 'Handcrafted Botanical Vector',
-		twinDesc:
-			'A 1:1 vector reconstruction of the original drawing: solid seed cores, crossed translucent wings, and a delicate stem. The character holds at any size.',
-		singleTitle: 'Solitary Samara',
-		singleSubtitle: 'Single Botanical Engraving',
-		singleDesc:
-			'The skeleton of a single samara: a tightly coiled seed at the top, a fan of thin wing below, scored with fine engraved lines.',
-		dualTitle: 'Dual Samaras',
-		dualSubtitle: 'Paired Symmetrical Study',
-		dualDesc:
-			'Two fruits hanging and interwoven. The wings open symmetrically below, a 90° fan that balances wild plant form with academic illustration.',
-		fontBaskerville:
-			'Cambridge University Press academic type — solid, formal, classic book print.',
-		fontGaramond: 'Continental humanist classic — steady stroke, no decorative excess.',
-		fontMono: 'Geek-academic monospace — botanical engraving meets a compiler aesthetic.'
 	}
 };
 

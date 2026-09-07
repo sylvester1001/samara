@@ -46,14 +46,9 @@
 	} from "lucide-svelte";
 	import BrandLogo from "$lib/components/BrandLogo.svelte";
 	import { isMac, isTauri } from "$lib/stores/platform.svelte.js";
-	import LogoShowcaseDialog from "$lib/components/LogoShowcaseDialog.svelte";
 	import { loadDraft, saveDraft, clearDraft } from "$lib/utils/draft-storage";
 	import { copyTextToClipboard } from "$lib/utils/clipboard";
 	import { t } from "$lib/i18n";
-
-	let logoShowcaseOpen = $state(false);
-	let activeLogoVariant = $state<'user-samara' | 'engraved-single' | 'engraved-dual'>('user-samara');
-	let activeBrandFont = $state<'baskerville' | 'garamond' | 'mono'>('garamond');
 
 	let tableElement: HTMLElement | null = $state(null);
 	let previewContainer: HTMLElement;
@@ -520,39 +515,21 @@
 <AppSidebar.Provider>
 	<AppSidebar.Root collapsible="offcanvas">
 		<AppSidebar.Header data-tauri-drag-region class="{isMac && isTauri ? 'pt-[38px]' : ''} shrink-0 justify-center px-4 pb-1 bg-sidebar select-none">
-			<button
-				type="button"
-				class="flex items-center gap-2.5 group cursor-pointer text-left -ml-1.5 px-1.5 py-1 rounded-[var(--radius)] hover:bg-muted/50 transition-colors w-full"
-				onclick={() => (logoShowcaseOpen = true)}
-				title={t('preview.logoHint')}
-			>
-				<div class="flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+			<div class="flex items-center gap-2.5 text-left -ml-1.5 px-1.5 py-1 w-full select-none">
+				<div class="flex items-center justify-center shrink-0">
 					<BrandLogo
-						variant={activeLogoVariant}
-						class={activeLogoVariant === 'user-samara' ? 'w-[39px] h-[24px]' : 'size-6'}
+						class="w-[39px] h-[24px]"
 						color={uiTheme.theme === 'avant-garde' ? '#0202f1' : 'currentColor'}
 					/>
 				</div>
 				<div class="flex flex-col leading-none grow min-w-0">
-					{#if activeBrandFont === 'baskerville'}
-						<span class="text-[15px] font-baskerville font-bold tracking-tight text-foreground truncate">Samara</span>
-					{:else if activeBrandFont === 'garamond'}
-						<span class="text-[17px] font-garamond font-semibold tracking-wide text-foreground truncate">Samara</span>
-					{:else}
-						<span class="text-[13px] font-mono-brand font-semibold tracking-wider text-foreground truncate">samara</span>
-					{/if}
+					<span class="text-[17px] font-garamond font-semibold tracking-wide text-foreground truncate">Samara</span>
 					{#if uiTheme.theme === 'avant-garde'}
 						<span class="text-[8.5px] font-terminal tracking-wider text-muted-foreground uppercase mt-0.5">{t('preview.academicTag')}</span>
 					{/if}
 				</div>
-			</button>
+			</div>
 		</AppSidebar.Header>
-
-		<LogoShowcaseDialog
-			bind:open={logoShowcaseOpen}
-			bind:currentVariant={activeLogoVariant}
-			bind:currentFont={activeBrandFont}
-		/>
 
 		<AppSidebar.Content class="px-4 pt-3 pb-5">
 			<SettingsSidebar

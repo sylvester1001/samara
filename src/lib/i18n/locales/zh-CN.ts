@@ -149,7 +149,6 @@ export const zhCN: TranslationSchema = {
 		downloadPlainTex: '下载 .tex 文件 (纯净无样式)',
 		selectCellFirst: '请先选择一个单元格',
 		documentTitle: 'Samara — 学术表格编辑器',
-		logoHint: '点击预览并选择标志 / 字体',
 		academicTag: 'ACADEMIC // v0.1'
 	},
 	formula: {
@@ -188,26 +187,5 @@ export const zhCN: TranslationSchema = {
 		ctaTitle: '准备好做下一张表了吗？',
 		ctaDescription: '在浏览器中开始编辑，或下载桌面应用。',
 		footer: 'Samara © 2025'
-	},
-	logo: {
-		galleryTitle: 'Samara 博物版画馆',
-		galleryDesc: '基于手绘线描，提炼出三款去繁就简的学术版画徽标。',
-		selectGlyph: '01 // 选择植物字形',
-		selectType: '02 // 选择学术字体',
-		twinTitle: '交错对偶翅果标',
-		twinSubtitle: 'Handcrafted Botanical Vector',
-		twinDesc:
-			'1:1 高清矢量重构自手绘插画：实心墨色种核、交错舒展的透光波浪翅膜、带微环的优雅果柄。神韵完整保留，无限放大不失真。',
-		singleTitle: '独羽垂悬标',
-		singleSubtitle: 'Single Botanical Engraving',
-		singleDesc:
-			'单体翅果的核心骨架。顶部为细密螺旋纹种核，向下垂悬展开扇形薄翼，翼面布满精细手绘刻线。纯正博物学手绘质感。',
-		dualTitle: '对偶垂悬标',
-		dualSubtitle: 'Paired Symmetrical Study',
-		dualDesc:
-			'两枚果实垂悬交织的瞬间。两翼在下方对称舒展，微呈 90° 扇面平衡，兼顾自然植物的野趣与学术图鉴的对称美。',
-		fontBaskerville: '英国剑桥大学出版社经典学术印刷体 — 敦厚、端庄、正统学术典籍感',
-		fontGaramond: '欧陆人文主义学术经典 — 笔触沉稳细腻，毫无轻浮脂粉气',
-		fontMono: '极客学术代码等宽体 — 古典版画图腾与现代学术编译器的反差美感'
 	}
 };
