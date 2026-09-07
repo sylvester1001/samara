@@ -591,6 +591,15 @@ textarea,
   user-select: text;
 }
 
+/* 让 KaTeX 公式字号与单元格普通文字 1:1 严格对齐，消除官方 1.21em 默认放大 */
+.katex {
+  font-size: 1em !important;
+}
+
+.katex-display {
+  margin: 0.25em 0;
+}
+
 .katex-error {
   color: #dc2626;
   font-style: italic;

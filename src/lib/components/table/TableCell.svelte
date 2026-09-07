@@ -68,6 +68,10 @@
 		white-space: pre-wrap;
 		word-wrap: break-word;
 	}
+
+	:global(.katex) {
+		font-size: 1em !important;
+	}
 </style>
 
 <div class="cell-content" ondblclick={startEdit} role="textbox" aria-label={t('a11y.cellEdit')} tabindex="0">
