@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import {
 		Toolbar,
 		EditToolbar,
@@ -18,7 +19,11 @@
 		exportAndDownloadPng,
 		exportAndDownloadSvg,
 	} from "$lib/utils/export";
-	import { showExportToast } from "$lib/utils/notifications";
+	import {
+		showExportToast,
+		showCopySuccessToast,
+		showCopyErrorToast,
+	} from "$lib/utils/notifications";
 	import { generateLatexTable } from "$lib/utils/export-latex";
 	import { isSegmentTrimmed, type LineEdge } from "$lib/utils/table-geometry";
 	import type { TableStyle, CanvasConfig } from "$lib/types";
@@ -34,10 +39,16 @@
 		ZoomIn,
 		ZoomOut,
 		RotateCcw,
+		Copy,
+		FileText,
+		CheckSquare,
+		Download,
 	} from "lucide-svelte";
 	import BrandLogo from "$lib/components/BrandLogo.svelte";
 	import { isMac, isTauri } from "$lib/stores/platform.svelte.js";
 	import LogoShowcaseDialog from "$lib/components/LogoShowcaseDialog.svelte";
+	import { loadDraft, saveDraft, clearDraft } from "$lib/utils/draft-storage";
+	import { copyTextToClipboard } from "$lib/utils/clipboard";
 	import { t } from "$lib/i18n";
 
 	let logoShowcaseOpen = $state(false);
@@ -68,8 +79,61 @@
 		target.value = "";
 	}
 
+	let isDraftLoaded = $state(false);
+	let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+	onMount(() => {
+		const draft = loadDraft();
+		if (draft) {
+			tableStore.restoreDraft(draft);
+		}
+		isDraftLoaded = true;
+	});
+
+	$effect(() => {
+		const data = $state.snapshot(tableStore.tableData);
+		const style = $state.snapshot(tableStore.tableStyle);
+		const canvas = $state.snapshot(tableStore.canvasConfig);
+
+		if (!isDraftLoaded) return;
+
+		if (autoSaveTimer) {
+			clearTimeout(autoSaveTimer);
+		}
+
+		autoSaveTimer = setTimeout(() => {
+			saveDraft({
+				tableData: data,
+				tableStyle: style,
+				canvasConfig: canvas,
+			});
+		}, 400);
+
+		return () => {
+			if (autoSaveTimer) clearTimeout(autoSaveTimer);
+		};
+	});
+
+	function handleBeforeUnload() {
+		if (!isDraftLoaded) return;
+		saveDraft({
+			tableData: $state.snapshot(tableStore.tableData),
+			tableStyle: $state.snapshot(tableStore.tableStyle),
+			canvasConfig: $state.snapshot(tableStore.canvasConfig),
+		});
+	}
+
 	function handleNewTable() {
+		const hasContent = tableStore.tableData.rows.some((row) =>
+			row.some((cell) => cell.content && cell.content.trim() !== '')
+		);
+		if (hasContent) {
+			if (!window.confirm(t('toolbar.confirmNewTable'))) {
+				return;
+			}
+		}
 		tableStore.createNewTable(4, 4);
+		clearDraft();
 	}
 
 	function handleUndo() {
@@ -370,7 +434,28 @@
 		scheduleExportFallback();
 	}
 
+	let latexPopoverOpen = $state(false);
+
+	async function handleCopyLatex(includeStyles: boolean, includeDocument: boolean) {
+		latexPopoverOpen = false;
+		const latex = generateLatexTable(
+			tableStore.tableData,
+			tableStore.tableStyle,
+			{ includeStyles, includeDocument }
+		);
+		const success = await copyTextToClipboard(latex);
+		if (success) {
+			const desc = includeDocument
+				? t('toast.copyDocSuccessDesc')
+				: t('toast.copySnippetSuccessDesc');
+			showCopySuccessToast(desc);
+		} else {
+			showCopyErrorToast();
+		}
+	}
+
 	function handleExportLatex(includeStyles: boolean = true) {
+		latexPopoverOpen = false;
 		const latex = generateLatexTable(
 			tableStore.tableData,
 			tableStore.tableStyle,
@@ -407,7 +492,11 @@
 	}
 </script>
 
-<svelte:window onpaste={handleGlobalPaste} onkeydown={handleGlobalKeydown} />
+<svelte:window
+	onpaste={handleGlobalPaste}
+	onkeydown={handleGlobalKeydown}
+	onbeforeunload={handleBeforeUnload}
+/>
 
 <svelte:head>
 	<title>{t('preview.documentTitle')}</title>
@@ -751,7 +840,7 @@
 									</div>
 								</Popover.Content>
 							</Popover.Root>
-							<Popover.Root>
+							<Popover.Root bind:open={latexPopoverOpen}>
 								<Popover.Trigger>
 									{#snippet child({ props })}
 										<Button
@@ -768,24 +857,104 @@
 								<Popover.Content
 									side="top"
 									align="center"
-									class="w-56"
+									sideOffset={8}
+									class="w-72 p-1.5 shadow-xl border border-border bg-popover {uiTheme.theme === 'avant-garde' ? 'font-terminal' : ''}"
 								>
-									<div class="grid gap-2">
-										<p class="text-sm text-muted-foreground mb-2">{t('preview.chooseFormat')}</p>
-										<Button
-											variant="outline"
-											class="w-full justify-start"
-											onclick={() => handleExportLatex(true)}
+									<div class="flex flex-col gap-0.5 select-none">
+										<!-- Copy Section Header -->
+										<div class="flex items-center justify-between px-2 pt-1 pb-0.5">
+											<span class="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+												{t('preview.copyToClipboard')}
+											</span>
+											{#if uiTheme.theme === 'avant-garde'}
+												<span class="text-[9px] text-[#0202f1] font-bold tracking-wider uppercase">OVERLEAF // READY</span>
+											{:else}
+												<span class="text-[10px] text-primary font-medium">Overleaf</span>
+											{/if}
+										</div>
+
+										<!-- Primary: Copy Snippet (Styled) -->
+										<button
+											type="button"
+											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left transition-colors cursor-pointer group outline-none"
+											onclick={() => handleCopyLatex(true, false)}
 										>
-											{t('preview.withStyles')}
-										</Button>
-										<Button
-											variant="outline"
-											class="w-full justify-start"
-											onclick={() => handleExportLatex(false)}
+											<Copy class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
+											<div class="flex flex-col min-w-0">
+												<span class="text-xs font-semibold text-foreground group-hover:text-accent-foreground transition-colors">
+													{t('preview.copyLatexSnippet')}
+												</span>
+												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug transition-colors">
+													{t('preview.copyLatexSnippetDesc')}
+												</span>
+											</div>
+										</button>
+
+										<!-- Copy Full Doc -->
+										<button
+											type="button"
+											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left transition-colors cursor-pointer group outline-none"
+											onclick={() => handleCopyLatex(true, true)}
 										>
-											{t('preview.plain')}
-										</Button>
+											<FileText class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
+											<div class="flex flex-col min-w-0">
+												<span class="text-xs font-medium text-foreground group-hover:text-accent-foreground transition-colors">
+													{t('preview.copyLatexDocument')}
+												</span>
+												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug transition-colors">
+													{t('preview.copyLatexDocumentDesc')}
+												</span>
+											</div>
+										</button>
+
+										<!-- Copy Plain Snippet -->
+										<button
+											type="button"
+											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left transition-colors cursor-pointer group outline-none"
+											onclick={() => handleCopyLatex(false, false)}
+										>
+											<CheckSquare class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
+											<div class="flex flex-col min-w-0">
+												<span class="text-xs font-medium text-foreground group-hover:text-accent-foreground transition-colors">
+													{t('preview.copyPlainLatex')}
+												</span>
+												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug transition-colors">
+													{t('preview.copyPlainLatexDesc')}
+												</span>
+											</div>
+										</button>
+
+										<!-- Divider -->
+										<div class="h-px bg-border/60 my-1"></div>
+
+										<!-- Download Section Header -->
+										<div class="px-2 pt-0.5 pb-1">
+											<span class="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+												{t('preview.downloadFile')}
+											</span>
+										</div>
+
+										<!-- Download Buttons Grid -->
+										<div class="grid grid-cols-2 gap-1.5 px-1 pb-1">
+											<button
+												type="button"
+												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground transition-all cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
+												onclick={() => handleExportLatex(true)}
+												title={t('preview.downloadStyledTex')}
+											>
+												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit transition-colors" />
+												<span class="truncate">{t('preview.withStyles')}</span>
+											</button>
+											<button
+												type="button"
+												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground transition-all cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
+												onclick={() => handleExportLatex(false)}
+												title={t('preview.downloadPlainTex')}
+											>
+												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit transition-colors" />
+												<span class="truncate">{t('preview.plain')}</span>
+											</button>
+										</div>
 									</div>
 								</Popover.Content>
 							</Popover.Root>

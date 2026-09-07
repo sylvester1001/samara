@@ -443,6 +443,20 @@ class TableStore {
 		}
 	}
 
+	restoreDraft(draft: { tableData: TableData; tableStyle?: TableStyle; canvasConfig?: CanvasConfig }) {
+		this.tableData = draft.tableData;
+		if (draft.tableStyle) {
+			this.tableStyle = draft.tableStyle;
+		}
+		if (draft.canvasConfig) {
+			this.canvasConfig = draft.canvasConfig;
+		}
+		this.history = [];
+		this.historyIndex = -1;
+		this.selectedCells = [];
+		this.saveHistory();
+	}
+
 	createNewTable(rows: number, cols: number) {
 		this.tableData = createEmptyTable(rows, cols);
 		this.history = [];

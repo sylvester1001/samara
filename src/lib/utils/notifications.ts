@@ -16,3 +16,15 @@ export function showExportToast(filename: string) {
 		}
 	});
 }
+
+export function showCopySuccessToast(description?: string) {
+	toast.success(t('toast.copySuccess'), {
+		description: description || t('toast.copySuccessDesc')
+	});
+}
+
+export function showCopyErrorToast() {
+	toast.error(t('toast.copyFailed'), {
+		description: t('toast.copyFailedDesc')
+	});
+}
