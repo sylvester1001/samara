@@ -771,7 +771,7 @@
 														onclick={() =>
 															(exportFormat =
 																"png")}
-														class="flex-1 h-8 {exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
+														class="flex-1 h-8 transition-none {exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
 														style={exportFormat === 'png' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
 													>
 														PNG
@@ -785,7 +785,7 @@
 														onclick={() =>
 															(exportFormat =
 																"svg")}
-														class="flex-1 h-8 {exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
+														class="flex-1 h-8 transition-none {exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal uppercase font-bold text-xs' : ''}"
 														style={exportFormat === 'svg' && uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
 													>
 														SVG
@@ -876,15 +876,15 @@
 										<!-- Primary: Copy Snippet (Styled) -->
 										<button
 											type="button"
-											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left transition-colors cursor-pointer group outline-none"
+											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left cursor-pointer group outline-none select-none"
 											onclick={() => handleCopyLatex(true, false)}
 										>
-											<Copy class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
+											<Copy class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground" />
 											<div class="flex flex-col min-w-0">
-												<span class="text-xs font-semibold text-foreground group-hover:text-accent-foreground transition-colors">
+												<span class="text-xs font-semibold text-foreground group-hover:text-accent-foreground">
 													{t('preview.copyLatexSnippet')}
 												</span>
-												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug transition-colors">
+												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug">
 													{t('preview.copyLatexSnippetDesc')}
 												</span>
 											</div>
@@ -893,15 +893,15 @@
 										<!-- Copy Full Doc -->
 										<button
 											type="button"
-											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left transition-colors cursor-pointer group outline-none"
+											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left cursor-pointer group outline-none select-none"
 											onclick={() => handleCopyLatex(true, true)}
 										>
-											<FileText class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
+											<FileText class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground" />
 											<div class="flex flex-col min-w-0">
-												<span class="text-xs font-medium text-foreground group-hover:text-accent-foreground transition-colors">
+												<span class="text-xs font-medium text-foreground group-hover:text-accent-foreground">
 													{t('preview.copyLatexDocument')}
 												</span>
-												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug transition-colors">
+												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug">
 													{t('preview.copyLatexDocumentDesc')}
 												</span>
 											</div>
@@ -910,15 +910,15 @@
 										<!-- Copy Plain Snippet -->
 										<button
 											type="button"
-											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left transition-colors cursor-pointer group outline-none"
+											class="w-full flex items-start gap-2.5 px-2.5 py-2 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left cursor-pointer group outline-none select-none"
 											onclick={() => handleCopyLatex(false, false)}
 										>
-											<CheckSquare class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground transition-colors" />
+											<CheckSquare class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-accent-foreground" />
 											<div class="flex flex-col min-w-0">
-												<span class="text-xs font-medium text-foreground group-hover:text-accent-foreground transition-colors">
+												<span class="text-xs font-medium text-foreground group-hover:text-accent-foreground">
 													{t('preview.copyPlainLatex')}
 												</span>
-												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug transition-colors">
+												<span class="text-[11px] text-muted-foreground group-hover:text-accent-foreground/80 leading-snug">
 													{t('preview.copyPlainLatexDesc')}
 												</span>
 											</div>
@@ -938,20 +938,20 @@
 										<div class="grid grid-cols-2 gap-1.5 px-1 pb-1">
 											<button
 												type="button"
-												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground transition-all cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
+												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
 												onclick={() => handleExportLatex(true)}
 												title={t('preview.downloadStyledTex')}
 											>
-												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit transition-colors" />
+												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
 												<span class="truncate">{t('preview.withStyles')}</span>
 											</button>
 											<button
 												type="button"
-												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground transition-all cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
+												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
 												onclick={() => handleExportLatex(false)}
 												title={t('preview.downloadPlainTex')}
 											>
-												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit transition-colors" />
+												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
 												<span class="truncate">{t('preview.plain')}</span>
 											</button>
 										</div>
