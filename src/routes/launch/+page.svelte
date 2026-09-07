@@ -157,9 +157,6 @@
 </div>
 
 <style>
-	@import "computer-modern/cmu-sans-serif.css";
-	@import "computer-modern/cmu-serif.css";
-
 	:global(html),
 	:global(body) {
 		height: auto;

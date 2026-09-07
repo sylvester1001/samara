@@ -1,0 +1,64 @@
+/* Computer Modern (OFL). Hosted locally so Vite/Tauri can resolve font URLs. */
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-serif-500-roman.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-serif-500-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-serif-700-roman.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'CMU Serif';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-serif-700-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'CMU Sans Serif';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-sans-serif-500-roman.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'CMU Sans Serif';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-sans-serif-500-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'CMU Sans Serif';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-sans-serif-700-roman.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'CMU Sans Serif';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/computer-modern/cmu-sans-serif-700-italic.woff2') format('woff2');
+}
