@@ -26,7 +26,27 @@
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 	import { i18n } from '$lib/i18n';
 
+	import { onMount } from 'svelte';
+	import { isTauri } from '$lib/stores/platform.svelte.js';
+
 	let { children } = $props();
+
+	onMount(async () => {
+		try {
+			if (typeof document !== 'undefined' && 'fonts' in document) {
+				await Promise.race([
+					document.fonts.ready,
+					new Promise((resolve) => setTimeout(resolve, 1500))
+				]);
+			}
+			if (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window) {
+				const { getCurrentWindow } = await import('@tauri-apps/api/window');
+				await getCurrentWindow().show();
+			}
+		} catch (e) {
+			console.error('Failed to show window:', e);
+		}
+	});
 
 	$effect(() => {
 		const current = uiTheme.theme;
