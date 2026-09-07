@@ -16,6 +16,7 @@
 	import '@fontsource/jetbrains-mono/600.css';
 	import '@fontsource/jetbrains-mono/700.css';
 	import '$lib/styles/source-han-sans.css';
+	import '$lib/styles/source-han-serif.css';
 	import '$lib/styles/computer-modern.css';
 
 	import './layout.css';

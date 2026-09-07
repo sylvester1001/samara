@@ -26,8 +26,8 @@
 
 	// ========== Constants ==========
 	const FONT_FAMILY_MAP: Record<string, string> = {
-		'computer-modern': '"CMU Serif", var(--font-cjk), serif',
-		times: '"Times New Roman", Times, var(--font-cjk), serif',
+		'computer-modern': '"CMU Serif", var(--font-cjk-serif), serif',
+		times: '"Times New Roman", Times, var(--font-cjk-serif), serif',
 		arial: 'Arial, Helvetica, var(--font-cjk), sans-serif'
 	};
 

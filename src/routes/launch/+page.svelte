@@ -256,7 +256,7 @@
 	}
 
 	.hero-title {
-		font-family: "CMU Serif", var(--font-cjk), Georgia, serif;
+		font-family: "CMU Serif", var(--font-cjk-serif), Georgia, serif;
 		font-size: clamp(2.5rem, 5vw, 3.5rem);
 		font-weight: 400;
 		line-height: 1.1;
@@ -309,7 +309,7 @@
 	}
 
 	.section-title {
-		font-family: "CMU Serif", var(--font-cjk), Georgia, serif;
+		font-family: "CMU Serif", var(--font-cjk-serif), Georgia, serif;
 		font-size: 2.5rem;
 		font-weight: 400;
 		color: #1c1917;
@@ -379,7 +379,7 @@
 	}
 
 	.cta-title {
-		font-family: "CMU Serif", var(--font-cjk), Georgia, serif;
+		font-family: "CMU Serif", var(--font-cjk-serif), Georgia, serif;
 		font-size: 2rem;
 		font-weight: 400;
 		color: #1c1917;

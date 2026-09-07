@@ -16,6 +16,7 @@
 
 :root {
   --font-cjk: 'Source Han Sans SC', 'Source Han Sans TC', sans-serif;
+  --font-cjk-serif: 'Source Han Serif SC', 'Source Han Serif TC', serif;
   --radius: 0.625rem;
   --cobalt: #18181b;
   --cobalt-hover: #27272a;
@@ -352,6 +353,7 @@ html:not([data-theme="classic"]) .font-editorial {
 
 html[lang='zh-TW'] {
   --font-cjk: 'Source Han Sans TC', 'Source Han Sans SC', sans-serif;
+  --font-cjk-serif: 'Source Han Serif TC', 'Source Han Serif SC', serif;
 }
 
 /* Language names keep their own CJK face, independent of html[lang].

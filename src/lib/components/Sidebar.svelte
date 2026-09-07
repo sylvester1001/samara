@@ -40,14 +40,14 @@
 		{
 			value: 'computer-modern',
 			label: 'Computer Modern',
-			fontFamily: '"CMU Serif", var(--font-cjk), Georgia, serif',
+			fontFamily: '"CMU Serif", var(--font-cjk-serif), Georgia, serif',
 			tag: t('sidebar.fontTagLatex'),
 			sample: t('sidebar.fontSample')
 		},
 		{
 			value: 'times',
 			label: 'Times New Roman',
-			fontFamily: '"Times New Roman", Times, var(--font-cjk), serif',
+			fontFamily: '"Times New Roman", Times, var(--font-cjk-serif), serif',
 			tag: t('sidebar.fontTagClassic'),
 			sample: t('sidebar.fontSample')
 		},
