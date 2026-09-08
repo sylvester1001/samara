@@ -15,12 +15,12 @@
 	let { variant, class: className }: Props = $props();
 </script>
 
-<AppTooltip text={t('a11y.toggleTheme')} onclick={toggleMode}>
+<AppTooltip text={t('a11y.toggleTheme')}>
 	{#snippet children({ props })}
 		<Button
 			variant={variant || (uiTheme.theme === 'avant-garde' ? 'ghost' : 'outline')}
 			size="icon"
-			class={className}
+			class="relative {className ?? ''}"
 			{...props}
 			onclick={toggleMode}
 		>
