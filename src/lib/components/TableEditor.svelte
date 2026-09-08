@@ -29,6 +29,8 @@
 		onMergeCells?: () => void;
 		onUnmergeCells?: () => void;
 		onAddLine?: (edge: LineEdge) => void;
+		draftStatus?: 'saved' | 'saving';
+		savePulseKey?: number;
 	}
 
 	let {
@@ -49,7 +51,9 @@
 		onHeaderAdjustModeChange,
 		onMergeCells,
 		onUnmergeCells,
-		onAddLine
+		onAddLine,
+		draftStatus = 'saved',
+		savePulseKey = 0
 	}: Props = $props();
 
 	const rowCount = $derived(rows.length);
@@ -674,9 +678,22 @@
 				</span>
 				<span class="text-border">/</span>
 			</span>
-			<span class="flex items-center gap-1.5 text-[9.5px] text-[#0202f1] font-semibold shrink-0">
-				<span class="size-1.5 rounded-full bg-[#0202f1] inline-block animate-pulse"></span>
-				<span>SYNCED</span>
+			<span class="flex items-center gap-1.5 text-[9.5px] font-semibold shrink-0">
+				{#if draftStatus === 'saving'}
+					<span class="relative flex size-1.5 shrink-0">
+						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+						<span class="relative inline-flex size-1.5 rounded-full bg-amber-500"></span>
+					</span>
+					<span class="text-amber-500 font-semibold transition-colors">SYNCING</span>
+				{:else}
+					<span class="relative flex size-1.5 shrink-0">
+						{#key savePulseKey}
+							<span class="absolute inline-flex h-full w-full animate-ping-once rounded-full bg-[#0202f1]"></span>
+						{/key}
+						<span class="relative inline-flex size-1.5 rounded-full bg-[#0202f1]"></span>
+					</span>
+					<span class="text-[#0202f1] font-semibold transition-colors">SYNCED</span>
+				{/if}
 			</span>
 		</div>
 	</div>

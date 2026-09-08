@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Undo2, Redo2, FilePlus, Download } from 'lucide-svelte';
+	import { Undo2, Redo2, FilePlus, Download, Save } from 'lucide-svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
 	import { SidebarTrigger } from '$lib/components/ui/sidebar/index.js';
@@ -10,6 +10,7 @@
 	interface Props {
 		onImport?: () => void;
 		onNewTable?: () => void;
+		onSave?: () => void;
 		onUndo?: () => void;
 		onRedo?: () => void;
 		canUndo?: boolean;
@@ -19,6 +20,7 @@
 	let {
 		onImport,
 		onNewTable,
+		onSave,
 		onUndo,
 		onRedo,
 		canUndo = false,
@@ -81,6 +83,16 @@
 		>
 			<FilePlus class="shrink-0 w-3.5 h-3.5" />
 			<span class="select-none">{t('toolbar.newTable')}</span>
+		</button>
+
+		<button
+			type="button"
+			class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
+			onclick={onSave}
+			title={t('toolbar.saveShortcut', { key: isMac ? '⌘S' : 'Ctrl+S' })}
+		>
+			<Save class="shrink-0 w-3.5 h-3.5" />
+			<span class="select-none">{t('toolbar.save')}</span>
 		</button>
 
 		<div class="w-px h-5 bg-border mx-1"></div>

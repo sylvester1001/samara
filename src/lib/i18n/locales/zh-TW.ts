@@ -22,6 +22,8 @@ export const zhTW: TranslationSchema = {
 	toolbar: {
 		import: '匯入',
 		newTable: '新增',
+		save: '儲存',
+		saveShortcut: '儲存 ({key})',
 		undo: '復原',
 		redo: '重做',
 		undoShortcut: '復原 ({key})',

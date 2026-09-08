@@ -76,6 +76,9 @@
 
 	let isDraftLoaded = $state(false);
 	let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+	let draftStatus = $state<'saved' | 'saving'>('saved');
+	let savePulseKey = $state(0);
+	let isInitialMount = true;
 
 	onMount(() => {
 		const draft = loadDraft();
@@ -91,6 +94,12 @@
 		const canvas = $state.snapshot(tableStore.canvasConfig);
 
 		if (!isDraftLoaded) return;
+		if (isInitialMount) {
+			isInitialMount = false;
+			return;
+		}
+
+		draftStatus = 'saving';
 
 		if (autoSaveTimer) {
 			clearTimeout(autoSaveTimer);
@@ -102,12 +111,28 @@
 				tableStyle: style,
 				canvasConfig: canvas,
 			});
-		}, 400);
+			draftStatus = 'saved';
+			savePulseKey = Date.now();
+		}, 10000);
 
 		return () => {
 			if (autoSaveTimer) clearTimeout(autoSaveTimer);
 		};
 	});
+
+	function handleManualSave() {
+		if (autoSaveTimer) {
+			clearTimeout(autoSaveTimer);
+			autoSaveTimer = null;
+		}
+		saveDraft({
+			tableData: $state.snapshot(tableStore.tableData),
+			tableStyle: $state.snapshot(tableStore.tableStyle),
+			canvasConfig: $state.snapshot(tableStore.canvasConfig),
+		});
+		draftStatus = 'saved';
+		savePulseKey = Date.now();
+	}
 
 	function handleBeforeUnload() {
 		if (!isDraftLoaded) return;
@@ -127,8 +152,14 @@
 				return;
 			}
 		}
+		if (autoSaveTimer) {
+			clearTimeout(autoSaveTimer);
+			autoSaveTimer = null;
+		}
 		tableStore.createNewTable(4, 4);
 		clearDraft();
+		draftStatus = 'saved';
+		savePulseKey = Date.now();
 	}
 
 	function handleUndo() {
@@ -318,6 +349,12 @@
 	}
 
 	function handleGlobalKeydown(e: KeyboardEvent) {
+		if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+			e.preventDefault();
+			handleManualSave();
+			return;
+		}
+
 		const target = e.target as HTMLElement;
 		const isEditing =
 			target.tagName === "INPUT" ||
@@ -556,6 +593,7 @@
 				{canRedo}
 				onImport={handleImportClick}
 				onNewTable={handleNewTable}
+				onSave={handleManualSave}
 				onUndo={handleUndo}
 				onRedo={handleRedo}
 			/>
@@ -618,6 +656,8 @@
 								onMergeCells={handleMergeCells}
 								onUnmergeCells={handleUnmergeCells}
 								onAddLine={handleAddLine}
+								{draftStatus}
+								{savePulseKey}
 							/>
 						</div>
 					</div>

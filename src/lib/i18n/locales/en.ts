@@ -20,6 +20,8 @@ export const en = {
 	toolbar: {
 		import: 'Import',
 		newTable: 'New',
+		save: 'Save',
+		saveShortcut: 'Save ({key})',
 		undo: 'Undo',
 		redo: 'Redo',
 		undoShortcut: 'Undo ({key})',

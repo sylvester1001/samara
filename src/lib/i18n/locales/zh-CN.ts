@@ -22,6 +22,8 @@ export const zhCN: TranslationSchema = {
 	toolbar: {
 		import: '导入',
 		newTable: '新建',
+		save: '保存',
+		saveShortcut: '保存 ({key})',
 		undo: '撤销',
 		redo: '重做',
 		undoShortcut: '撤销 ({key})',
