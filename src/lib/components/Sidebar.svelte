@@ -7,6 +7,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
 	import PresetPicker from '$lib/components/PresetPicker.svelte';
+	import AppTooltip from '$lib/components/AppTooltip.svelte';
 	import type { TableStyle, CanvasConfig, BorderStyle } from '$lib/types';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 	import { isWindows } from '$lib/stores/platform.svelte.js';
@@ -263,15 +264,19 @@
 				<span class="text-xs text-muted-foreground shrink-0 w-8 font-terminal text-[10px] uppercase tracking-wider">{t('sidebar.size')}</span>
 				<div class="relative flex-1 flex items-center py-1">
 					<!-- 12pt Center Benchmark Notch (工业标定刻度线) -->
-					<button
-						type="button"
-						class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-5 flex flex-col items-center justify-between pointer-events-auto cursor-pointer z-0 group"
-						onclick={() => handleFontSizeChange?.(12)}
-						title={t('sidebar.fontSizeDefault')}
-					>
-						<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
-						<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
-					</button>
+					<AppTooltip text={t('sidebar.fontSizeDefault')}>
+						{#snippet children({ props })}
+							<button
+								type="button"
+								class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-5 flex flex-col items-center justify-between pointer-events-auto cursor-pointer z-0 group"
+								onclick={() => handleFontSizeChange?.(12)}
+								{...props}
+							>
+								<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
+								<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
+							</button>
+						{/snippet}
+					</AppTooltip>
 					<Slider
 						class="w-full relative z-[1]"
 						type="single"
@@ -282,14 +287,18 @@
 						onValueChange={handleFontSizeChange}
 					/>
 				</div>
-				<button
-					type="button"
-					class="text-xs text-muted-foreground shrink-0 w-8 text-right font-terminal text-[11px] font-semibold transition-colors {tableStyle.fontSize === 12 ? 'text-foreground' : 'text-primary hover:underline cursor-pointer'}"
-					onclick={() => handleFontSizeChange?.(12)}
-					title={tableStyle.fontSize === 12 ? t('sidebar.fontSizeDefaultShort') : t('sidebar.fontSizeReset')}
-				>
-					{tableStyle.fontSize}pt
-				</button>
+				<AppTooltip text={tableStyle.fontSize === 12 ? t('sidebar.fontSizeDefaultShort') : t('sidebar.fontSizeReset')}>
+					{#snippet children({ props })}
+						<button
+							type="button"
+							class="text-xs text-muted-foreground shrink-0 w-8 text-right font-terminal text-[11px] font-semibold transition-colors {tableStyle.fontSize === 12 ? 'text-foreground' : 'text-primary hover:underline cursor-pointer'}"
+							onclick={() => handleFontSizeChange?.(12)}
+							{...props}
+						>
+							{tableStyle.fontSize}pt
+						</button>
+					{/snippet}
+				</AppTooltip>
 			</div>
 		</div>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import AppTooltip from '$lib/components/AppTooltip.svelte';
 	import { Grid3x3 } from 'lucide-svelte';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 	import { t } from '$lib/i18n';
@@ -59,15 +60,18 @@
 <Popover.Root bind:open>
 	<Popover.Trigger>
 		{#snippet child({ props })}
-			<Button
-				variant="ghost"
-				size="icon"
-				class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-				{...props}
-				title={t('table.size')}
-			>
-				<Grid3x3 class="w-3.5 h-3.5" />
-			</Button>
+			<AppTooltip text={t('table.size')} childProps={props}>
+				{#snippet children({ props: tooltipProps })}
+					<Button
+						variant="ghost"
+						size="icon"
+						class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
+						{...tooltipProps}
+					>
+						<Grid3x3 class="w-3.5 h-3.5" />
+					</Button>
+				{/snippet}
+			</AppTooltip>
 		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content align="start" class="w-auto p-2.5 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">

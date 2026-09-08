@@ -7,6 +7,7 @@
 		TableEditor,
 		FormulaDialog,
 	} from "$lib/components";
+	import AppTooltip from "$lib/components/AppTooltip.svelte";
 	import SettingsSidebar from "$lib/components/Sidebar.svelte";
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import * as AppSidebar from "$lib/components/ui/sidebar/index.js";
@@ -689,33 +690,45 @@
 							</Badge>
 						{/if}
 						<div class="absolute top-3 left-3 flex items-center gap-0.5 z-10">
-							<Button
-								variant="ghost"
-								size="icon"
-								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-								onclick={() => (previewZoom = 1)}
-								title={t('preview.resetZoom')}
-							>
-								<RotateCcw class="h-3.5 w-3.5" />
-							</Button>
-							<Button
-								variant="ghost"
-								size="icon"
-								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-								onclick={handleZoomOut}
-								title={t('preview.zoomOut')}
-							>
-								<ZoomOut class="h-3.5 w-3.5" />
-							</Button>
-							<Button
-								variant="ghost"
-								size="icon"
-								class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-								onclick={handleZoomIn}
-								title={t('preview.zoomIn')}
-							>
-								<ZoomIn class="h-3.5 w-3.5" />
-							</Button>
+							<AppTooltip text={t('preview.resetZoom')}>
+								{#snippet children({ props })}
+									<Button
+										variant="ghost"
+										size="icon"
+										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
+										onclick={() => (previewZoom = 1)}
+										{...props}
+									>
+										<RotateCcw class="h-3.5 w-3.5" />
+									</Button>
+								{/snippet}
+							</AppTooltip>
+							<AppTooltip text={t('preview.zoomOut')}>
+								{#snippet children({ props })}
+									<Button
+										variant="ghost"
+										size="icon"
+										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
+										onclick={handleZoomOut}
+										{...props}
+									>
+										<ZoomOut class="h-3.5 w-3.5" />
+									</Button>
+								{/snippet}
+							</AppTooltip>
+							<AppTooltip text={t('preview.zoomIn')}>
+								{#snippet children({ props })}
+									<Button
+										variant="ghost"
+										size="icon"
+										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
+										onclick={handleZoomIn}
+										{...props}
+									>
+										<ZoomIn class="h-3.5 w-3.5" />
+									</Button>
+								{/snippet}
+							</AppTooltip>
 							<span
 								class="text-[11px] font-terminal text-muted-foreground flex items-center px-1.5 font-semibold select-none"
 							>
@@ -953,24 +966,32 @@
 
 										<!-- Download Buttons Grid -->
 										<div class="grid grid-cols-2 gap-1.5 px-1 pb-1">
-											<button
-												type="button"
-												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
-												onclick={() => handleExportLatex(true)}
-												title={t('preview.downloadStyledTex')}
-											>
-												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
-												<span class="truncate">{t('preview.withStyles')}</span>
-											</button>
-											<button
-												type="button"
-												class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
-												onclick={() => handleExportLatex(false)}
-												title={t('preview.downloadPlainTex')}
-											>
-												<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
-												<span class="truncate">{t('preview.plain')}</span>
-											</button>
+											<AppTooltip text={t('preview.downloadStyledTex')}>
+												{#snippet children({ props })}
+													<button
+														type="button"
+														class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
+														onclick={() => handleExportLatex(true)}
+														{...props}
+													>
+														<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
+														<span class="truncate">{t('preview.withStyles')}</span>
+													</button>
+												{/snippet}
+											</AppTooltip>
+											<AppTooltip text={t('preview.downloadPlainTex')}>
+												{#snippet children({ props })}
+													<button
+														type="button"
+														class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
+														onclick={() => handleExportLatex(false)}
+														{...props}
+													>
+														<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
+														<span class="truncate">{t('preview.plain')}</span>
+													</button>
+												{/snippet}
+											</AppTooltip>
 										</div>
 									</div>
 								</Popover.Content>

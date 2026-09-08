@@ -8,17 +8,19 @@
 		text,
 		childProps,
 		contentProps,
+		delayDuration = 200,
 		children,
 		...triggerProps
 	}: {
 		text: string;
 		childProps?: Record<string, unknown>;
 		contentProps?: WithoutChildrenOrChild<ComponentProps<typeof Tooltip.Content>>;
+		delayDuration?: number;
 		children?: Snippet<[{ props: Record<string, unknown> }]>;
 	} & Record<string, unknown> = $props();
 </script>
 
-<Tooltip.Root>
+<Tooltip.Root {delayDuration}>
 	<Tooltip.Trigger {...triggerProps}>
 		{#snippet child({ props })}
 			{@const mergedProps = childProps ? mergeProps(props, childProps) : props}

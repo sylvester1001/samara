@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import AppTooltip from '$lib/components/AppTooltip.svelte';
 	import { i18n, t, type Locale } from '$lib/i18n';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
 	import { Languages } from 'lucide-svelte';
@@ -17,20 +18,23 @@
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger>
 		{#snippet child({ props })}
-			<Button
-				variant="outline"
-				size="sm"
-				class="h-8 px-2.5 gap-1.5 {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
-				title={t('toolbar.language')}
-				aria-label={t('toolbar.language')}
-				{...props}
-			>
-				<Languages data-icon="inline-start" />
-				<span
-					class="text-[11px] font-terminal font-semibold uppercase tracking-wider select-none"
-					lang={current.lang}
-				>{current.short}</span>
-			</Button>
+			<AppTooltip text={t('toolbar.language')} childProps={props}>
+				{#snippet children({ props: tooltipProps })}
+					<Button
+						variant="outline"
+						size="sm"
+						class="h-8 px-2.5 gap-1.5 {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
+						aria-label={t('toolbar.language')}
+						{...tooltipProps}
+					>
+						<Languages data-icon="inline-start" />
+						<span
+							class="text-[11px] font-terminal font-semibold uppercase tracking-wider select-none"
+							lang={current.lang}
+						>{current.short}</span>
+					</Button>
+				{/snippet}
+			</AppTooltip>
 		{/snippet}
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end" class="w-40 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">

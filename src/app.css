@@ -837,12 +837,26 @@ html:not([data-theme="classic"]) [data-sonner-toast] {
 
 html[data-theme="avant-garde"] [data-slot="popover-content"],
 html[data-theme="avant-garde"] [data-slot="dialog-content"],
+html[data-theme="avant-garde"] [data-slot="tooltip-content"],
 html[data-theme="avant-garde"] [data-popover-content],
 html[data-theme="avant-garde"] [data-dialog-content],
 html:not([data-theme="classic"]) [data-slot="popover-content"],
 html:not([data-theme="classic"]) [data-slot="dialog-content"],
+html:not([data-theme="classic"]) [data-slot="tooltip-content"],
 html:not([data-theme="classic"]) [data-popover-content],
 html:not([data-theme="classic"]) [data-dialog-content] {
+  border-radius: 0px !important;
+}
+
+html[data-theme="avant-garde"] [data-slot="tooltip-content"],
+html:not([data-theme="classic"]) [data-slot="tooltip-content"] {
+  font-family: 'JetBrains Mono', var(--font-cjk), monospace !important;
+  font-size: 11px !important;
+  letter-spacing: 0.02em !important;
+}
+
+html[data-theme="avant-garde"] [data-slot="tooltip-content"] div,
+html:not([data-theme="classic"]) [data-slot="tooltip-content"] div {
   border-radius: 0px !important;
 }
 
