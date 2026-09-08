@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Undo2, Redo2, FilePlus, Download, Save } from 'lucide-svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 	import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
 	import AppTooltip from '$lib/components/AppTooltip.svelte';
 	import { SidebarTrigger } from '$lib/components/ui/sidebar/index.js';
@@ -127,25 +128,7 @@
 	></div>
 
 	<div class="flex items-center gap-2 shrink-0 select-none">
-		<!-- Theme Style Switcher: Classic / Avant-Garde -->
-		<AppTooltip text={t('toolbar.switchStyle')} onclick={() => uiTheme.toggle()}>
-			{#snippet children({ props })}
-				<button
-					type="button"
-					class="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[var(--radius)] border border-border bg-background hover:bg-muted transition-all cursor-pointer select-none text-xs"
-					{...props}
-					onclick={() => uiTheme.toggle()}
-				>
-					{#if uiTheme.theme === 'avant-garde'}
-						<span class="size-2 rounded-full bg-[#0202f1] shrink-0"></span>
-						<span class="font-terminal text-[11px] uppercase tracking-wider font-semibold text-foreground select-none">{t('toolbar.avantGarde')}</span>
-					{:else}
-						<span class="size-2 rounded-full bg-muted-foreground/60 shrink-0"></span>
-						<span class="text-xs text-muted-foreground font-medium select-none">{t('toolbar.classic')}</span>
-					{/if}
-				</button>
-			{/snippet}
-		</AppTooltip>
+		<ThemeSwitcher />
 
 		<LanguageSwitcher />
 

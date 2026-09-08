@@ -27,7 +27,7 @@ export const en = {
 		undoShortcut: 'Undo ({key})',
 		redoShortcut: 'Redo ({key})',
 		confirmNewTable: 'Creating a new table will reset your current work. Continue?',
-		switchStyle: 'Switch UI Style: Classic / Avant-Garde',
+		switchStyle: 'UI Style',
 		avantGarde: 'Avant-Garde',
 		classic: 'Classic',
 		language: 'Language'

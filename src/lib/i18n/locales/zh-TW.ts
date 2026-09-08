@@ -29,7 +29,7 @@ export const zhTW: TranslationSchema = {
 		undoShortcut: '復原 ({key})',
 		redoShortcut: '重做 ({key})',
 		confirmNewTable: '建立新表格將重設目前編輯內容，確定繼續嗎？',
-		switchStyle: '切換介面風格：Classic / Avant-Garde',
+		switchStyle: '介面風格',
 		avantGarde: 'Avant-Garde',
 		classic: 'Classic',
 		language: '語言'

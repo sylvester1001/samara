@@ -29,7 +29,7 @@ export const zhCN: TranslationSchema = {
 		undoShortcut: '撤销 ({key})',
 		redoShortcut: '重做 ({key})',
 		confirmNewTable: '新建表格将重置当前编辑内容，确定继续吗？',
-		switchStyle: '切换界面风格：Classic / Avant-Garde',
+		switchStyle: '界面风格',
 		avantGarde: 'Avant-Garde',
 		classic: 'Classic',
 		language: '语言'
