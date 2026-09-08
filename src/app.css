@@ -834,6 +834,17 @@ html:not([data-theme="classic"]) [data-sonner-toast] {
   font-family: var(--font-cjk), "JetBrains Mono", monospace !important;
 }
 
+html[data-theme="avant-garde"] [data-slot="popover-content"],
+html[data-theme="avant-garde"] [data-slot="dialog-content"],
+html[data-theme="avant-garde"] [data-popover-content],
+html[data-theme="avant-garde"] [data-dialog-content],
+html:not([data-theme="classic"]) [data-slot="popover-content"],
+html:not([data-theme="classic"]) [data-slot="dialog-content"],
+html:not([data-theme="classic"]) [data-popover-content],
+html:not([data-theme="classic"]) [data-dialog-content] {
+  border-radius: 0px !important;
+}
+
 html[data-theme="avant-garde"] [data-sonner-toast] [data-close-button],
 html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button] {
   border-radius: 0px !important;
@@ -849,14 +860,23 @@ html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
 /* =========================================================
    Techwear / Industrial Registration Corner Marks
    Diagonal corners: Top-Right (┐) and Bottom-Left (└)
+   Applied to: TableEditor, Popovers, and Dialogs
    ========================================================= */
 .tech-corners,
-[data-tech-corners] {
+[data-tech-corners],
+html[data-theme="avant-garde"] [data-slot="popover-content"],
+html:not([data-theme="classic"]) [data-slot="popover-content"],
+html[data-theme="avant-garde"] [data-slot="dialog-content"],
+html:not([data-theme="classic"]) [data-slot="dialog-content"] {
   position: relative;
 }
 
 .tech-corners::after,
-[data-tech-corners]::after {
+[data-tech-corners]::after,
+html[data-theme="avant-garde"] [data-slot="popover-content"]::after,
+html:not([data-theme="classic"]) [data-slot="popover-content"]::after,
+html[data-theme="avant-garde"] [data-slot="dialog-content"]::after,
+html:not([data-theme="classic"]) [data-slot="dialog-content"]::after {
   content: '';
   position: absolute;
   top: -1px;
@@ -870,7 +890,11 @@ html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
 }
 
 .tech-corners::before,
-[data-tech-corners]::before {
+[data-tech-corners]::before,
+html[data-theme="avant-garde"] [data-slot="popover-content"]::before,
+html:not([data-theme="classic"]) [data-slot="popover-content"]::before,
+html[data-theme="avant-garde"] [data-slot="dialog-content"]::before,
+html:not([data-theme="classic"]) [data-slot="dialog-content"]::before {
   content: '';
   position: absolute;
   bottom: -1px;
@@ -882,3 +906,5 @@ html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
   pointer-events: none;
   z-index: 30;
 }
+
+
