@@ -61,13 +61,16 @@
 	const colCount = $derived(rows[0]?.length || 0);
 	const selectedSet = $derived(new Set(selectedCells.map((cell) => `${cell.row}:${cell.col}`)));
 
-	const totalBufferBytes = $derived.by(() => {
+	const textEncoder = new TextEncoder();
+	const currentBufferBytes = $derived.by(() => {
+		if (!selectedCells || selectedCells.length === 0) {
+			return 0;
+		}
 		let total = 0;
-		for (const row of rows) {
-			for (const cell of row) {
-				if (cell?.content) {
-					total += cell.content.length;
-				}
+		for (const { row, col } of selectedCells) {
+			const cell = rows[row]?.[col];
+			if (cell?.content) {
+				total += textEncoder.encode(cell.content).length;
 			}
 		}
 		return total;
@@ -681,7 +684,7 @@
 				<span class="text-border">/</span>
 				<span class="flex items-center gap-1">
 					<span class="text-muted-foreground/50">BUF:</span>
-					<span class="font-semibold text-foreground/90 tracking-normal">{totalBufferBytes} B</span>
+					<span class="font-semibold text-foreground/90 tracking-normal">{currentBufferBytes} B</span>
 				</span>
 			</span>
 		</div>
