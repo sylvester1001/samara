@@ -2,6 +2,22 @@ import { browser } from '$app/environment';
 
 export type UiTheme = 'avant-garde' | 'classic';
 
+export interface ThemeFeatures {
+	borderTrace: boolean;
+	reticleCorners: boolean;
+}
+
+export const themeFeatures: Record<UiTheme, ThemeFeatures> = {
+	'avant-garde': {
+		borderTrace: true,
+		reticleCorners: true
+	},
+	'classic': {
+		borderTrace: false,
+		reticleCorners: false
+	}
+};
+
 class UiThemeStore {
 	theme = $state<UiTheme>('avant-garde');
 
