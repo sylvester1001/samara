@@ -10,7 +10,8 @@
 .font-garamond {
   font-family: 'EB Garamond', var(--font-cjk), Garamond, Georgia, serif;
 }
-.font-mono-brand {
+.font-mono-brand,
+.font-terminal {
   font-family: 'JetBrains Mono', var(--font-cjk), monospace;
 }
 

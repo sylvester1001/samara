@@ -55,6 +55,36 @@
 	const rowCount = $derived(rows.length);
 	const colCount = $derived(rows[0]?.length || 0);
 	const selectedSet = $derived(new Set(selectedCells.map((cell) => `${cell.row}:${cell.col}`)));
+
+	const totalBufferBytes = $derived.by(() => {
+		let total = 0;
+		for (const row of rows) {
+			for (const cell of row) {
+				if (cell?.content) {
+					total += cell.content.length;
+				}
+			}
+		}
+		return total;
+	});
+
+	const posDisplay = $derived.by(() => {
+		if (!selectedCells || selectedCells.length === 0) {
+			return 'STANDBY';
+		}
+		if (selectedCells.length === 1) {
+			const { row, col } = selectedCells[0];
+			const colLetter = String.fromCharCode(65 + col);
+			return `${colLetter}${row + 1}`;
+		}
+		const minRow = Math.min(...selectedCells.map((c) => c.row));
+		const maxRow = Math.max(...selectedCells.map((c) => c.row));
+		const minCol = Math.min(...selectedCells.map((c) => c.col));
+		const maxCol = Math.max(...selectedCells.map((c) => c.col));
+		const start = `${String.fromCharCode(65 + minCol)}${minRow + 1}`;
+		const end = `${String.fromCharCode(65 + maxCol)}${maxRow + 1}`;
+		return `${start}:${end} (${selectedCells.length})`;
+	});
 	let selectionAnchor = $state<{ row: number; col: number } | null>(null);
 	let isDragging = $state(false);
 	const inputPaddingXRem = 1.25;
@@ -613,9 +643,59 @@
 			</ContextMenu.Root>
 		</div>
 	</ScrollArea>
+
+	<!-- HUD Telemetry Bar -->
+	<div
+		class="hud-telemetry flex items-center justify-between px-3 h-[25px] bg-muted/20 border-t border-border shrink-0 select-none font-terminal text-[10px] uppercase tracking-wider text-muted-foreground/80 overflow-hidden whitespace-nowrap"
+	>
+		<div class="flex items-center gap-2.5 min-w-0 shrink-0">
+			<span class="flex items-center gap-1 shrink-0">
+				<span class="text-muted-foreground/50">POS:</span>
+				<span class="font-bold text-foreground tracking-normal">{posDisplay}</span>
+			</span>
+			<span class="text-border shrink-0">/</span>
+			<span class="flex items-center gap-1 shrink-0">
+				<span class="text-muted-foreground/50">GRID:</span>
+				<span class="font-semibold text-foreground/90 tracking-normal">{rowCount}×{colCount}</span>
+			</span>
+			<span class="hud-item-buf flex items-center gap-2.5 shrink-0">
+				<span class="text-border">/</span>
+				<span class="flex items-center gap-1">
+					<span class="text-muted-foreground/50">BUF:</span>
+					<span class="font-semibold text-foreground/90 tracking-normal">{totalBufferBytes} B</span>
+				</span>
+			</span>
+		</div>
+		<div class="flex items-center gap-2.5 shrink-0">
+			<span class="hud-item-engine flex items-center gap-2.5 shrink-0">
+				<span class="flex items-center gap-1 text-[9.5px] tracking-widest text-muted-foreground/60">
+					<span>ENGINE:</span>
+					<span class="text-foreground/80 font-medium">NICEMATRIX</span>
+				</span>
+				<span class="text-border">/</span>
+			</span>
+			<span class="flex items-center gap-1.5 text-[9.5px] text-[#0202f1] font-semibold shrink-0">
+				<span class="size-1.5 rounded-full bg-[#0202f1] inline-block animate-pulse"></span>
+				<span>SYNCED</span>
+			</span>
+		</div>
+	</div>
 </div>
 
 <style>
+	.hud-telemetry {
+		container-type: inline-size;
+	}
+	@container (max-width: 480px) {
+		.hud-item-engine {
+			display: none;
+		}
+	}
+	@container (max-width: 380px) {
+		.hud-item-buf {
+			display: none;
+		}
+	}
 	:global(.table-editor th:hover .header-delete-btn),
 	:global(.table-editor td:hover .header-delete-btn) {
 		opacity: 1 !important;
