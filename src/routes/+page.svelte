@@ -552,7 +552,7 @@
 
 <AppSidebar.Provider>
 	<AppSidebar.Root collapsible="offcanvas">
-		<AppSidebar.Header data-tauri-drag-region class="{isMac && isTauri ? 'pt-[38px]' : ''} shrink-0 justify-center px-4 pb-1 bg-sidebar select-none">
+		<AppSidebar.Header data-tauri-drag-region={isMac && isTauri ? '' : undefined} class="{isMac && isTauri ? 'pt-[38px]' : ''} shrink-0 justify-center px-4 pb-1 bg-sidebar select-none">
 			<div class="flex items-center gap-2.5 text-left -ml-1.5 px-1.5 py-1 w-full select-none">
 				<div class="flex items-center justify-center shrink-0">
 					<BrandLogo
@@ -690,40 +690,40 @@
 							</Badge>
 						{/if}
 						<div class="absolute top-3 left-3 flex items-center gap-0.5 z-10">
-							<AppTooltip text={t('preview.resetZoom')}>
+							<AppTooltip text={t('preview.resetZoom')} onclick={() => (previewZoom = 1)}>
 								{#snippet children({ props })}
 									<Button
 										variant="ghost"
 										size="icon"
 										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-										onclick={() => (previewZoom = 1)}
 										{...props}
+										onclick={() => (previewZoom = 1)}
 									>
 										<RotateCcw class="h-3.5 w-3.5" />
 									</Button>
 								{/snippet}
 							</AppTooltip>
-							<AppTooltip text={t('preview.zoomOut')}>
+							<AppTooltip text={t('preview.zoomOut')} onclick={handleZoomOut}>
 								{#snippet children({ props })}
 									<Button
 										variant="ghost"
 										size="icon"
 										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-										onclick={handleZoomOut}
 										{...props}
+										onclick={handleZoomOut}
 									>
 										<ZoomOut class="h-3.5 w-3.5" />
 									</Button>
 								{/snippet}
 							</AppTooltip>
-							<AppTooltip text={t('preview.zoomIn')}>
+							<AppTooltip text={t('preview.zoomIn')} onclick={handleZoomIn}>
 								{#snippet children({ props })}
 									<Button
 										variant="ghost"
 										size="icon"
 										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-										onclick={handleZoomIn}
 										{...props}
+										onclick={handleZoomIn}
 									>
 										<ZoomIn class="h-3.5 w-3.5" />
 									</Button>
@@ -966,26 +966,26 @@
 
 										<!-- Download Buttons Grid -->
 										<div class="grid grid-cols-2 gap-1.5 px-1 pb-1">
-											<AppTooltip text={t('preview.downloadStyledTex')}>
+											<AppTooltip text={t('preview.downloadStyledTex')} onclick={() => handleExportLatex(true)}>
 												{#snippet children({ props })}
 													<button
 														type="button"
 														class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
-														onclick={() => handleExportLatex(true)}
 														{...props}
+														onclick={() => handleExportLatex(true)}
 													>
 														<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
 														<span class="truncate">{t('preview.withStyles')}</span>
 													</button>
 												{/snippet}
 											</AppTooltip>
-											<AppTooltip text={t('preview.downloadPlainTex')}>
+											<AppTooltip text={t('preview.downloadPlainTex')} onclick={() => handleExportLatex(false)}>
 												{#snippet children({ props })}
 													<button
 														type="button"
 														class="inline-flex items-center justify-center gap-1.5 h-8 px-2 border border-border bg-background text-foreground cursor-pointer select-none group {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider text-[11px] font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-[var(--radius)] hover:bg-muted text-xs font-medium'}"
-														onclick={() => handleExportLatex(false)}
 														{...props}
+														onclick={() => handleExportLatex(false)}
 													>
 														<Download class="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover:text-inherit" />
 														<span class="truncate">{t('preview.plain')}</span>

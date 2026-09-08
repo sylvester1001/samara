@@ -264,13 +264,13 @@
 				<span class="text-xs text-muted-foreground shrink-0 w-8 font-terminal text-[10px] uppercase tracking-wider">{t('sidebar.size')}</span>
 				<div class="relative flex-1 flex items-center py-1">
 					<!-- 12pt Center Benchmark Notch (工业标定刻度线) -->
-					<AppTooltip text={t('sidebar.fontSizeDefault')}>
+					<AppTooltip text={t('sidebar.fontSizeDefault')} onclick={() => handleFontSizeChange?.(12)}>
 						{#snippet children({ props })}
 							<button
 								type="button"
 								class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-5 flex flex-col items-center justify-between pointer-events-auto cursor-pointer z-0 group"
-								onclick={() => handleFontSizeChange?.(12)}
 								{...props}
+								onclick={() => handleFontSizeChange?.(12)}
 							>
 								<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
 								<span class="w-[1.5px] h-[3.5px] rounded-[1px] bg-zinc-300 dark:bg-zinc-700 group-hover:bg-primary transition-colors"></span>
@@ -287,13 +287,13 @@
 						onValueChange={handleFontSizeChange}
 					/>
 				</div>
-				<AppTooltip text={tableStyle.fontSize === 12 ? t('sidebar.fontSizeDefaultShort') : t('sidebar.fontSizeReset')}>
+				<AppTooltip text={tableStyle.fontSize === 12 ? t('sidebar.fontSizeDefaultShort') : t('sidebar.fontSizeReset')} onclick={() => handleFontSizeChange?.(12)}>
 					{#snippet children({ props })}
 						<button
 							type="button"
 							class="text-xs text-muted-foreground shrink-0 w-8 text-right font-terminal text-[11px] font-semibold transition-colors {tableStyle.fontSize === 12 ? 'text-foreground' : 'text-primary hover:underline cursor-pointer'}"
-							onclick={() => handleFontSizeChange?.(12)}
 							{...props}
+							onclick={() => handleFontSizeChange?.(12)}
 						>
 							{tableStyle.fontSize}pt
 						</button>

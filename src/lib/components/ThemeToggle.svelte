@@ -15,14 +15,14 @@
 	let { variant, class: className }: Props = $props();
 </script>
 
-<AppTooltip text={t('a11y.toggleTheme')}>
+<AppTooltip text={t('a11y.toggleTheme')} onclick={toggleMode}>
 	{#snippet children({ props })}
 		<Button
-			onclick={toggleMode}
 			variant={variant || (uiTheme.theme === 'avant-garde' ? 'ghost' : 'outline')}
 			size="icon"
 			class={className}
 			{...props}
+			onclick={toggleMode}
 		>
 			<SunIcon class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 !transition-all dark:scale-0 dark:-rotate-90" />
 			<MoonIcon class="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 !transition-all dark:scale-100 dark:rotate-0" />

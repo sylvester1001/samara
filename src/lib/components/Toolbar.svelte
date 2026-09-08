@@ -28,38 +28,10 @@
 		canRedo = false
 	}: Props = $props();
 
-	function handleDragMouseDown(e: MouseEvent) {
-		if (e.button !== 0) return;
-		const target = e.target as HTMLElement | null;
-		if (target?.closest('button, a, input, select, textarea, [role="button"]')) {
-			return;
-		}
-		e.preventDefault();
-		if (isTauri) {
-			import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
-				getCurrentWindow().startDragging();
-			}).catch(() => {});
-		}
-	}
-
-	function handleDragDblClick(e: MouseEvent) {
-		const target = e.target as HTMLElement | null;
-		if (target?.closest('button, a, input, select, textarea, [role="button"]')) {
-			return;
-		}
-		if (isTauri) {
-			import('@tauri-apps/api/window').then(({ getCurrentWindow }) => {
-				getCurrentWindow().toggleMaximize();
-			}).catch(() => {});
-		}
-	}
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <header
-	data-tauri-drag-region
-	onmousedown={handleDragMouseDown}
-	ondblclick={handleDragDblClick}
+	data-tauri-drag-region={isMac && isTauri ? '' : undefined}
 	class="flex items-center h-14 px-4 border-b border-border bg-background gap-4 overflow-hidden w-full box-border select-none"
 >
 	<div class="flex items-center gap-2 min-w-0 shrink-0 select-none">
@@ -72,13 +44,13 @@
 		<div class="w-px h-5 bg-border mx-1"></div>
 
 		<!-- Action Buttons -->
-		<AppTooltip text={t('toolbar.import')}>
+		<AppTooltip text={t('toolbar.import')} onclick={onImport}>
 			{#snippet children({ props })}
 				<button
 					type="button"
 					class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
-					onclick={onImport}
 					{...props}
+					onclick={onImport}
 				>
 					<Download class="shrink-0 w-3.5 h-3.5" />
 					<span class="select-none">{t('toolbar.import')}</span>
@@ -86,13 +58,13 @@
 			{/snippet}
 		</AppTooltip>
 
-		<AppTooltip text={t('toolbar.newTable')}>
+		<AppTooltip text={t('toolbar.newTable')} onclick={onNewTable}>
 			{#snippet children({ props })}
 				<button
 					type="button"
 					class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
-					onclick={onNewTable}
 					{...props}
+					onclick={onNewTable}
 				>
 					<FilePlus class="shrink-0 w-3.5 h-3.5" />
 					<span class="select-none">{t('toolbar.newTable')}</span>
@@ -100,13 +72,13 @@
 			{/snippet}
 		</AppTooltip>
 
-		<AppTooltip text={t('toolbar.saveShortcut', { key: isMac ? '⌘S' : 'Ctrl+S' })}>
+		<AppTooltip text={t('toolbar.saveShortcut', { key: isMac ? '⌘S' : 'Ctrl+S' })} onclick={onSave}>
 			{#snippet children({ props })}
 				<button
 					type="button"
 					class="inline-flex items-center gap-1.5 h-8 px-2.5 border border-border bg-background text-[11px] font-medium text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'ticket-btn font-terminal uppercase tracking-wider font-semibold hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1]' : 'rounded-md hover:bg-muted'}"
-					onclick={onSave}
 					{...props}
+					onclick={onSave}
 				>
 					<Save class="shrink-0 w-3.5 h-3.5" />
 					<span class="select-none">{t('toolbar.save')}</span>
@@ -117,29 +89,29 @@
 		<div class="w-px h-5 bg-border mx-1"></div>
 
 		<div class="inline-flex border border-border overflow-hidden select-none {uiTheme.theme === 'classic' ? 'rounded-md' : ''}">
-			<AppTooltip text={t('toolbar.undoShortcut', { key: isMac ? '⌘Z' : 'Ctrl+Z' })}>
+			<AppTooltip text={t('toolbar.undoShortcut', { key: isMac ? '⌘Z' : 'Ctrl+Z' })} onclick={onUndo}>
 				{#snippet children({ props })}
 					<button
 						type="button"
 						class="h-8 w-8 inline-flex items-center justify-center bg-background text-foreground transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none border-r border-border select-none {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-muted'}"
-						onclick={onUndo}
 						disabled={!canUndo}
 						aria-label={t('toolbar.undo')}
 						{...props}
+						onclick={onUndo}
 					>
 						<Undo2 class="w-3.5 h-3.5" />
 					</button>
 				{/snippet}
 			</AppTooltip>
-			<AppTooltip text={t('toolbar.redoShortcut', { key: isMac ? '⌘Y' : 'Ctrl+Y' })}>
+			<AppTooltip text={t('toolbar.redoShortcut', { key: isMac ? '⌘Y' : 'Ctrl+Y' })} onclick={onRedo}>
 				{#snippet children({ props })}
 					<button
 						type="button"
 						class="h-8 w-8 inline-flex items-center justify-center bg-background text-foreground transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'hover:bg-muted'}"
-						onclick={onRedo}
 						disabled={!canRedo}
 						aria-label={t('toolbar.redo')}
 						{...props}
+						onclick={onRedo}
 					>
 						<Redo2 class="w-3.5 h-3.5" />
 					</button>
@@ -148,21 +120,21 @@
 		</div>
 	</div>
 
-	<!-- Draggable middle region -->
+	<!-- Middle region (draggable on macOS) -->
 	<div
-		data-tauri-drag-region
+		data-tauri-drag-region={isMac && isTauri ? '' : undefined}
 		class="flex-1 h-full min-w-0 select-none self-stretch"
 	></div>
 
 	<div class="flex items-center gap-2 shrink-0 select-none">
 		<!-- Theme Style Switcher: Classic / Avant-Garde -->
-		<AppTooltip text={t('toolbar.switchStyle')}>
+		<AppTooltip text={t('toolbar.switchStyle')} onclick={() => uiTheme.toggle()}>
 			{#snippet children({ props })}
 				<button
 					type="button"
 					class="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[var(--radius)] border border-border bg-background hover:bg-muted transition-all cursor-pointer select-none text-xs"
-					onclick={() => uiTheme.toggle()}
 					{...props}
+					onclick={() => uiTheme.toggle()}
 				>
 					{#if uiTheme.theme === 'avant-garde'}
 						<span class="size-2 rounded-full bg-[#0202f1] shrink-0"></span>

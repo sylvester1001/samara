@@ -455,17 +455,17 @@
 			<span class="text-[11px] font-terminal text-muted-foreground uppercase tracking-widest">{rowCount} × {colCount}</span>
 		</div>
 		<div class="flex gap-1.5">
-			<AppTooltip text={t('table.addRow')}>
+			<AppTooltip text={t('table.addRow')} onclick={() => onAddRow()}>
 				{#snippet children({ props })}
-					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddRow()} {...props}>
+					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => onAddRow()}>
 						<Plus class="w-3 h-3" />
 						{t('table.row')}
 					</button>
 				{/snippet}
 			</AppTooltip>
-			<AppTooltip text={t('table.addColumn')}>
+			<AppTooltip text={t('table.addColumn')} onclick={() => onAddColumn()}>
 				{#snippet children({ props })}
-					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" onclick={() => onAddColumn()} {...props}>
+					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => onAddColumn()}>
 						<Plus class="w-3 h-3" />
 						{t('table.col')}
 					</button>
@@ -504,11 +504,11 @@
 													<button 
 														type="button"
 														class="header-delete-btn absolute top-1/2 -translate-y-1/2 right-1 size-4 flex items-center justify-center rounded-[2px] text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 opacity-0 transition-all cursor-pointer pointer-events-none hover:pointer-events-auto" 
+														{...props}
 														onclick={(e) => {
 															e.stopPropagation();
 															onDeleteColumn(colIndex);
 														}}
-														{...props}
 													>
 														<X class="size-2.5 stroke-[2.2]" />
 													</button>
@@ -537,11 +537,11 @@
 													<button 
 														type="button"
 														class="header-delete-btn absolute inset-0 m-auto size-4 flex items-center justify-center rounded-[2px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 opacity-0 transition-all cursor-pointer pointer-events-none hover:pointer-events-auto" 
+														{...props}
 														onclick={(e) => {
 															e.stopPropagation();
 															onDeleteRow(rowIndex);
 														}}
-														{...props}
 													>
 														<X class="size-2.5 stroke-[2.2]" />
 													</button>

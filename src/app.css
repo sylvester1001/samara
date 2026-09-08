@@ -769,11 +769,15 @@ html[data-theme="avant-garde"] [data-highlighted][data-destructive] {
   color: #ffffff !important;
 }
 
-/* Ensure all elements inside tauri drag regions cannot trigger text selection */
+/* Ensure all elements inside tauri drag regions cannot trigger text selection and enable drag */
 [data-tauri-drag-region],
 [data-tauri-drag-region] * {
   -webkit-user-select: none !important;
   user-select: none !important;
+}
+
+[data-tauri-drag-region] {
+  -webkit-app-region: drag;
 }
 
 /* Ensure all buttons and button-like controls are strictly unselectable across the app */
@@ -787,6 +791,19 @@ button *,
 [unselectable="on"] * {
   -webkit-user-select: none !important;
   user-select: none !important;
+}
+
+/* Ensure all interactive controls opt out of window dragging */
+button,
+[role="button"],
+[data-slot="button"],
+[data-slot="tooltip-trigger"],
+[data-slot="dropdown-menu-trigger"],
+input,
+select,
+textarea,
+a {
+  -webkit-app-region: no-drag !important;
 }
 
 /* Preserve text selection inside editable inputs and textareas */

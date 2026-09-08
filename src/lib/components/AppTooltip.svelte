@@ -20,7 +20,7 @@
 	} & Record<string, unknown> = $props();
 </script>
 
-<Tooltip.Root {delayDuration}>
+<Tooltip.Root {delayDuration} ignoreNonKeyboardFocus={true} disableHoverableContent={true}>
 	<Tooltip.Trigger {...triggerProps}>
 		{#snippet child({ props })}
 			{@const mergedProps = childProps ? mergeProps(props, childProps) : props}
