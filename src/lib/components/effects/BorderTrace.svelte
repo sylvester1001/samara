@@ -7,6 +7,7 @@
 		color?: string;
 		strokeWidth?: number;
 		class?: string;
+		replayKey?: number;
 	}
 
 	let {
@@ -14,7 +15,8 @@
 		durationMs = 1000,
 		color = 'var(--cobalt, #0202f1)',
 		strokeWidth = 1.75,
-		class: className = ''
+		class: className = '',
+		replayKey = 0
 	}: Props = $props();
 
 	const isEnabled = $derived(themeFeatures[uiTheme.theme]?.borderTrace ?? false);
@@ -38,6 +40,7 @@
 	);
 
 	$effect(() => {
+		const _trigger = replayKey;
 		if (!pathEl || !isEnabled || !active || width <= 0 || height <= 0) return;
 
 		const el = pathEl;
