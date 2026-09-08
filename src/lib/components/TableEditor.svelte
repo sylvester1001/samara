@@ -397,12 +397,25 @@
 		}
 		selectionAnchor = { row: rowIndex, col: colIndex };
 		isDragging = true;
-		onSelectionChange([{ row: rowIndex, col: colIndex }]);
+		if (!isSelected(rowIndex, colIndex) || selectedCells.length > 1) {
+			onSelectionChange([{ row: rowIndex, col: colIndex }]);
+		}
 	}
 
-	function handleCellMouseEnter(rowIndex: number, colIndex: number) {
-		if (isDragging && selectionAnchor) {
-			onSelectionChange(buildRange(selectionAnchor, { row: rowIndex, col: colIndex }));
+	function handleTableMouseOver(e: MouseEvent) {
+		if (!isDragging || !selectionAnchor) return;
+		const target = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-row][data-col]');
+		if (!target) return;
+		const row = Number(target.getAttribute('data-row'));
+		const col = Number(target.getAttribute('data-col'));
+		if (Number.isNaN(row) || Number.isNaN(col)) return;
+
+		if (row !== selectionAnchor.row || col !== selectionAnchor.col) {
+			window.getSelection()?.removeAllRanges();
+			(document.activeElement as HTMLElement)?.blur();
+			onSelectionChange(buildRange(selectionAnchor, { row, col }));
+		} else if (selectedCells.length > 1) {
+			onSelectionChange([{ row, col }]);
 		}
 	}
 
@@ -480,9 +493,9 @@
 	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both">
 		<div class="p-4 w-full">
 			<ContextMenu.Root>
-				<ContextMenu.Trigger class="block w-full select-none" oncontextmenu={handleContextMenu} unselectable="on">
-					<div class="relative w-full select-none" bind:this={gridWrap} unselectable="on">
-					<table class="w-full border-collapse table-fixed select-none" unselectable="on">
+				<ContextMenu.Trigger class="block w-full select-none" oncontextmenu={handleContextMenu}>
+					<div class="relative w-full select-none" bind:this={gridWrap}>
+					<table class="w-full border-collapse table-fixed select-none">
 						<colgroup>
 							<col style="width: {rowGutterWidth};" />
 							{#each columnCharWidths as width}
@@ -522,7 +535,8 @@
 								{/each}
 							</tr>
 						</thead>
-						<tbody>
+						<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+						<tbody onmouseover={handleTableMouseOver}>
 							{#each rows as row, rowIndex}
 								<tr
 									data-table-row={rowIndex}
@@ -566,13 +580,12 @@
 												data-row={rowIndex}
 												data-col={colIndex}
 												onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
-												onmouseenter={() => handleCellMouseEnter(rowIndex, colIndex)}
 											>
 												<textarea
 													rows="1"
 													cols="1"
-													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden {isDragging ? 'pointer-events-none select-none' : ''} {cell.effectiveBold ? 'font-bold' : ''}"
-													style="vertical-align: middle; min-height: 1.5em;"
+													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden select-text {cell.effectiveBold ? 'font-bold' : ''}"
+													style="vertical-align: middle; min-height: 1.5em; user-select: text; -webkit-user-select: text;"
 													class:text-left={cell.effectiveAlign === 'left'}
 													class:text-center={cell.effectiveAlign === 'center'}
 													class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
