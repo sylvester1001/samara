@@ -9,7 +9,7 @@ export const zhCN: TranslationSchema = {
 	},
 	a11y: {
 		toggleSidebar: '切换侧边栏',
-		toggleTheme: '切换主题',
+		toggleTheme: '明暗模式',
 		sidebar: '侧边栏',
 		sidebarDescription: '显示移动端侧边栏。',
 		cellEdit: '表格单元格，双击编辑',
@@ -29,7 +29,7 @@ export const zhCN: TranslationSchema = {
 		undoShortcut: '撤销 ({key})',
 		redoShortcut: '重做 ({key})',
 		confirmNewTable: '新建表格将重置当前编辑内容，确定继续吗？',
-		switchStyle: '界面风格',
+		switchStyle: '主题',
 		avantGarde: 'Avant-Garde',
 		classic: 'Classic',
 		language: '语言'

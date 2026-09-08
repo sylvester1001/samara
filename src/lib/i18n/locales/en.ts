@@ -7,7 +7,7 @@ export const en = {
 	},
 	a11y: {
 		toggleSidebar: 'Toggle Sidebar',
-		toggleTheme: 'Toggle theme',
+		toggleTheme: 'Light / Dark Mode',
 		sidebar: 'Sidebar',
 		sidebarDescription: 'Displays the mobile sidebar.',
 		cellEdit: 'Table cell, double-click to edit',
@@ -27,7 +27,7 @@ export const en = {
 		undoShortcut: 'Undo ({key})',
 		redoShortcut: 'Redo ({key})',
 		confirmNewTable: 'Creating a new table will reset your current work. Continue?',
-		switchStyle: 'UI Style',
+		switchStyle: 'Theme',
 		avantGarde: 'Avant-Garde',
 		classic: 'Classic',
 		language: 'Language'

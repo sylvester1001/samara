@@ -9,7 +9,7 @@ export const zhTW: TranslationSchema = {
 	},
 	a11y: {
 		toggleSidebar: '切換側邊欄',
-		toggleTheme: '切換主題',
+		toggleTheme: '明暗模式',
 		sidebar: '側邊欄',
 		sidebarDescription: '顯示行動版側邊欄。',
 		cellEdit: '表格儲存格，按兩下編輯',
@@ -29,7 +29,7 @@ export const zhTW: TranslationSchema = {
 		undoShortcut: '復原 ({key})',
 		redoShortcut: '重做 ({key})',
 		confirmNewTable: '建立新表格將重設目前編輯內容，確定繼續嗎？',
-		switchStyle: '介面風格',
+		switchStyle: '主題',
 		avantGarde: 'Avant-Garde',
 		classic: 'Classic',
 		language: '語言'
