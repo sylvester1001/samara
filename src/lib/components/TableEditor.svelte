@@ -409,7 +409,7 @@
 <svelte:window onmouseup={handleMouseUp} onkeydown={handleHeaderAdjustKeydown} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="table-editor flex flex-col h-full bg-background rounded-[2px] border border-border overflow-hidden" onmousedown={handleEditorClick}>
+<div class="table-editor tech-corners flex flex-col h-full bg-background rounded-[var(--radius)] border border-border" onmousedown={handleEditorClick}>
 	<div class="flex justify-between items-center px-4 py-2 bg-muted/25 border-b border-border shrink-0 relative z-0">
 		<div class="flex items-center gap-2.5">
 			<TableSizeSelector

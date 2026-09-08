@@ -846,5 +846,39 @@ html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
   border-color: #0202f1 !important;
 }
 
+/* =========================================================
+   Techwear / Industrial Registration Corner Marks
+   Diagonal corners: Top-Right (┐) and Bottom-Left (└)
+   ========================================================= */
+.tech-corners,
+[data-tech-corners] {
+  position: relative;
+}
 
+.tech-corners::after,
+[data-tech-corners]::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: var(--tech-corner-size, 10px);
+  height: var(--tech-corner-size, 10px);
+  border-top: var(--tech-corner-width, 1.5px) solid var(--tech-corner-color, var(--cobalt, #0202f1));
+  border-right: var(--tech-corner-width, 1.5px) solid var(--tech-corner-color, var(--cobalt, #0202f1));
+  pointer-events: none;
+  z-index: 30;
+}
 
+.tech-corners::before,
+[data-tech-corners]::before {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: -1px;
+  width: var(--tech-corner-size, 10px);
+  height: var(--tech-corner-size, 10px);
+  border-bottom: var(--tech-corner-width, 1.5px) solid var(--tech-corner-color, var(--cobalt, #0202f1));
+  border-left: var(--tech-corner-width, 1.5px) solid var(--tech-corner-color, var(--cobalt, #0202f1));
+  pointer-events: none;
+  z-index: 30;
+}
