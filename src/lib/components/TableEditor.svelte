@@ -10,6 +10,7 @@
 	import { resolveCell } from '$lib/utils/table-semantics';
 	import { uiTheme, themeFeatures } from '$lib/stores/ui-theme.svelte.js';
 	import CellReticle from './effects/CellReticle.svelte';
+	import LineSlice from './effects/LineSlice.svelte';
 	import { t } from '$lib/i18n';
 
 	interface Props {
@@ -308,11 +309,23 @@
 		left: number;
 		width: number;
 		height: number;
+		headerW: number;
+		headerH: number;
 		key: number;
 	}
 
+	const LINE_SLICE_MS = 580;
+
 	let activeLaser = $state<LaserSlice | null>(null);
 	let activeLaserTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function armLaser(slice: LaserSlice) {
+		if (activeLaserTimer) clearTimeout(activeLaserTimer);
+		activeLaser = slice;
+		activeLaserTimer = setTimeout(() => {
+			activeLaser = null;
+		}, LINE_SLICE_MS);
+	}
 
 	async function executeAddRow(index?: number) {
 		const targetIndex = index ?? (selectionBounds ? selectionBounds.maxR + 1 : rowCount);
@@ -325,20 +338,19 @@
 		const wrapRect = gridWrap.getBoundingClientRect();
 		if (!rowEl) return;
 		const rowRect = rowEl.getBoundingClientRect();
+		const gutterEl = rowEl.querySelector<HTMLElement>('td:first-child');
+		const gutterRect = gutterEl?.getBoundingClientRect();
 
-		if (activeLaserTimer) clearTimeout(activeLaserTimer);
-		activeLaser = {
+		armLaser({
 			type: 'row',
 			top: rowRect.top - wrapRect.top,
 			left: rowRect.left - wrapRect.left,
 			width: rowRect.width,
-			height: 2,
+			height: rowRect.height,
+			headerW: gutterRect?.width ?? rowRect.height,
+			headerH: gutterRect?.height ?? rowRect.height,
 			key: Date.now()
-		};
-
-		activeLaserTimer = setTimeout(() => {
-			activeLaser = null;
-		}, 430);
+		});
 	}
 
 	async function executeAddColumn(index?: number) {
@@ -356,19 +368,16 @@
 		const colRect = colHeader.getBoundingClientRect();
 		const tableRect = tableEl.getBoundingClientRect();
 
-		if (activeLaserTimer) clearTimeout(activeLaserTimer);
-		activeLaser = {
+		armLaser({
 			type: 'col',
 			top: tableRect.top - wrapRect.top,
 			left: colRect.left - wrapRect.left,
-			width: 2,
+			width: colRect.width,
 			height: tableRect.height,
+			headerW: colRect.width,
+			headerH: colRect.height,
 			key: Date.now()
-		};
-
-		activeLaserTimer = setTimeout(() => {
-			activeLaser = null;
-		}, 430);
+		});
 	}
 
 	function handleInsertRowAbove() {
@@ -827,7 +836,13 @@
 								style:height="{activeLaser.height}px"
 								aria-hidden="true"
 							>
-								<div class={activeLaser.type === 'row' ? 'laser-beam-row' : 'laser-beam-col'}></div>
+								<LineSlice
+									type={activeLaser.type}
+									headerW={activeLaser.headerW}
+									headerH={activeLaser.headerH}
+									travelW={activeLaser.width}
+									travelH={activeLaser.height}
+								/>
 							</div>
 						{/key}
 					{/if}
@@ -994,75 +1009,4 @@
 		opacity: 0 !important;
 	}
 
-	.laser-beam-row {
-		position: absolute;
-		top: -1px;
-		left: 0;
-		width: 100%;
-		height: 2px;
-		background: var(--cobalt, #0202f1);
-		animation: runner-h-anim 420ms forwards;
-	}
-
-	.laser-beam-col {
-		position: absolute;
-		top: 0;
-		left: -1px;
-		width: 2px;
-		height: 100%;
-		background: var(--cobalt, #0202f1);
-		animation: runner-v-anim 420ms forwards;
-	}
-
-	@keyframes runner-h-anim {
-		0% {
-			transform-origin: left center;
-			transform: scaleX(0);
-			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-		}
-		45% {
-			transform-origin: left center;
-			transform: scaleX(1);
-			animation-timing-function: step-start;
-		}
-		45.001% {
-			transform-origin: right center;
-			transform: scaleX(1);
-			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-		}
-		90% {
-			transform-origin: right center;
-			transform: scaleX(0);
-		}
-		100% {
-			transform-origin: right center;
-			transform: scaleX(0);
-		}
-	}
-
-	@keyframes runner-v-anim {
-		0% {
-			transform-origin: top center;
-			transform: scaleY(0);
-			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-		}
-		45% {
-			transform-origin: top center;
-			transform: scaleY(1);
-			animation-timing-function: step-start;
-		}
-		45.001% {
-			transform-origin: bottom center;
-			transform: scaleY(1);
-			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-		}
-		90% {
-			transform-origin: bottom center;
-			transform: scaleY(0);
-		}
-		100% {
-			transform-origin: bottom center;
-			transform: scaleY(0);
-		}
-	}
 </style>
