@@ -287,35 +287,6 @@ html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"] svg {
   height: 0.875rem !important;
 }
 
-/* Avant-Garde Context Menu YoRHa Inversion */
-html[data-theme="avant-garde"] [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted],
-html:not([data-theme="classic"]) [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted],
-html[data-theme="avant-garde"] [data-slot="context-menu-sub-trigger"][data-highlighted],
-html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"][data-highlighted] {
-  background-color: #0202f1 !important;
-  color: #ffffff !important;
-}
-
-html[data-theme="avant-garde"] [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted] svg,
-html:not([data-theme="classic"]) [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted] svg,
-html[data-theme="avant-garde"] [data-slot="context-menu-sub-trigger"][data-highlighted] svg,
-html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"][data-highlighted] svg {
-  color: #ffffff !important;
-  opacity: 1 !important;
-}
-
-html[data-theme="avant-garde"] [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted],
-html:not([data-theme="classic"]) [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted] {
-  background-color: #dc2626 !important;
-  color: #ffffff !important;
-}
-
-html[data-theme="avant-garde"] [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted] svg,
-html:not([data-theme="classic"]) [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted] svg {
-  color: #ffffff !important;
-  opacity: 1 !important;
-}
-
 /* Terminal Monospace Font Rules */
 .font-terminal,
 html[data-theme="avant-garde"] .font-terminal,
@@ -769,7 +740,6 @@ html[data-theme="avant-garde"] [data-context-menu-content],
 html[data-theme="avant-garde"] [data-popover-content],
 html[data-theme="avant-garde"] [data-dropdown-menu-content],
 html[data-theme="avant-garde"] [role="menu"] {
-  border-radius: 2px !important;
   border: 1px solid rgba(10, 10, 14, 0.15) !important;
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.12) !important;
 }
@@ -780,22 +750,6 @@ html[data-theme="avant-garde"].dark [data-dropdown-menu-content],
 html[data-theme="avant-garde"].dark [role="menu"] {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4) !important;
-}
-
-html[data-theme="avant-garde"] [data-highlighted],
-html[data-theme="avant-garde"] [data-highlighted]:not([data-disabled]) {
-  background-color: var(--accent) !important;
-  color: var(--accent-foreground) !important;
-  border-radius: 1px !important;
-}
-
-html[data-theme="avant-garde"] [data-highlighted] svg {
-  color: var(--accent-foreground) !important;
-}
-
-html[data-theme="avant-garde"] [data-highlighted][data-destructive] {
-  background-color: #dc2626 !important;
-  color: #ffffff !important;
 }
 
 /* Ensure all elements inside tauri drag regions cannot trigger text selection and enable drag */
