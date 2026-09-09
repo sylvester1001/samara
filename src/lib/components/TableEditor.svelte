@@ -2,8 +2,19 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import TableSizeSelector from './TableSizeSelector.svelte';
 	import AppTooltip from '$lib/components/AppTooltip.svelte';
-	import { Plus, X } from 'lucide-svelte';
 	import { tick } from 'svelte';
+	import {
+		Plus,
+		X,
+		TableCellsMerge,
+		TableCellsSplit,
+		Minus,
+		ArrowUpToLine,
+		ArrowDownToLine,
+		ArrowLeftToLine,
+		ArrowRightToLine,
+		Trash2
+	} from 'lucide-svelte';
 	import * as ContextMenu from '$lib/components/ui/context-menu/index.js';
 	import type { Cell } from '$lib/types';
 	import type { LineEdge } from '$lib/utils/table-geometry';
@@ -908,67 +919,166 @@
 					{/if}
 					</div>
 				</ContextMenu.Trigger>
-				<ContextMenu.Content class="w-56 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
+				<ContextMenu.Content class="w-60 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
+					{#if uiTheme.theme === 'avant-garde'}
+						<!-- Terminal Header -->
+						<div class="px-2.5 py-1 mb-1 border-b border-border/80 flex items-center justify-between text-[9px] font-terminal tracking-wider text-muted-foreground/70 uppercase select-none">
+							<span class="flex items-center gap-1.5">
+								<span class="inline-block size-1.5 bg-[#0202f1]"></span>
+								<span>CMD // GRID_OPS</span>
+							</span>
+							<span class="font-mono text-[8.5px] opacity-60">0x01</span>
+						</div>
+					{/if}
+
 					<ContextMenu.Group>
-						<ContextMenu.Item inset disabled={!canMerge} onclick={onMergeCells}>
-							{t('edit.mergeCells')}
+						<ContextMenu.Item disabled={!canMerge} onclick={onMergeCells} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+								</svg>
+							</span>
+							<TableCellsMerge class="size-3.5 shrink-0 opacity-70" />
+							<span class="flex-1 font-medium">{t('edit.mergeCells')}</span>
 						</ContextMenu.Item>
-						<ContextMenu.Item inset disabled={!canUnmerge} onclick={onUnmergeCells}>
-							{t('edit.unmergeCells')}
+						<ContextMenu.Item disabled={!canUnmerge} onclick={onUnmergeCells} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+								</svg>
+							</span>
+							<TableCellsSplit class="size-3.5 shrink-0 opacity-70" />
+							<span class="flex-1 font-medium">{t('edit.unmergeCells')}</span>
 						</ContextMenu.Item>
 					</ContextMenu.Group>
+
 					<ContextMenu.Separator />
+
 					<ContextMenu.Group>
-						<ContextMenu.Item inset disabled={!canAddLine} onclick={() => onAddLine?.('below')}>
-							{t('table.lineBelow')}
+						<ContextMenu.Item disabled={!canAddLine} onclick={() => onAddLine?.('below')} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+								</svg>
+							</span>
+							<ArrowDownToLine class="size-3.5 shrink-0 opacity-70" />
+							<span class="flex-1 font-medium">{t('table.lineBelow')}</span>
 						</ContextMenu.Item>
-						<ContextMenu.Item inset disabled={!canAddLine} onclick={() => onAddLine?.('above')}>
-							{t('table.lineAbove')}
+						<ContextMenu.Item disabled={!canAddLine} onclick={() => onAddLine?.('above')} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+								</svg>
+							</span>
+							<ArrowUpToLine class="size-3.5 shrink-0 opacity-70" />
+							<span class="flex-1 font-medium">{t('table.lineAbove')}</span>
 						</ContextMenu.Item>
 					</ContextMenu.Group>
+
 					<ContextMenu.Separator />
+
 					<ContextMenu.Sub>
-						<ContextMenu.SubTrigger inset>{t('table.insert')}</ContextMenu.SubTrigger>
+						<ContextMenu.SubTrigger class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+								</svg>
+							</span>
+							<Plus class="size-3.5 shrink-0 opacity-70" />
+							<span class="flex-1 font-medium">{t('table.insert')}</span>
+						</ContextMenu.SubTrigger>
 						<ContextMenu.SubContent class="w-56 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertRowAbove}>
-								{t('table.insertRowAbove')}
+							{#if uiTheme.theme === 'avant-garde'}
+								<!-- Terminal Header -->
+								<div class="px-2.5 py-1 mb-1 border-b border-border/80 flex items-center justify-between text-[9px] font-terminal tracking-wider text-muted-foreground/70 uppercase select-none">
+									<span class="flex items-center gap-1.5">
+										<span class="inline-block size-1.5 bg-[#0202f1]"></span>
+										<span>CMD // INSERT</span>
+									</span>
+									<span class="font-mono text-[8.5px] opacity-60">0x02</span>
+								</div>
+							{/if}
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertRowAbove} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+								<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+									</svg>
+								</span>
+								<ArrowUpToLine class="size-3.5 shrink-0 opacity-70" />
+								<span class="flex-1 font-medium">{t('table.insertRowAbove')}</span>
 							</ContextMenu.Item>
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertRowBelow}>
-								{t('table.insertRowBelow')}
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertRowBelow} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+								<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+									</svg>
+								</span>
+								<ArrowDownToLine class="size-3.5 shrink-0 opacity-70" />
+								<span class="flex-1 font-medium">{t('table.insertRowBelow')}</span>
 							</ContextMenu.Item>
 							<ContextMenu.Separator />
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertColumnLeft}>
-								{t('table.insertColumnLeft')}
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnLeft} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+								<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+									</svg>
+								</span>
+								<ArrowLeftToLine class="size-3.5 shrink-0 opacity-70" />
+								<span class="flex-1 font-medium">{t('table.insertColumnLeft')}</span>
 							</ContextMenu.Item>
-							<ContextMenu.Item inset disabled={!canInsertAtTarget} onclick={handleInsertColumnRight}>
-								{t('table.insertColumnRight')}
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnRight} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+								<span class="flex items-center justify-center size-2.5 shrink-0 text-muted-foreground/60">
+									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+									</svg>
+								</span>
+								<ArrowRightToLine class="size-3.5 shrink-0 opacity-70" />
+								<span class="flex-1 font-medium">{t('table.insertColumnRight')}</span>
 							</ContextMenu.Item>
 						</ContextMenu.SubContent>
 					</ContextMenu.Sub>
+
 					<ContextMenu.Separator />
+
 					<ContextMenu.Item
-						inset
 						variant="destructive"
 						disabled={!canDeleteRows}
 						onclick={handleDeleteRowsContext}
+						class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer"
 					>
-						{#if selectedRowIndices.length > 1}
-							{t('table.deleteSelectedRows', { n: selectedRowIndices.length })}
-						{:else}
-							{t('table.deleteRowItem')}
-						{/if}
+						<span class="flex items-center justify-center size-2.5 shrink-0 text-destructive">
+							<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+								<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+							</svg>
+						</span>
+						<Trash2 class="size-3.5 shrink-0 opacity-80" />
+						<span class="flex-1 font-medium">
+							{#if selectedRowIndices.length > 1}
+								{t('table.deleteSelectedRows', { n: selectedRowIndices.length })}
+							{:else}
+								{t('table.deleteRowItem')}
+							{/if}
+						</span>
 					</ContextMenu.Item>
 					<ContextMenu.Item
-						inset
 						variant="destructive"
 						disabled={!canDeleteColumns}
 						onclick={handleDeleteColumnsContext}
+						class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer"
 					>
-						{#if selectedColIndices.length > 1}
-							{t('table.deleteSelectedColumns', { n: selectedColIndices.length })}
-						{:else}
-							{t('table.deleteColumnItem')}
-						{/if}
+						<span class="flex items-center justify-center size-2.5 shrink-0 text-destructive">
+							<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
+								<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
+							</svg>
+						</span>
+						<Trash2 class="size-3.5 shrink-0 opacity-80" />
+						<span class="flex-1 font-medium">
+							{#if selectedColIndices.length > 1}
+								{t('table.deleteSelectedColumns', { n: selectedColIndices.length })}
+							{:else}
+								{t('table.deleteColumnItem')}
+							{/if}
+						</span>
 					</ContextMenu.Item>
 				</ContextMenu.Content>
 			</ContextMenu.Root>

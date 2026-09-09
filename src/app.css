@@ -287,6 +287,35 @@ html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"] svg {
   height: 0.875rem !important;
 }
 
+/* Avant-Garde Context Menu YoRHa Inversion */
+html[data-theme="avant-garde"] [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted],
+html:not([data-theme="classic"]) [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted],
+html[data-theme="avant-garde"] [data-slot="context-menu-sub-trigger"][data-highlighted],
+html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"][data-highlighted] {
+  background-color: #0202f1 !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="avant-garde"] [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted] svg,
+html:not([data-theme="classic"]) [data-slot="context-menu-item"]:not([data-variant="destructive"])[data-highlighted] svg,
+html[data-theme="avant-garde"] [data-slot="context-menu-sub-trigger"][data-highlighted] svg,
+html:not([data-theme="classic"]) [data-slot="context-menu-sub-trigger"][data-highlighted] svg {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="avant-garde"] [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted],
+html:not([data-theme="classic"]) [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted] {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="avant-garde"] [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted] svg,
+html:not([data-theme="classic"]) [data-slot="context-menu-item"][data-variant="destructive"][data-highlighted] svg {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
 /* Terminal Monospace Font Rules */
 .font-terminal,
 html[data-theme="avant-garde"] .font-terminal,
@@ -899,7 +928,11 @@ html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
 html[data-theme="avant-garde"] [data-slot="popover-content"],
 html:not([data-theme="classic"]) [data-slot="popover-content"],
 html[data-theme="avant-garde"] [data-slot="dialog-content"],
-html:not([data-theme="classic"]) [data-slot="dialog-content"] {
+html:not([data-theme="classic"]) [data-slot="dialog-content"],
+html[data-theme="avant-garde"] [data-slot="context-menu-content"],
+html:not([data-theme="classic"]) [data-slot="context-menu-content"],
+html[data-theme="avant-garde"] [data-slot="context-menu-sub-content"],
+html:not([data-theme="classic"]) [data-slot="context-menu-sub-content"] {
   position: relative;
 }
 
@@ -908,7 +941,11 @@ html:not([data-theme="classic"]) [data-slot="dialog-content"] {
 html[data-theme="avant-garde"] [data-slot="popover-content"]::after,
 html:not([data-theme="classic"]) [data-slot="popover-content"]::after,
 html[data-theme="avant-garde"] [data-slot="dialog-content"]::after,
-html:not([data-theme="classic"]) [data-slot="dialog-content"]::after {
+html:not([data-theme="classic"]) [data-slot="dialog-content"]::after,
+html[data-theme="avant-garde"] [data-slot="context-menu-content"]::after,
+html:not([data-theme="classic"]) [data-slot="context-menu-content"]::after,
+html[data-theme="avant-garde"] [data-slot="context-menu-sub-content"]::after,
+html:not([data-theme="classic"]) [data-slot="context-menu-sub-content"]::after {
   content: '';
   position: absolute;
   top: -1px;
@@ -926,7 +963,11 @@ html:not([data-theme="classic"]) [data-slot="dialog-content"]::after {
 html[data-theme="avant-garde"] [data-slot="popover-content"]::before,
 html:not([data-theme="classic"]) [data-slot="popover-content"]::before,
 html[data-theme="avant-garde"] [data-slot="dialog-content"]::before,
-html:not([data-theme="classic"]) [data-slot="dialog-content"]::before {
+html:not([data-theme="classic"]) [data-slot="dialog-content"]::before,
+html[data-theme="avant-garde"] [data-slot="context-menu-content"]::before,
+html:not([data-theme="classic"]) [data-slot="context-menu-content"]::before,
+html[data-theme="avant-garde"] [data-slot="context-menu-sub-content"]::before,
+html:not([data-theme="classic"]) [data-slot="context-menu-sub-content"]::before {
   content: '';
   position: absolute;
   bottom: -1px;
