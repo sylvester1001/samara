@@ -105,6 +105,12 @@
 	});
 	let selectionAnchor = $state<{ row: number; col: number } | null>(null);
 	let isDragging = $state(false);
+	let dragStartCell = $state<{ row: number; col: number } | null>(null);
+	let tableElement: HTMLTableElement | null = $state(null);
+	let cachedColBounds: { left: number; right: number }[] | null = null;
+	let cachedRowBounds: { top: number; bottom: number }[] | null = null;
+	let lastHoverRow: number | null = null;
+	let lastHoverCol: number | null = null;
 	const inputPaddingXRem = 1.25;
 	let contextCell = $state<{ row: number; col: number } | null>(null);
 
@@ -267,24 +273,93 @@
 		}
 	}
 
+	interface LaserSlice {
+		type: 'row' | 'col';
+		top: number;
+		left: number;
+		width: number;
+		height: number;
+		key: number;
+	}
+
+	let activeLaser = $state<LaserSlice | null>(null);
+	let activeLaserTimer: ReturnType<typeof setTimeout> | null = null;
+
+	async function executeAddRow(index?: number) {
+		const targetIndex = index ?? (selectionBounds ? selectionBounds.maxR + 1 : rowCount);
+		onAddRow(targetIndex);
+
+		if (!themeFeatures[uiTheme.theme]?.lineSliceTransition || !gridWrap) return;
+		await tick();
+
+		const rowEl = gridWrap.querySelector<HTMLElement>(`tr[data-table-row="${targetIndex}"]`);
+		const wrapRect = gridWrap.getBoundingClientRect();
+		if (!rowEl) return;
+		const rowRect = rowEl.getBoundingClientRect();
+
+		if (activeLaserTimer) clearTimeout(activeLaserTimer);
+		activeLaser = {
+			type: 'row',
+			top: rowRect.top - wrapRect.top,
+			left: rowRect.left - wrapRect.left,
+			width: rowRect.width,
+			height: 2,
+			key: Date.now()
+		};
+
+		activeLaserTimer = setTimeout(() => {
+			activeLaser = null;
+		}, 430);
+	}
+
+	async function executeAddColumn(index?: number) {
+		const targetIndex = index ?? (selectionBounds ? selectionBounds.maxC + 1 : colCount);
+		onAddColumn(targetIndex);
+
+		if (!themeFeatures[uiTheme.theme]?.lineSliceTransition || !gridWrap) return;
+		await tick();
+
+		const colHeader = gridWrap.querySelector<HTMLElement>(`thead th:nth-child(${targetIndex + 2})`);
+		const tableEl = gridWrap.querySelector<HTMLElement>('table');
+		const wrapRect = gridWrap.getBoundingClientRect();
+		if (!colHeader || !tableEl) return;
+
+		const colRect = colHeader.getBoundingClientRect();
+		const tableRect = tableEl.getBoundingClientRect();
+
+		if (activeLaserTimer) clearTimeout(activeLaserTimer);
+		activeLaser = {
+			type: 'col',
+			top: tableRect.top - wrapRect.top,
+			left: colRect.left - wrapRect.left,
+			width: 2,
+			height: tableRect.height,
+			key: Date.now()
+		};
+
+		activeLaserTimer = setTimeout(() => {
+			activeLaser = null;
+		}, 430);
+	}
+
 	function handleInsertRowAbove() {
 		if (!contextTarget) return;
-		onAddRow(contextTarget.row);
+		executeAddRow(contextTarget.row);
 	}
 
 	function handleInsertRowBelow() {
 		if (!contextTarget) return;
-		onAddRow(contextTarget.row + 1);
+		executeAddRow(contextTarget.row + 1);
 	}
 
 	function handleInsertColumnLeft() {
 		if (!contextTarget) return;
-		onAddColumn(contextTarget.col);
+		executeAddColumn(contextTarget.col);
 	}
 
 	function handleInsertColumnRight() {
 		if (!contextTarget) return;
-		onAddColumn(contextTarget.col + 1);
+		executeAddColumn(contextTarget.col + 1);
 	}
 
 	function handleDeleteRowContext() {
@@ -405,32 +480,101 @@
 			);
 			return;
 		}
+		dragStartCell = { row: rowIndex, col: colIndex };
 		selectionAnchor = { row: rowIndex, col: colIndex };
-		isDragging = true;
+		lastHoverRow = rowIndex;
+		lastHoverCol = colIndex;
+		measureTableGrid();
+
 		if (!isSelected(rowIndex, colIndex) || selectedCells.length > 1) {
 			onSelectionChange([{ row: rowIndex, col: colIndex }]);
 		}
 	}
 
-	function handleTableMouseOver(e: MouseEvent) {
-		if (!isDragging || !selectionAnchor) return;
-		const target = (e.target as HTMLElement | null)?.closest<HTMLElement>('[data-row][data-col]');
-		if (!target) return;
-		const row = Number(target.getAttribute('data-row'));
-		const col = Number(target.getAttribute('data-col'));
-		if (Number.isNaN(row) || Number.isNaN(col)) return;
+	function measureTableGrid() {
+		if (!tableElement) return;
+		const tableRect = tableElement.getBoundingClientRect();
+		const ths = tableElement.querySelectorAll<HTMLTableCellElement>('thead tr th[data-col]');
+		const colBounds: { left: number; right: number }[] = [];
+		ths.forEach((th) => {
+			const rect = th.getBoundingClientRect();
+			colBounds.push({
+				left: rect.left - tableRect.left,
+				right: rect.right - tableRect.left
+			});
+		});
 
-		if (row !== selectionAnchor.row || col !== selectionAnchor.col) {
+		const trs = tableElement.querySelectorAll<HTMLTableRowElement>('tbody tr[data-table-row]');
+		const rowBounds: { top: number; bottom: number }[] = [];
+		trs.forEach((tr) => {
+			const rect = tr.getBoundingClientRect();
+			rowBounds.push({
+				top: rect.top - tableRect.top,
+				bottom: rect.bottom - tableRect.top
+			});
+		});
+
+		cachedColBounds = colBounds;
+		cachedRowBounds = rowBounds;
+	}
+
+	function handleWindowMouseMove(e: MouseEvent) {
+		if (e.buttons === 0 && (dragStartCell || isDragging)) {
+			handleWindowMouseUp();
+			return;
+		}
+		if (!dragStartCell || !cachedColBounds || !cachedRowBounds || !tableElement) return;
+
+		const tableRect = tableElement.getBoundingClientRect();
+		const mouseX = e.clientX - tableRect.left;
+		const mouseY = e.clientY - tableRect.top;
+
+		let targetCol = cachedColBounds.length - 1;
+		for (let c = 0; c < cachedColBounds.length; c++) {
+			if (mouseX < cachedColBounds[c].right) {
+				targetCol = c;
+				break;
+			}
+		}
+		if (mouseX < cachedColBounds[0].left) targetCol = 0;
+
+		let targetRow = cachedRowBounds.length - 1;
+		for (let r = 0; r < cachedRowBounds.length; r++) {
+			if (mouseY < cachedRowBounds[r].bottom) {
+				targetRow = r;
+				break;
+			}
+		}
+		if (mouseY < cachedRowBounds[0].top) targetRow = 0;
+
+		if (!isDragging) {
+			if (targetRow === dragStartCell.row && targetCol === dragStartCell.col) {
+				return;
+			}
+			isDragging = true;
 			window.getSelection()?.removeAllRanges();
 			(document.activeElement as HTMLElement)?.blur();
-			onSelectionChange(buildRange(selectionAnchor, { row, col }));
-		} else if (selectedCells.length > 1) {
-			onSelectionChange([{ row, col }]);
+		}
+
+		if (targetRow === lastHoverRow && targetCol === lastHoverCol) {
+			return;
+		}
+
+		lastHoverRow = targetRow;
+		lastHoverCol = targetCol;
+
+		if (selectionAnchor) {
+			onSelectionChange(buildRange(selectionAnchor, { row: targetRow, col: targetCol }));
 		}
 	}
 
-	function handleMouseUp() {
+	function handleWindowMouseUp() {
 		isDragging = false;
+		dragStartCell = null;
+		lastHoverRow = null;
+		lastHoverCol = null;
+		cachedColBounds = null;
+		cachedRowBounds = null;
 	}
 
 	function isSelected(rowIndex: number, colIndex: number) {
@@ -467,7 +611,7 @@
 	}
 </script>
 
-<svelte:window onmouseup={handleMouseUp} onkeydown={handleHeaderAdjustKeydown} />
+<svelte:window onmousemove={handleWindowMouseMove} onmouseup={handleWindowMouseUp} onpointerup={handleWindowMouseUp} onkeydown={handleHeaderAdjustKeydown} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="table-editor tech-corners flex flex-col h-full bg-background rounded-[var(--radius)] border border-border" onmousedown={handleEditorClick}>
@@ -481,17 +625,17 @@
 			<span class="text-[11px] font-terminal text-muted-foreground uppercase tracking-widest">{rowCount} × {colCount}</span>
 		</div>
 		<div class="flex gap-1.5">
-			<AppTooltip text={t('table.addRow')} onclick={() => onAddRow()}>
+			<AppTooltip text={t('table.addRow')} onclick={() => executeAddRow()}>
 				{#snippet children({ props })}
-					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => onAddRow()}>
+					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => executeAddRow()}>
 						<Plus class="w-3 h-3" />
 						{t('table.row')}
 					</button>
 				{/snippet}
 			</AppTooltip>
-			<AppTooltip text={t('table.addColumn')} onclick={() => onAddColumn()}>
+			<AppTooltip text={t('table.addColumn')} onclick={() => executeAddColumn()}>
 				{#snippet children({ props })}
-					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => onAddColumn()}>
+					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => executeAddColumn()}>
 						<Plus class="w-3 h-3" />
 						{t('table.col')}
 					</button>
@@ -505,7 +649,7 @@
 			<ContextMenu.Root>
 				<ContextMenu.Trigger class="block w-full select-none" oncontextmenu={handleContextMenu}>
 					<div class="relative w-full select-none" bind:this={gridWrap}>
-					<table class="w-full border-collapse table-fixed select-none">
+					<table bind:this={tableElement} class="w-full border-collapse table-fixed select-none">
 						<colgroup>
 							<col style="width: {rowGutterWidth};" />
 							{#each columnCharWidths as width}
@@ -520,6 +664,7 @@
 								></th>
 								{#each rows[0] || [] as _, colIndex}
 									<th
+										data-col={colIndex}
 										class="relative px-2 py-1.5 bg-muted/30 hover:bg-muted/60 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none cursor-pointer transition-colors"
 										onclick={() => handleSelectColumn(colIndex)}
 									>
@@ -545,8 +690,7 @@
 								{/each}
 							</tr>
 						</thead>
-						<!-- svelte-ignore a11y_mouse_events_have_key_events -->
-						<tbody onmouseover={handleTableMouseOver}>
+						<tbody>
 							{#each rows as row, rowIndex}
 								<tr
 									data-table-row={rowIndex}
@@ -604,6 +748,8 @@
 													rows="1"
 													cols="1"
 													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden select-text {cell.effectiveBold ? 'font-bold' : ''}"
+													class:pointer-events-none={isDragging}
+													class:select-none={isDragging}
 													style="vertical-align: middle; min-height: 1.5em; user-select: text; -webkit-user-select: text;"
 													class:text-left={cell.effectiveAlign === 'left'}
 													class:text-center={cell.effectiveAlign === 'center'}
@@ -627,6 +773,20 @@
 							{/each}
 						</tbody>
 					</table>
+					{#if activeLaser}
+						{#key activeLaser.key}
+							<div
+								class="pointer-events-none absolute z-30 overflow-visible select-none"
+								style:top="{activeLaser.top}px"
+								style:left="{activeLaser.left}px"
+								style:width="{activeLaser.width}px"
+								style:height="{activeLaser.height}px"
+								aria-hidden="true"
+							>
+								<div class={activeLaser.type === 'row' ? 'laser-beam-row' : 'laser-beam-col'}></div>
+							</div>
+						{/key}
+					{/if}
 					{#if headerAdjustMode}
 						<div
 							data-header-adjust
@@ -770,5 +930,77 @@
 	}
 	:global(.table-editor td:hover .row-header-num) {
 		opacity: 0 !important;
+	}
+
+	.laser-beam-row {
+		position: absolute;
+		top: -1px;
+		left: 0;
+		width: 100%;
+		height: 2px;
+		background: var(--cobalt, #0202f1);
+		animation: runner-h-anim 420ms forwards;
+	}
+
+	.laser-beam-col {
+		position: absolute;
+		top: 0;
+		left: -1px;
+		width: 2px;
+		height: 100%;
+		background: var(--cobalt, #0202f1);
+		animation: runner-v-anim 420ms forwards;
+	}
+
+	@keyframes runner-h-anim {
+		0% {
+			transform-origin: left center;
+			transform: scaleX(0);
+			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		}
+		45% {
+			transform-origin: left center;
+			transform: scaleX(1);
+			animation-timing-function: step-start;
+		}
+		45.001% {
+			transform-origin: right center;
+			transform: scaleX(1);
+			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		}
+		90% {
+			transform-origin: right center;
+			transform: scaleX(0);
+		}
+		100% {
+			transform-origin: right center;
+			transform: scaleX(0);
+		}
+	}
+
+	@keyframes runner-v-anim {
+		0% {
+			transform-origin: top center;
+			transform: scaleY(0);
+			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		}
+		45% {
+			transform-origin: top center;
+			transform: scaleY(1);
+			animation-timing-function: step-start;
+		}
+		45.001% {
+			transform-origin: bottom center;
+			transform: scaleY(1);
+			animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		}
+		90% {
+			transform-origin: bottom center;
+			transform: scaleY(0);
+		}
+		100% {
+			transform-origin: bottom center;
+			transform: scaleY(0);
+		}
 	}
 </style>

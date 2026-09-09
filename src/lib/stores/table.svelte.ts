@@ -239,6 +239,12 @@ class TableStore {
 			...segment,
 			atRow: segment.atRow >= idx ? segment.atRow + 1 : segment.atRow
 		}));
+		if (this.selectedCells.length > 0) {
+			this.selectedCells = this.selectedCells.map((c) => ({
+				...c,
+				row: c.row >= idx ? c.row + 1 : c.row
+			}));
+		}
 		this.saveHistory();
 	}
 
@@ -255,6 +261,14 @@ class TableStore {
 				const shifted = segment.atRow >= index ? segment.atRow - 1 : segment.atRow;
 				return { ...segment, atRow: Math.min(Math.max(-1, shifted), maxRow) };
 			});
+			if (this.selectedCells.length > 0) {
+				this.selectedCells = this.selectedCells
+					.filter((c) => c.row !== index)
+					.map((c) => ({
+						...c,
+						row: c.row > index ? c.row - 1 : c.row
+					}));
+			}
 			this.saveHistory();
 		}
 	}
@@ -282,6 +296,12 @@ class TableStore {
 			}
 			return segment;
 		});
+		if (this.selectedCells.length > 0) {
+			this.selectedCells = this.selectedCells.map((c) => ({
+				...c,
+				col: c.col >= idx ? c.col + 1 : c.col
+			}));
+		}
 		this.saveHistory();
 	}
 
@@ -307,6 +327,14 @@ class TableStore {
 					return segment;
 				})
 				.filter((segment) => segment.endCol >= segment.startCol);
+			if (this.selectedCells.length > 0) {
+				this.selectedCells = this.selectedCells
+					.filter((c) => c.col !== index)
+					.map((c) => ({
+						...c,
+						col: c.col > index ? c.col - 1 : c.col
+					}));
+			}
 			this.saveHistory();
 		}
 	}

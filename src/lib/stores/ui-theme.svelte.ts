@@ -5,16 +5,19 @@ export type UiTheme = 'avant-garde' | 'classic';
 export interface ThemeFeatures {
 	borderTrace: boolean;
 	reticleCorners: boolean;
+	lineSliceTransition: boolean;
 }
 
 export const themeFeatures: Record<UiTheme, ThemeFeatures> = {
 	'avant-garde': {
 		borderTrace: true,
-		reticleCorners: true
+		reticleCorners: true,
+		lineSliceTransition: true
 	},
 	'classic': {
 		borderTrace: false,
-		reticleCorners: false
+		reticleCorners: false,
+		lineSliceTransition: false
 	}
 };
 
