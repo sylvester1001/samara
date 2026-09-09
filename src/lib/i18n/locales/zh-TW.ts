@@ -121,6 +121,8 @@ export const zhTW: TranslationSchema = {
 		insertColumnRight: '在右側插入欄',
 		deleteRowItem: '刪除列',
 		deleteColumnItem: '刪除欄',
+		deleteSelectedRows: '刪除所有選中列 ({n})',
+		deleteSelectedColumns: '刪除所有選中欄 ({n})',
 		lineBelow: '下方線條',
 		lineAbove: '上方線條'
 	},

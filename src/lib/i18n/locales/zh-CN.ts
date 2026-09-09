@@ -121,6 +121,8 @@ export const zhCN: TranslationSchema = {
 		insertColumnRight: '在右侧插入列',
 		deleteRowItem: '删除行',
 		deleteColumnItem: '删除列',
+		deleteSelectedRows: '删除所有选中行 ({n})',
+		deleteSelectedColumns: '删除所有选中列 ({n})',
 		lineBelow: '下方线条',
 		lineAbove: '上方线条'
 	},

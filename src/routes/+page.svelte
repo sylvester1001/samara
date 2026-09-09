@@ -211,6 +211,14 @@
 		tableStore.deleteColumn(index);
 	}
 
+	function handleDeleteRows(indices: number[]) {
+		tableStore.deleteRows(indices);
+	}
+
+	function handleDeleteColumns(indices: number[]) {
+		tableStore.deleteColumns(indices);
+	}
+
 	function handleResizeTable(rows: number, cols: number) {
 		tableStore.resizeTable(rows, cols);
 	}
@@ -645,6 +653,8 @@
 								onAddColumn={handleAddColumn}
 								onDeleteRow={handleDeleteRow}
 								onDeleteColumn={handleDeleteColumn}
+								onDeleteRows={handleDeleteRows}
+								onDeleteColumns={handleDeleteColumns}
 								onClearSelectedCells={() =>
 									tableStore.clearSelectedCellsContent()}
 								onResizeTable={handleResizeTable}

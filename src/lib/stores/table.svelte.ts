@@ -248,29 +248,58 @@ class TableStore {
 		this.saveHistory();
 	}
 
-	deleteRow(index: number) {
-		if (this.tableData.rows.length > 1) {
-			this.tableData.rows.splice(index, 1);
-			this.tableData.rowHeights.splice(index, 1);
-			this.tableData.headerRows = Math.min(
-				Math.max(1, this.tableData.headerRows),
-				this.tableData.rows.length
-			);
-			const maxRow = this.tableData.rows.length - 1;
-			this.tableData.segments = this.tableData.segments.map((segment) => {
-				const shifted = segment.atRow >= index ? segment.atRow - 1 : segment.atRow;
-				return { ...segment, atRow: Math.min(Math.max(-1, shifted), maxRow) };
-			});
-			if (this.selectedCells.length > 0) {
-				this.selectedCells = this.selectedCells
-					.filter((c) => c.row !== index)
-					.map((c) => ({
-						...c,
-						row: c.row > index ? c.row - 1 : c.row
-					}));
-			}
-			this.saveHistory();
+	deleteRows(indices: number[]) {
+		const validIndices = Array.from(new Set(indices))
+			.filter((idx) => idx >= 0 && idx < this.tableData.rows.length)
+			.sort((a, b) => b - a);
+
+		if (validIndices.length === 0) return;
+		if (this.tableData.rows.length - validIndices.length < 1) return;
+
+		const removedSet = new Set(validIndices);
+
+		for (const idx of validIndices) {
+			this.tableData.rows.splice(idx, 1);
+			this.tableData.rowHeights.splice(idx, 1);
 		}
+
+		this.tableData.headerRows = Math.min(
+			Math.max(1, this.tableData.headerRows),
+			this.tableData.rows.length
+		);
+
+		const maxRow = this.tableData.rows.length - 1;
+		this.tableData.segments = this.tableData.segments
+			.map((segment) => {
+				const shift = validIndices.filter((idx) => idx <= segment.atRow).length;
+				const shifted = segment.atRow - shift;
+				return { ...segment, atRow: Math.min(Math.max(-1, shifted), maxRow) };
+			})
+			.filter((segment) => segment.atRow <= maxRow);
+
+		if (this.selectedCells.length > 0) {
+			this.selectedCells = this.selectedCells
+				.filter((c) => !removedSet.has(c.row))
+				.map((c) => {
+					const shift = validIndices.filter((idx) => idx < c.row).length;
+					return {
+						...c,
+						row: c.row - shift
+					};
+				});
+		}
+
+		if (this.selectedCells.length === 0 && this.tableData.rows.length > 0) {
+			const minRemoved = validIndices[validIndices.length - 1];
+			const targetRow = Math.min(minRemoved, this.tableData.rows.length - 1);
+			this.selectedCells = [{ row: targetRow, col: 0 }];
+		}
+
+		this.saveHistory();
+	}
+
+	deleteRow(index: number) {
+		this.deleteRows([index]);
 	}
 
 	addColumn(index?: number) {
@@ -305,20 +334,32 @@ class TableStore {
 		this.saveHistory();
 	}
 
-	deleteColumn(index: number) {
-		if (this.tableData.columnWidths.length > 1) {
-			this.tableData.rows.forEach((row) => row.splice(index, 1));
-			this.tableData.columnWidths.splice(index, 1);
+	deleteColumns(indices: number[]) {
+		const validIndices = Array.from(new Set(indices))
+			.filter((idx) => idx >= 0 && idx < this.tableData.columnWidths.length)
+			.sort((a, b) => b - a);
+
+		if (validIndices.length === 0) return;
+		if (this.tableData.columnWidths.length - validIndices.length < 1) return;
+
+		const removedSet = new Set(validIndices);
+
+		for (const idx of validIndices) {
+			this.tableData.rows.forEach((row) => row.splice(idx, 1));
+			this.tableData.columnWidths.splice(idx, 1);
+		}
+
+		for (const idx of validIndices) {
 			this.tableData.segments = this.tableData.segments
 				.map((segment) => {
-					if (index < segment.startCol) {
+					if (idx < segment.startCol) {
 						return {
 							...segment,
 							startCol: segment.startCol - 1,
 							endCol: segment.endCol - 1
 						};
 					}
-					if (index <= segment.endCol) {
+					if (idx <= segment.endCol) {
 						return {
 							...segment,
 							endCol: segment.endCol - 1
@@ -327,16 +368,31 @@ class TableStore {
 					return segment;
 				})
 				.filter((segment) => segment.endCol >= segment.startCol);
-			if (this.selectedCells.length > 0) {
-				this.selectedCells = this.selectedCells
-					.filter((c) => c.col !== index)
-					.map((c) => ({
-						...c,
-						col: c.col > index ? c.col - 1 : c.col
-					}));
-			}
-			this.saveHistory();
 		}
+
+		if (this.selectedCells.length > 0) {
+			this.selectedCells = this.selectedCells
+				.filter((c) => !removedSet.has(c.col))
+				.map((c) => {
+					const shift = validIndices.filter((idx) => idx < c.col).length;
+					return {
+						...c,
+						col: c.col - shift
+					};
+				});
+		}
+
+		if (this.selectedCells.length === 0 && this.tableData.columnWidths.length > 0) {
+			const minRemoved = validIndices[validIndices.length - 1];
+			const targetCol = Math.min(minRemoved, this.tableData.columnWidths.length - 1);
+			this.selectedCells = [{ row: 0, col: targetCol }];
+		}
+
+		this.saveHistory();
+	}
+
+	deleteColumn(index: number) {
+		this.deleteColumns([index]);
 	}
 
 	addSegment(segment: RuleSegment) {

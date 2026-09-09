@@ -119,6 +119,8 @@ export const en = {
 		insertColumnRight: 'Insert Column Right',
 		deleteRowItem: 'Delete Row',
 		deleteColumnItem: 'Delete Column',
+		deleteSelectedRows: 'Delete All Selected Rows ({n})',
+		deleteSelectedColumns: 'Delete All Selected Columns ({n})',
 		lineBelow: 'Line below',
 		lineAbove: 'Line above'
 	},

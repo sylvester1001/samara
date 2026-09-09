@@ -21,6 +21,8 @@
 		onAddColumn: (index?: number) => void;
 		onDeleteRow: (index: number) => void;
 		onDeleteColumn: (index: number) => void;
+		onDeleteRows?: (indices: number[]) => void;
+		onDeleteColumns?: (indices: number[]) => void;
 		onClearSelectedCells?: () => void;
 		onResizeTable?: (rows: number, cols: number) => void;
 		headerRows?: number;
@@ -44,6 +46,8 @@
 		onAddColumn,
 		onDeleteRow,
 		onDeleteColumn,
+		onDeleteRows,
+		onDeleteColumns,
 		onClearSelectedCells,
 		onResizeTable,
 		headerRows = 1,
@@ -165,8 +169,33 @@
 		return null;
 	});
 	const canInsertAtTarget = $derived(!!contextTarget);
-	const canDeleteRow = $derived(!!contextTarget && rowCount > 1);
-	const canDeleteColumn = $derived(!!contextTarget && colCount > 1);
+
+	const selectedRowIndices = $derived.by(() => {
+		if (selectedCells.length > 0) {
+			return Array.from(new Set(selectedCells.map((c) => c.row))).sort((a, b) => a - b);
+		}
+		if (contextCell) {
+			return [contextCell.row];
+		}
+		return [];
+	});
+
+	const selectedColIndices = $derived.by(() => {
+		if (selectedCells.length > 0) {
+			return Array.from(new Set(selectedCells.map((c) => c.col))).sort((a, b) => a - b);
+		}
+		if (contextCell) {
+			return [contextCell.col];
+		}
+		return [];
+	});
+
+	const canDeleteRows = $derived(
+		selectedRowIndices.length > 0 && rowCount > selectedRowIndices.length
+	);
+	const canDeleteColumns = $derived(
+		selectedColIndices.length > 0 && colCount > selectedColIndices.length
+	);
 	const canMerge = $derived(selectedCells.length > 1);
 	const canUnmerge = $derived.by(() => {
 		for (const { row, col } of selectedCells) {
@@ -362,14 +391,22 @@
 		executeAddColumn(contextTarget.col + 1);
 	}
 
-	function handleDeleteRowContext() {
-		if (!contextTarget) return;
-		onDeleteRow(contextTarget.row);
+	function handleDeleteRowsContext() {
+		if (selectedRowIndices.length === 0) return;
+		if (onDeleteRows) {
+			onDeleteRows(selectedRowIndices);
+		} else {
+			selectedRowIndices.slice().reverse().forEach((r) => onDeleteRow(r));
+		}
 	}
 
-	function handleDeleteColumnContext() {
-		if (!contextTarget) return;
-		onDeleteColumn(contextTarget.col);
+	function handleDeleteColumnsContext() {
+		if (selectedColIndices.length === 0) return;
+		if (onDeleteColumns) {
+			onDeleteColumns(selectedColIndices);
+		} else {
+			selectedColIndices.slice().reverse().forEach((c) => onDeleteColumn(c));
+		}
 	}
 
 	function handleKeyDown(e: KeyboardEvent, rowIndex: number, colIndex: number) {
@@ -457,8 +494,15 @@
 	}
 
 	function handleCellMouseDown(e: MouseEvent, rowIndex: number, colIndex: number) {
-		if (headerAdjustMode && rowIndex >= headerRows) {
-			onHeaderAdjustModeChange?.(false);
+		if (e.button !== 0) {
+			if (e.button === 2) {
+				contextCell = { row: rowIndex, col: colIndex };
+				const key = `${rowIndex}:${colIndex}`;
+				if (!selectedSet.has(key)) {
+					onSelectionChange([{ row: rowIndex, col: colIndex }]);
+				}
+			}
+			return;
 		}
 		const key = `${rowIndex}:${colIndex}`;
 		if (e.shiftKey && selectionAnchor) {
@@ -847,11 +891,29 @@
 						</ContextMenu.SubContent>
 					</ContextMenu.Sub>
 					<ContextMenu.Separator />
-					<ContextMenu.Item inset variant="destructive" disabled={!canDeleteRow} onclick={handleDeleteRowContext}>
-						{t('table.deleteRowItem')}
+					<ContextMenu.Item
+						inset
+						variant="destructive"
+						disabled={!canDeleteRows}
+						onclick={handleDeleteRowsContext}
+					>
+						{#if selectedRowIndices.length > 1}
+							{t('table.deleteSelectedRows', { n: selectedRowIndices.length })}
+						{:else}
+							{t('table.deleteRowItem')}
+						{/if}
 					</ContextMenu.Item>
-					<ContextMenu.Item inset variant="destructive" disabled={!canDeleteColumn} onclick={handleDeleteColumnContext}>
-						{t('table.deleteColumnItem')}
+					<ContextMenu.Item
+						inset
+						variant="destructive"
+						disabled={!canDeleteColumns}
+						onclick={handleDeleteColumnsContext}
+					>
+						{#if selectedColIndices.length > 1}
+							{t('table.deleteSelectedColumns', { n: selectedColIndices.length })}
+						{:else}
+							{t('table.deleteColumnItem')}
+						{/if}
 					</ContextMenu.Item>
 				</ContextMenu.Content>
 			</ContextMenu.Root>
