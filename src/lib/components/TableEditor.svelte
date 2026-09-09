@@ -634,6 +634,27 @@
 		return selectedSet.has(`${rowIndex}:${colIndex}`);
 	}
 
+	const isAllSelected = $derived(
+		rowCount > 0 && colCount > 0 && selectedCells.length === rowCount * colCount
+	);
+
+	function handleSelectAll() {
+		if (rowCount === 0 || colCount === 0) return;
+		if (isAllSelected) {
+			onSelectionChange([]);
+			selectionAnchor = null;
+		} else {
+			const cells: { row: number; col: number }[] = [];
+			for (let r = 0; r < rowCount; r++) {
+				for (let c = 0; c < colCount; c++) {
+					cells.push({ row: r, col: c });
+				}
+			}
+			selectionAnchor = { row: 0, col: 0 };
+			onSelectionChange(cells);
+		}
+	}
+
 	function handleSelectColumn(colIndex: number) {
 		const cells: { row: number; col: number }[] = [];
 		for (let r = 0; r < rowCount; r++) {
@@ -712,9 +733,30 @@
 						<thead>
 							<tr>
 								<th
-									class="box-border bg-muted/40 p-0 border-b border-r border-zinc-200 dark:border-zinc-800"
-									style="width: {rowGutterWidth};"
-								></th>
+									class="origin-cell relative box-border p-0 border border-zinc-200 dark:border-zinc-800 text-center select-none transition-colors {isAllSelected ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)]' : 'bg-muted/60 text-foreground') : 'bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
+									style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
+								>
+									<AppTooltip text={isAllSelected ? t('table.clearSelection') : t('table.selectAll')}>
+										{#snippet children({ props })}
+											<button
+												type="button"
+												class="origin-cell-btn w-full h-full min-h-[26px] flex items-center justify-center cursor-pointer outline-none bg-transparent border-none p-0 text-inherit transition-all group"
+												{...props}
+												onclick={handleSelectAll}
+												aria-label={isAllSelected ? t('table.clearSelection') : t('table.selectAll')}
+											>
+												<svg class="size-3.5 transition-transform duration-150 group-active:scale-90" viewBox="0 0 16 16" fill="currentColor">
+													<g transform="rotate(45 8 8)">
+														<rect x="4.2" y="4.2" width="3.2" height="3.2" class="nier-diamond-tl" />
+														<rect x="8.6" y="4.2" width="3.2" height="3.2" class="nier-diamond-tr" />
+														<rect x="4.2" y="8.6" width="3.2" height="3.2" class="nier-diamond-bl" />
+														<rect x="8.6" y="8.6" width="3.2" height="3.2" class="nier-diamond-br" />
+													</g>
+												</svg>
+											</button>
+										{/snippet}
+									</AppTooltip>
+								</th>
 								{#each rows[0] || [] as _, colIndex}
 									<th
 										data-col={colIndex}
@@ -1007,4 +1049,28 @@
 		opacity: 0 !important;
 	}
 
+	.nier-diamond-tl,
+	.nier-diamond-tr,
+	.nier-diamond-bl,
+	.nier-diamond-br {
+		transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+		transform: translate(0, 0);
+	}
+
+	:global(.origin-cell:hover) .nier-diamond-tl,
+	:global(.origin-cell-btn:hover) .nier-diamond-tl {
+		transform: translate(-0.55px, -0.55px);
+	}
+	:global(.origin-cell:hover) .nier-diamond-tr,
+	:global(.origin-cell-btn:hover) .nier-diamond-tr {
+		transform: translate(0.55px, -0.55px);
+	}
+	:global(.origin-cell:hover) .nier-diamond-bl,
+	:global(.origin-cell-btn:hover) .nier-diamond-bl {
+		transform: translate(-0.55px, 0.55px);
+	}
+	:global(.origin-cell:hover) .nier-diamond-br,
+	:global(.origin-cell-btn:hover) .nier-diamond-br {
+		transform: translate(0.55px, 0.55px);
+	}
 </style>

@@ -114,6 +114,8 @@ export const zhTW: TranslationSchema = {
 		selectRow: '選取第 {n} 列',
 		deleteRow: '刪除第 {n} 列',
 		header: '表頭',
+		selectAll: '全選表格',
+		clearSelection: '取消全選',
 		insert: '插入',
 		insertRowAbove: '在上方插入列',
 		insertRowBelow: '在下方插入列',

@@ -112,6 +112,8 @@ export const en = {
 		selectRow: 'Select Row {n}',
 		deleteRow: 'Delete Row {n}',
 		header: 'Header',
+		selectAll: 'Select All',
+		clearSelection: 'Clear Selection',
 		insert: 'Insert',
 		insertRowAbove: 'Insert Row Above',
 		insertRowBelow: 'Insert Row Below',
