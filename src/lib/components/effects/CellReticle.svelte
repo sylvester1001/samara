@@ -38,7 +38,6 @@
 		height: 5px;
 		box-sizing: border-box;
 		pointer-events: none;
-		will-change: transform;
 	}
 
 	.reticle-tl {
@@ -46,7 +45,7 @@
 		left: -1px;
 		border-top: 1.5px solid var(--reticle-color, #0202f1);
 		border-left: 1.5px solid var(--reticle-color, #0202f1);
-		animation: reticle-snap-tl 90ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		animation: reticle-snap-tl 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
 	.reticle-tr {
@@ -54,7 +53,7 @@
 		right: -1px;
 		border-top: 1.5px solid var(--reticle-color, #0202f1);
 		border-right: 1.5px solid var(--reticle-color, #0202f1);
-		animation: reticle-snap-tr 90ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		animation: reticle-snap-tr 80ms 16ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
 	.reticle-bl {
@@ -62,7 +61,7 @@
 		left: -1px;
 		border-bottom: 1.5px solid var(--reticle-color, #0202f1);
 		border-left: 1.5px solid var(--reticle-color, #0202f1);
-		animation: reticle-snap-bl 90ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		animation: reticle-snap-bl 80ms 8ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
 	.reticle-br {
@@ -70,48 +69,48 @@
 		right: -1px;
 		border-bottom: 1.5px solid var(--reticle-color, #0202f1);
 		border-right: 1.5px solid var(--reticle-color, #0202f1);
-		animation: reticle-snap-br 90ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		animation: reticle-snap-br 80ms 24ms cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
 	@keyframes reticle-snap-tl {
-		0% {
+		from {
 			transform: translate(-3px, -3px);
 			opacity: 0.2;
 		}
-		100% {
+		to {
 			transform: translate(0, 0);
 			opacity: 1;
 		}
 	}
 
 	@keyframes reticle-snap-tr {
-		0% {
+		from {
 			transform: translate(3px, -3px);
 			opacity: 0.2;
 		}
-		100% {
+		to {
 			transform: translate(0, 0);
 			opacity: 1;
 		}
 	}
 
 	@keyframes reticle-snap-bl {
-		0% {
+		from {
 			transform: translate(-3px, 3px);
 			opacity: 0.2;
 		}
-		100% {
+		to {
 			transform: translate(0, 0);
 			opacity: 1;
 		}
 	}
 
 	@keyframes reticle-snap-br {
-		0% {
+		from {
 			transform: translate(3px, 3px);
 			opacity: 0.2;
 		}
-		100% {
+		to {
 			transform: translate(0, 0);
 			opacity: 1;
 		}
