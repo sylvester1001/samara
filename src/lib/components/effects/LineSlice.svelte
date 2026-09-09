@@ -1,40 +1,28 @@
 <script lang="ts">
-	const SLICE_MS = 560;
-	const EASE_OUT_CIRC = 'cubic-bezier(0, 0.55, 0.45, 1)';
+	const SLICE_MS = 320;
 
 	interface Props {
 		type: 'row' | 'col';
 		headerW: number;
 		headerH: number;
-		travelW: number;
-		travelH: number;
 	}
 
-	let { type, headerW, headerH, travelW, travelH }: Props = $props();
+	let { type, headerW, headerH }: Props = $props();
 
 	let fillEl = $state<HTMLDivElement | null>(null);
 
 	$effect(() => {
 		const fill = fillEl;
-		if (!fill || travelW <= 0 || travelH <= 0) return;
+		if (!fill) return;
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-		const isRow = type === 'row';
-		// inset() 四个值必须带同一单位，否则 Blink 会拒绝插值、直接跳变
-		const clipHidden = isRow
-			? `inset(0px ${travelW}px 0px 0px)`
-			: `inset(0px 0px ${travelH}px 0px)`;
-		const clipShown = 'inset(0px 0px 0px 0px)';
-
-		fill.style.opacity = '0';
-		fill.style.clipPath = clipHidden;
+		fill.style.opacity = '1';
 
 		const fillAnim = fill.animate(
 			[
-				{ clipPath: clipHidden, opacity: 0, offset: 0, easing: 'ease' },
-				{ clipPath: clipHidden, opacity: 1, offset: 0.08, easing: EASE_OUT_CIRC },
-				{ clipPath: clipShown, opacity: 1, offset: 0.68, easing: 'ease' },
-				{ clipPath: clipShown, opacity: 0, offset: 1 }
+				{ opacity: 1, offset: 0, easing: 'step-end' },
+				{ opacity: 1, offset: 0.42, easing: 'cubic-bezier(0, 0.55, 0.45, 1)' },
+				{ opacity: 0, offset: 1 }
 			],
 			{ duration: SLICE_MS, fill: 'forwards' }
 		);
@@ -72,7 +60,6 @@
 	.slice-fill {
 		position: absolute;
 		inset: 0;
-		overflow: hidden;
 		opacity: 0;
 		background: var(--cobalt-subtle, rgba(2, 2, 241, 0.08));
 	}
@@ -98,7 +85,7 @@
 		border-left: 1.5px solid var(--slice-c);
 		animation:
 			slice-mark-in-tl 80ms cubic-bezier(0.16, 1, 0.3, 1) both,
-			slice-mark-out 120ms 430ms ease-in forwards;
+			slice-mark-out 80ms 180ms ease-in forwards;
 	}
 
 	.slice-mark-tr {
@@ -108,7 +95,7 @@
 		border-right: 1.5px solid var(--slice-c);
 		animation:
 			slice-mark-in-tr 80ms 16ms cubic-bezier(0.16, 1, 0.3, 1) both,
-			slice-mark-out 120ms 430ms ease-in forwards;
+			slice-mark-out 80ms 180ms ease-in forwards;
 	}
 
 	.slice-mark-bl {
@@ -118,7 +105,7 @@
 		border-left: 1.5px solid var(--slice-c);
 		animation:
 			slice-mark-in-bl 80ms 8ms cubic-bezier(0.16, 1, 0.3, 1) both,
-			slice-mark-out 120ms 430ms ease-in forwards;
+			slice-mark-out 80ms 180ms ease-in forwards;
 	}
 
 	.slice-mark-br {
@@ -128,7 +115,7 @@
 		border-right: 1.5px solid var(--slice-c);
 		animation:
 			slice-mark-in-br 80ms 24ms cubic-bezier(0.16, 1, 0.3, 1) both,
-			slice-mark-out 120ms 430ms ease-in forwards;
+			slice-mark-out 80ms 180ms ease-in forwards;
 	}
 
 	@keyframes slice-mark-in-tl {

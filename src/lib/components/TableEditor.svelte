@@ -314,7 +314,7 @@
 		key: number;
 	}
 
-	const LINE_SLICE_MS = 580;
+	const LINE_SLICE_MS = 360;
 
 	let activeLaser = $state<LaserSlice | null>(null);
 	let activeLaserTimer: ReturnType<typeof setTimeout> | null = null;
@@ -840,8 +840,6 @@
 									type={activeLaser.type}
 									headerW={activeLaser.headerW}
 									headerH={activeLaser.headerH}
-									travelW={activeLaser.width}
-									travelH={activeLaser.height}
 								/>
 							</div>
 						{/key}
