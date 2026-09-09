@@ -8,7 +8,8 @@
 	import type { Cell } from '$lib/types';
 	import type { LineEdge } from '$lib/utils/table-geometry';
 	import { resolveCell } from '$lib/utils/table-semantics';
-	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
+	import { uiTheme, themeFeatures } from '$lib/stores/ui-theme.svelte.js';
+	import CellReticle from './effects/CellReticle.svelte';
 	import { t } from '$lib/i18n';
 
 	interface Props {
@@ -76,8 +77,20 @@
 		return total;
 	});
 
+	const selectionBounds = $derived.by(() => {
+		if (!selectedCells || selectedCells.length === 0) return null;
+		let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
+		for (const c of selectedCells) {
+			if (c.row < minR) minR = c.row;
+			if (c.row > maxR) maxR = c.row;
+			if (c.col < minC) minC = c.col;
+			if (c.col > maxC) maxC = c.col;
+		}
+		return { minR, maxR, minC, maxC };
+	});
+
 	const posDisplay = $derived.by(() => {
-		if (!selectedCells || selectedCells.length === 0) {
+		if (!selectedCells || selectedCells.length === 0 || !selectionBounds) {
 			return 'STANDBY';
 		}
 		if (selectedCells.length === 1) {
@@ -85,10 +98,7 @@
 			const colLetter = String.fromCharCode(65 + col);
 			return `${colLetter}${row + 1}`;
 		}
-		const minRow = Math.min(...selectedCells.map((c) => c.row));
-		const maxRow = Math.max(...selectedCells.map((c) => c.row));
-		const minCol = Math.min(...selectedCells.map((c) => c.col));
-		const maxCol = Math.max(...selectedCells.map((c) => c.col));
+		const { minR: minRow, maxR: maxRow, minC: minCol, maxC: maxCol } = selectionBounds;
 		const start = `${String.fromCharCode(65 + minCol)}${minRow + 1}`;
 		const end = `${String.fromCharCode(65 + maxCol)}${maxRow + 1}`;
 		return `${start}:${end} (${selectedCells.length})`;
@@ -581,6 +591,15 @@
 												data-col={colIndex}
 												onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
 											>
+												{#if themeFeatures[uiTheme.theme]?.reticleCorners && selectionBounds && isSelected(rowIndex, colIndex)}
+													{@const isTL = rowIndex === selectionBounds.minR && colIndex === selectionBounds.minC}
+													{@const isTR = rowIndex === selectionBounds.minR && (colIndex + (cell.colspan || 1) - 1) === selectionBounds.maxC}
+													{@const isBL = (rowIndex + (cell.rowspan || 1) - 1) === selectionBounds.maxR && colIndex === selectionBounds.minC}
+													{@const isBR = (rowIndex + (cell.rowspan || 1) - 1) === selectionBounds.maxR && (colIndex + (cell.colspan || 1) - 1) === selectionBounds.maxC}
+													{#if isTL || isTR || isBL || isBR}
+														<CellReticle tl={isTL} tr={isTR} bl={isBL} br={isBR} />
+													{/if}
+												{/if}
 												<textarea
 													rows="1"
 													cols="1"
