@@ -42,7 +42,7 @@
 	// 角标色块的名义尺寸（CSS px）。实际尺寸会向上取整到 BorderTrace 给出的 grid 倍数，
 	// 使四条边同时落在整数 CSS 像素与整数物理像素上。
 	const STAMP_W = 44;
-	const STAMP_H = 12;
+	const STAMP_H = 14;
 	function snapUp(v: number, grid: number) {
 		return Math.ceil(v / grid) * grid;
 	}
@@ -78,12 +78,14 @@
 							<!--
 								角标色块画在描边所在的同一个 <svg> 里：右边 x = g.frameW 与描边外沿是同一个坐标，
 								同一套光栅化，不存在 HTML 盒子按 CSS 像素吸附导致的半像素错位。
+								底边 y = g.strokeWidth 即描边内沿（卡片 border-box 外沿），色块坐在卡片外延上、
+								与蓝色边框共用同一条基线，盖住顶边描边的右段。
 								嵌套 <svg> 充当「门框」（overflow hidden 做裁切），内部 <g> 从右侧滑出。
 							-->
 							<svg
 								class="stamp-portal select-none"
 								x={g.frameW - w}
-								y={-h}
+								y={g.strokeWidth - h}
 								width={w}
 								height={h}
 								overflow="hidden"

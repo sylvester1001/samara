@@ -4,6 +4,8 @@
 		/** 描边外框宽高，已对齐到物理像素 */
 		frameW: number;
 		frameH: number;
+		/** 描边宽度（已对齐到整数物理像素）；描边内沿 = strokeWidth，即宿主 border-box 外沿 + gap */
+		strokeWidth: number;
 		dpr: number;
 		/** 最小整数 n，使 n × dpr 为整数；尺寸取 grid 的倍数即可同时落在 CSS 像素与物理像素网格上 */
 		grid: number;
@@ -21,6 +23,8 @@
 		strokeWidth?: number;
 		class?: string;
 		replayKey?: number;
+		/** 宿主元素 border-box 外沿与描边内沿之间的间隙（CSS px）。0 = 描边紧贴宿主边框外侧包裹 */
+		gap?: number;
 		/** HTML 覆盖层（右沿 / 上沿与描边外沿对齐） */
 		children?: Snippet;
 		/**
@@ -37,6 +41,7 @@
 		strokeWidth = 2,
 		class: className = '',
 		replayKey = 0,
+		gap = 0,
 		children,
 		overlay
 	}: Props = $props();
@@ -129,10 +134,17 @@
 		};
 	}
 
+	// 宿主（position: relative 的父元素）的边框宽度，用来把描边推到宿主 border-box 之外
+	let hostBorder = $state(0);
+
 	$effect(() => {
 		if (!containerEl) return;
 		const el = containerEl;
 		const update = () => {
+			const host = el.parentElement;
+			if (host) {
+				hostBorder = parseFloat(getComputedStyle(host).borderTopWidth) || 0;
+			}
 			const next = measure(el);
 			if (next) geom = next;
 		};
@@ -142,12 +154,14 @@
 		return () => ro.disconnect();
 	});
 
-	// 线宽对齐到整数物理像素
-	const crispStrokeWidth = $derived.by(() => {
-		const dpr = geom?.dpr ?? 1;
-		return Math.max(1, Math.round(strokeWidth * dpr)) / dpr;
-	});
+	// 线宽对齐到整数物理像素（dpr 在挂载前就已知，不必等 measure）
+	const dpr = $derived(geom?.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1));
+	const crispStrokeWidth = $derived(Math.max(1, Math.round(strokeWidth * dpr)) / dpr);
 	const half = $derived(crispStrokeWidth / 2);
+
+	// 容器相对宿主 padding-box 向外扩张的距离：越过宿主边框 + 间隙 + 整条描边，
+	// 于是描边内沿正好落在「宿主 border-box 外沿 + gap」处，从外侧包裹卡片
+	const outset = $derived(hostBorder + gap + crispStrokeWidth);
 
 	// 描边中心线所在的矩形：SVG 原点已在物理像素上，外沿 = [0, frameW] × [0, frameH]，向内缩半个线宽
 	const x0 = $derived(half);
@@ -214,7 +228,8 @@
 {#if isEnabled && active}
 	<div
 		bind:this={containerEl}
-		class="pointer-events-none absolute -inset-px z-20 overflow-visible {className}"
+		class="pointer-events-none absolute z-20 overflow-visible {className}"
+		style="inset:-{outset}px"
 		aria-hidden="true"
 	>
 		<!--
@@ -238,7 +253,13 @@
 				stroke-dashoffset={perimeter}
 			/>
 			{#if geom && overlay}
-				{@render overlay({ frameW: geom.frameW, frameH: geom.frameH, dpr: geom.dpr, grid: geom.grid })}
+				{@render overlay({
+					frameW: geom.frameW,
+					frameH: geom.frameH,
+					strokeWidth: crispStrokeWidth,
+					dpr: geom.dpr,
+					grid: geom.grid
+				})}
 			{/if}
 		</svg>
 		<div class="absolute overflow-visible" style={childrenStyle}>
