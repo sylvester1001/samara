@@ -2,7 +2,7 @@
 	import * as ToggleGroup from '$lib/components/ui/toggle-group/index.js';
 	import { cn } from '$lib/utils.js';
 	import { uiTheme } from '$lib/stores/ui-theme.svelte.js';
-	import BorderTrace from '$lib/components/effects/BorderTrace.svelte';
+	import BorderTrace, { type BorderTraceGeometry } from '$lib/components/effects/BorderTrace.svelte';
 	import type { TableStyle } from '$lib/types';
 	import { t } from '$lib/i18n';
 
@@ -38,6 +38,14 @@
 			onValueChange?.(next);
 		}
 	}
+
+	// 角标色块的名义尺寸（CSS px）。实际尺寸会向上取整到 BorderTrace 给出的 grid 倍数，
+	// 使四条边同时落在整数 CSS 像素与整数物理像素上。
+	const STAMP_W = 44;
+	const STAMP_H = 12;
+	function snapUp(v: number, grid: number) {
+		return Math.ceil(v / grid) * grid;
+	}
 </script>
 
 <ToggleGroup.Root
@@ -55,28 +63,51 @@
 				'relative ml-0 flex h-auto min-w-0 flex-col gap-1.5 border border-border bg-background p-1.5 shadow-none transition-all overflow-visible',
 				'first:ml-0',
 				'hover:border-foreground/40 hover:text-foreground',
+				'focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus:ring-0 ring-0 ring-offset-0 outline-none',
 				uiTheme.theme === 'avant-garde'
-					? 'rounded-none first:rounded-none last:rounded-none data-[state=on]:border-transparent data-[state=on]:bg-[var(--cobalt-subtle)]/30 data-[state=on]:text-[var(--cobalt)]'
+					? 'rounded-none first:rounded-none last:rounded-none data-[state=on]:border-transparent data-[state=on]:bg-background data-[state=on]:text-[var(--cobalt)]'
 					: 'rounded-[2px] first:rounded-[2px] last:rounded-[2px] data-[state=on]:border-foreground data-[state=on]:shadow-[inset_0_0_0_1.5px_currentColor] data-[state=on]:bg-muted/60 data-[state=on]:text-foreground'
 			)}
 		>
-			<BorderTrace active={value === preset.value} replayKey={animTrigger[preset.value]} />
-
-			{#if uiTheme.theme === 'avant-garde' && value === preset.value}
-				{#key `${value}-${animTrigger[preset.value]}`}
-					<div class="stamp-portal pointer-events-none absolute bottom-[calc(100%-1px)] right-[-1px] z-30 overflow-hidden select-none">
-						<div class="stamp-slider inline-flex items-center justify-center bg-[var(--cobalt)] px-1.5 py-0.5 relative overflow-hidden">
-							<span class="stamp-label font-terminal text-[8.5px] font-bold tracking-wider leading-none text-white whitespace-nowrap">
-								[{preset.code}]
-							</span>
-							<div class="stamp-slashes" aria-hidden="true">
-								<span class="slash-line"></span>
-								<span class="slash-line"></span>
-							</div>
-						</div>
-					</div>
-				{/key}
-			{/if}
+			<BorderTrace active={value === preset.value} replayKey={animTrigger[preset.value]}>
+				{#snippet overlay(g: BorderTraceGeometry)}
+					{#if uiTheme.theme === 'avant-garde' && value === preset.value}
+						{@const w = snapUp(STAMP_W, g.grid)}
+						{@const h = snapUp(STAMP_H, g.grid)}
+						{#key `${value}-${animTrigger[preset.value]}`}
+							<!--
+								角标色块画在描边所在的同一个 <svg> 里：右边 x = g.frameW 与描边外沿是同一个坐标，
+								同一套光栅化，不存在 HTML 盒子按 CSS 像素吸附导致的半像素错位。
+								嵌套 <svg> 充当「门框」（overflow hidden 做裁切），内部 <g> 从右侧滑出。
+							-->
+							<svg
+								class="stamp-portal select-none"
+								x={g.frameW - w}
+								y={-h}
+								width={w}
+								height={h}
+								overflow="hidden"
+								style="--stamp-w:{w}px"
+							>
+								<g class="stamp-slider">
+									<rect width={w} height={h} fill="var(--cobalt, #0202f1)" shape-rendering="crispEdges" />
+									<text
+										class="stamp-label font-terminal text-[8.5px] font-bold tracking-wider fill-white"
+										x={w / 2}
+										y={h / 2}
+										text-anchor="middle"
+										dominant-baseline="central"
+									>[{preset.code}]</text>
+									<g class="stamp-slashes" aria-hidden="true">
+										<rect class="slash-line" x={w} y={-h} width="2.5" height={h * 3} transform="skewX(-24)" />
+										<rect class="slash-line" x={w + 6} y={-h} width="2.5" height={h * 3} transform="skewX(-24)" />
+									</g>
+								</g>
+							</svg>
+						{/key}
+					{/if}
+				{/snippet}
+			</BorderTrace>
 			<div class={cn(
 				'flex aspect-[5/4] w-full items-center justify-center overflow-hidden bg-muted/40 p-1.5',
 				uiTheme.theme === 'avant-garde' ? 'rounded-none' : 'rounded-[1px]'
@@ -136,59 +167,33 @@
 </ToggleGroup.Root>
 
 <style>
+	/* 嵌套 <svg> 作为门框：overflow hidden 裁掉门外的部分 */
 	.stamp-portal {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
 		overflow: hidden;
-		border-radius: 0;
+		pointer-events: none;
 	}
 
 	.stamp-slider {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background-color: var(--cobalt, #0202f1);
-		border-radius: 0;
-		will-change: transform;
 		/* 就像从右侧一扇看不见的门里向左滑出来一样：字与色块严丝合缝从门缝探出 */
 		animation: door-slide-out 340ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 	}
 
 	.stamp-label {
-		display: inline-block;
-		position: relative;
-		z-index: 1;
+		user-select: none;
 	}
 
 	.stamp-slashes {
-		position: absolute;
-		top: -60%;
-		bottom: -60%;
-		right: 0;
-		display: flex;
-		gap: 3.5px;
-		align-items: center;
-		z-index: 2;
-		pointer-events: none;
-		will-change: transform;
 		/* 在底色和文字从门里完全滑出就位后，两条粗斜线 // 疾速从右向左刷扫掠过 */
 		animation: slashes-sweep 680ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 	}
 
 	.slash-line {
-		display: block;
-		width: 2.5px;
-		height: 220%;
-		background-color: #ffffff;
-		transform: skewX(-24deg);
-		transform-origin: center center;
-		flex-shrink: 0;
+		fill: #ffffff;
 	}
 
 	@keyframes door-slide-out {
 		0% {
-			transform: translateX(100%);
+			transform: translateX(var(--stamp-w, 100%));
 		}
 		100% {
 			transform: translateX(0);
