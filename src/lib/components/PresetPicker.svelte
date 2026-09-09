@@ -42,7 +42,7 @@
 	// 角标色块的名义尺寸（CSS px）。实际尺寸会向上取整到 BorderTrace 给出的 grid 倍数，
 	// 使四条边同时落在整数 CSS 像素与整数物理像素上。
 	const STAMP_W = 44;
-	const STAMP_H = 14;
+	const STAMP_H = 16;
 	function snapUp(v: number, grid: number) {
 		return Math.ceil(v / grid) * grid;
 	}
