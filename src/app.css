@@ -444,6 +444,35 @@ html, body {
   box-shadow: 0 2px 16px rgba(129, 140, 248, 0.18);
 }
 
+/* Avant-Garde Table Paper: Hard offset shadow (工控图纸硬投影) */
+html[data-theme="avant-garde"] .canvas-wrapper,
+html:not([data-theme="classic"]) .canvas-wrapper {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 4px 4px 0px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark html[data-theme="avant-garde"] .canvas-wrapper,
+html[data-theme="avant-garde"].dark .canvas-wrapper,
+html.dark:not([data-theme="classic"]) .canvas-wrapper,
+:global(.dark) html[data-theme="avant-garde"] .canvas-wrapper,
+:global(.dark) html:not([data-theme="classic"]) .canvas-wrapper {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 4px 4px 0px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="avant-garde"] .canvas-wrapper:hover,
+html:not([data-theme="classic"]) .canvas-wrapper:hover {
+  box-shadow: 0 0 0 1px #0202f1, 4px 4px 0px rgba(2, 2, 241, 0.16);
+}
+
+.dark html[data-theme="avant-garde"] .canvas-wrapper:hover,
+html[data-theme="avant-garde"].dark .canvas-wrapper:hover,
+html.dark:not([data-theme="classic"]) .canvas-wrapper:hover,
+:global(.dark) html[data-theme="avant-garde"] .canvas-wrapper:hover,
+:global(.dark) html:not([data-theme="classic"]) .canvas-wrapper:hover {
+  box-shadow: 0 0 0 1px #5566ff, 4px 4px 0px rgba(0, 0, 0, 0.7);
+}
+
+
 /* Content container: holds double lines + table */
 .table-content {
   display: flex;
