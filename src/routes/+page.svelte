@@ -750,7 +750,7 @@
 							orientation="both"
 						>
 							<div
-								class="min-w-full min-h-full flex justify-center items-start pt-16 pb-28 px-16"
+								class="min-w-full min-h-full flex justify-center items-start pt-16 pb-28 px-4"
 							>
 								<div
 									style:transform="scale({previewZoom})"
