@@ -939,7 +939,7 @@
 								</svg>
 							</span>
 							<TableCellsMerge class="size-3.5 shrink-0" />
-							<span class="flex-1 font-medium">{t('edit.mergeCells')}</span>
+							<span class="flex-1 font-normal">{t('edit.mergeCells')}</span>
 						</ContextMenu.Item>
 						<ContextMenu.Item disabled={!canUnmerge} onclick={onUnmergeCells} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
 							<span class="flex items-center justify-center size-2.5 shrink-0">
@@ -948,7 +948,7 @@
 								</svg>
 							</span>
 							<TableCellsSplit class="size-3.5 shrink-0" />
-							<span class="flex-1 font-medium">{t('edit.unmergeCells')}</span>
+							<span class="flex-1 font-normal">{t('edit.unmergeCells')}</span>
 						</ContextMenu.Item>
 					</ContextMenu.Group>
 
@@ -962,7 +962,7 @@
 								</svg>
 							</span>
 							<ArrowDownToLine class="size-3.5 shrink-0" />
-							<span class="flex-1 font-medium">{t('table.lineBelow')}</span>
+							<span class="flex-1 font-normal">{t('table.lineBelow')}</span>
 						</ContextMenu.Item>
 						<ContextMenu.Item disabled={!canAddLine} onclick={() => onAddLine?.('above')} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
 							<span class="flex items-center justify-center size-2.5 shrink-0">
@@ -971,7 +971,7 @@
 								</svg>
 							</span>
 							<ArrowUpToLine class="size-3.5 shrink-0" />
-							<span class="flex-1 font-medium">{t('table.lineAbove')}</span>
+							<span class="flex-1 font-normal">{t('table.lineAbove')}</span>
 						</ContextMenu.Item>
 					</ContextMenu.Group>
 
@@ -985,7 +985,7 @@
 								</svg>
 							</span>
 							<Plus class="size-3.5 shrink-0" />
-							<span class="flex-1 font-medium">{t('table.insert')}</span>
+							<span class="flex-1 font-normal">{t('table.insert')}</span>
 						</ContextMenu.SubTrigger>
 						<ContextMenu.SubContent class="w-56 {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : ''}">
 							{#if uiTheme.theme === 'avant-garde'}
@@ -1005,7 +1005,7 @@
 									</svg>
 								</span>
 								<ArrowUpToLine class="size-3.5 shrink-0" />
-								<span class="flex-1 font-medium">{t('table.insertRowAbove')}</span>
+								<span class="flex-1 font-normal">{t('table.insertRowAbove')}</span>
 							</ContextMenu.Item>
 							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertRowBelow} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
 								<span class="flex items-center justify-center size-2.5 shrink-0">
@@ -1014,7 +1014,7 @@
 									</svg>
 								</span>
 								<ArrowDownToLine class="size-3.5 shrink-0" />
-								<span class="flex-1 font-medium">{t('table.insertRowBelow')}</span>
+								<span class="flex-1 font-normal">{t('table.insertRowBelow')}</span>
 							</ContextMenu.Item>
 							<ContextMenu.Separator />
 							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnLeft} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
@@ -1024,7 +1024,7 @@
 									</svg>
 								</span>
 								<ArrowLeftToLine class="size-3.5 shrink-0" />
-								<span class="flex-1 font-medium">{t('table.insertColumnLeft')}</span>
+								<span class="flex-1 font-normal">{t('table.insertColumnLeft')}</span>
 							</ContextMenu.Item>
 							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnRight} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
 								<span class="flex items-center justify-center size-2.5 shrink-0">
@@ -1033,7 +1033,7 @@
 									</svg>
 								</span>
 								<ArrowRightToLine class="size-3.5 shrink-0" />
-								<span class="flex-1 font-medium">{t('table.insertColumnRight')}</span>
+								<span class="flex-1 font-normal">{t('table.insertColumnRight')}</span>
 							</ContextMenu.Item>
 						</ContextMenu.SubContent>
 					</ContextMenu.Sub>
@@ -1052,7 +1052,7 @@
 							</svg>
 						</span>
 						<Trash2 class="size-3.5 shrink-0 text-destructive" />
-						<span class="flex-1 font-medium">
+						<span class="flex-1 font-normal">
 							{#if selectedRowIndices.length > 1}
 								{t('table.deleteSelectedRows', { n: selectedRowIndices.length })}
 							{:else}
@@ -1072,7 +1072,7 @@
 							</svg>
 						</span>
 						<Trash2 class="size-3.5 shrink-0 text-destructive" />
-						<span class="flex-1 font-medium">
+						<span class="flex-1 font-normal">
 							{#if selectedColIndices.length > 1}
 								{t('table.deleteSelectedColumns', { n: selectedColIndices.length })}
 							{:else}
