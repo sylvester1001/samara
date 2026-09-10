@@ -69,22 +69,18 @@
 		backface-visibility: hidden;
 	}
 
-	/* 四个方块自带 45° 筝形尖角切割，合拢后组合成上下收尖的双向筝形棱柱 */
+	/* 四个长方块合拢后组合成纯平、坚实、锋利的 6px x 24px 实心矩形主体 */
 	.block-tl {
 		transform: translate3d(-4px, -5px, 0);
-		clip-path: polygon(0% 3px, 100% 0%, 100% 100%, 0% 100%);
 	}
 	.block-tr {
 		transform: translate3d(4px, -5px, 0);
-		clip-path: polygon(0% 0%, 100% 3px, 100% 100%, 0% 100%);
 	}
 	.block-bl {
 		transform: translate3d(-4px, 5px, 0);
-		clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% calc(100% - 3px));
 	}
 	.block-br {
 		transform: translate3d(4px, 5px, 0);
-		clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 3px), 0% 100%);
 	}
 
 	/* 第一段进场：160ms 快速咬合合体 */
