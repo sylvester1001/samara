@@ -746,11 +746,11 @@
 							</span>
 						</div>
 						<ScrollArea
-							class="flex-1 w-full pt-12 px-4 pb-16"
+							class="flex-1 w-full h-full min-h-0 min-w-0"
 							orientation="both"
 						>
 							<div
-								class="min-w-full min-h-full flex justify-center items-start py-4 px-8"
+								class="min-w-full min-h-full flex justify-center items-start pt-16 pb-28 px-16"
 							>
 								<div
 									style:transform="scale({previewZoom})"
