@@ -754,6 +754,188 @@ textarea,
   border-color: #5566FF;
 }
 
+/* =========================================================================
+   Avant-Garde NieR: Automata Style Caliper Reticle Handles (尼尔机械纪元游标抓手)
+   Two-Stage Mechanical Deployment:
+   - Resting: Inward contracted & hidden
+   - Stage 1 (.canvas-wrapper:hover): Deploys outward to corners
+   - Stage 2 (.canvas-resizer:hover): 5px floating pip kicks outward (Zero glow)
+   ========================================================================= */
+html[data-theme="avant-garde"] .canvas-resizer,
+html:not([data-theme="classic"]) .canvas-resizer {
+  width: 20px;
+  height: 20px;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0px !important;
+  box-shadow: none !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Resting state: contracted inward towards paper center */
+html[data-theme="avant-garde"] .canvas-resizer.nw,
+html:not([data-theme="classic"]) .canvas-resizer.nw {
+  top: -10px;
+  left: -10px;
+  transform: translate(8px, 8px);
+}
+
+html[data-theme="avant-garde"] .canvas-resizer.ne,
+html:not([data-theme="classic"]) .canvas-resizer.ne {
+  top: -10px;
+  right: -10px;
+  transform: translate(-8px, 8px);
+}
+
+html[data-theme="avant-garde"] .canvas-resizer.sw,
+html:not([data-theme="classic"]) .canvas-resizer.sw {
+  bottom: -10px;
+  left: -10px;
+  transform: translate(8px, -8px);
+}
+
+html[data-theme="avant-garde"] .canvas-resizer.se,
+html:not([data-theme="classic"]) .canvas-resizer.se {
+  bottom: -10px;
+  right: -10px;
+  transform: translate(-8px, -8px);
+}
+
+/* Stage 1: Deploy outward to corner lock position when canvas is hovered/resizing */
+html[data-theme="avant-garde"] .canvas-wrapper:hover .canvas-resizer,
+html:not([data-theme="classic"]) .canvas-wrapper:hover .canvas-resizer,
+html[data-theme="avant-garde"] .canvas-wrapper.resizing .canvas-resizer,
+html:not([data-theme="classic"]) .canvas-wrapper.resizing .canvas-resizer {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(0, 0);
+}
+
+/* NieR Component A: External L-Bracket (位于纸张外轮廓外侧的机械卡尺包角) */
+html[data-theme="avant-garde"] .canvas-resizer::before,
+html:not([data-theme="classic"]) .canvas-resizer::before {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  box-sizing: border-box;
+  pointer-events: none;
+  transition: border-color 0.15s ease;
+}
+
+/* NieR Component B: Outer Floating Caliper Pip (5px 实心微型游标方块) */
+html[data-theme="avant-garde"] .canvas-resizer::after,
+html:not([data-theme="classic"]) .canvas-resizer::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: #0202f1;
+  pointer-events: none;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  box-shadow: none !important;
+}
+
+/* NW: Top-Left (Outside L-bracket at top: 8px left: 8px, 5px Pip at top: 1px left: 1px) */
+html[data-theme="avant-garde"] .canvas-resizer.nw::before,
+html:not([data-theme="classic"]) .canvas-resizer.nw::before {
+  top: 8px;
+  left: 8px;
+  border-top: 1.5px solid #0202f1;
+  border-left: 1.5px solid #0202f1;
+  border-right: none;
+  border-bottom: none;
+}
+html[data-theme="avant-garde"] .canvas-resizer.nw::after,
+html:not([data-theme="classic"]) .canvas-resizer.nw::after {
+  top: 1px;
+  left: 1px;
+}
+html[data-theme="avant-garde"] .canvas-resizer.nw:hover::after,
+html:not([data-theme="classic"]) .canvas-resizer.nw:hover::after {
+  transform: translate(-2px, -2px);
+}
+
+/* NE: Top-Right (Outside L-bracket at top: 8px right: 8px, 5px Pip at top: 1px right: 1px) */
+html[data-theme="avant-garde"] .canvas-resizer.ne::before,
+html:not([data-theme="classic"]) .canvas-resizer.ne::before {
+  top: 8px;
+  right: 8px;
+  border-top: 1.5px solid #0202f1;
+  border-right: 1.5px solid #0202f1;
+  border-left: none;
+  border-bottom: none;
+}
+html[data-theme="avant-garde"] .canvas-resizer.ne::after,
+html:not([data-theme="classic"]) .canvas-resizer.ne::after {
+  top: 1px;
+  right: 1px;
+}
+html[data-theme="avant-garde"] .canvas-resizer.ne:hover::after,
+html:not([data-theme="classic"]) .canvas-resizer.ne:hover::after {
+  transform: translate(2px, -2px);
+}
+
+/* SW: Bottom-Left (Outside L-bracket at bottom: 8px left: 8px, 5px Pip at bottom: 1px left: 1px) */
+html[data-theme="avant-garde"] .canvas-resizer.sw::before,
+html:not([data-theme="classic"]) .canvas-resizer.sw::before {
+  bottom: 8px;
+  left: 8px;
+  border-bottom: 1.5px solid #0202f1;
+  border-left: 1.5px solid #0202f1;
+  border-right: none;
+  border-top: none;
+}
+html[data-theme="avant-garde"] .canvas-resizer.sw::after,
+html:not([data-theme="classic"]) .canvas-resizer.sw::after {
+  bottom: 1px;
+  left: 1px;
+}
+html[data-theme="avant-garde"] .canvas-resizer.sw:hover::after,
+html:not([data-theme="classic"]) .canvas-resizer.sw:hover::after {
+  transform: translate(-2px, 2px);
+}
+
+/* SE: Bottom-Right (Outside L-bracket at bottom: 8px right: 8px, 5px Pip at bottom: 1px right: 1px) */
+html[data-theme="avant-garde"] .canvas-resizer.se::before,
+html:not([data-theme="classic"]) .canvas-resizer.se::before {
+  bottom: 8px;
+  right: 8px;
+  border-bottom: 1.5px solid #0202f1;
+  border-right: 1.5px solid #0202f1;
+  border-left: none;
+  border-top: none;
+}
+html[data-theme="avant-garde"] .canvas-resizer.se::after,
+html:not([data-theme="classic"]) .canvas-resizer.se::after {
+  bottom: 1px;
+  right: 1px;
+}
+html[data-theme="avant-garde"] .canvas-resizer.se:hover::after,
+html:not([data-theme="classic"]) .canvas-resizer.se:hover::after {
+  transform: translate(2px, 2px);
+}
+
+/* Dark mode: crisp #5566ff, strictly zero glow */
+:global(.dark) html[data-theme="avant-garde"] .canvas-resizer::before,
+:global(.dark) html:not([data-theme="classic"]) .canvas-resizer::before,
+.dark html[data-theme="avant-garde"] .canvas-resizer::before,
+html[data-theme="avant-garde"].dark .canvas-resizer::before {
+  border-color: #5566ff !important;
+}
+
+:global(.dark) html[data-theme="avant-garde"] .canvas-resizer::after,
+:global(.dark) html:not([data-theme="classic"]) .canvas-resizer::after,
+.dark html[data-theme="avant-garde"] .canvas-resizer::after,
+html[data-theme="avant-garde"].dark .canvas-resizer::after {
+  background-color: #5566ff !important;
+  box-shadow: none !important;
+}
+
+
+
 /* Preview canvas dot pattern (retained original dots per user request) */
 .preview-canvas {
   background-image: radial-gradient(circle, #d4d4d8 1px, transparent 1px);

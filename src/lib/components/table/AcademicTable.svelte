@@ -292,6 +292,7 @@
 <!-- Canvas: the exportable area -->
 <div
 	class="canvas-wrapper"
+	class:resizing={isCanvasResizing}
 	bind:this={canvasElement}
 	style:background-color={canvasConfig.backgroundColor}
 	style:width="{canvasWidth}px"
