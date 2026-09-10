@@ -44,7 +44,7 @@
 						{...tooltipProps}
 					>
 						<Palette class="w-3.5 h-3.5 shrink-0" />
-						<span class="text-[11px] font-terminal font-semibold uppercase tracking-wider select-none">
+						<span class="text-[11px] select-none {uiTheme.theme === 'avant-garde' ? 'font-terminal font-semibold uppercase tracking-wider' : 'font-sans font-medium'}">
 							{t(current.labelKey)}
 						</span>
 					</Button>

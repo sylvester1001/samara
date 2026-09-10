@@ -740,7 +740,7 @@
 								{/snippet}
 							</AppTooltip>
 							<span
-								class="text-[11px] font-terminal text-muted-foreground flex items-center px-1.5 font-semibold select-none"
+								class="text-[11px] {uiTheme.theme === 'avant-garde' ? 'font-terminal font-semibold' : 'font-sans font-medium'} text-muted-foreground flex items-center px-1.5 select-none"
 							>
 								{Math.round(previewZoom * 100)}%
 							</span>

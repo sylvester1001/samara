@@ -1095,8 +1095,10 @@ html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
    Diagonal corners: Top-Right (┐) and Bottom-Left (└)
    Applied to: TableEditor, Popovers, and Dialogs
    ========================================================= */
-.tech-corners,
-[data-tech-corners],
+html[data-theme="avant-garde"] .tech-corners,
+html:not([data-theme="classic"]) .tech-corners,
+html[data-theme="avant-garde"] [data-tech-corners],
+html:not([data-theme="classic"]) [data-tech-corners],
 html[data-theme="avant-garde"] [data-slot="popover-content"],
 html:not([data-theme="classic"]) [data-slot="popover-content"],
 html[data-theme="avant-garde"] [data-slot="dialog-content"],
@@ -1108,8 +1110,10 @@ html:not([data-theme="classic"]) [data-slot="context-menu-sub-content"] {
   position: relative;
 }
 
-.tech-corners::after,
-[data-tech-corners]::after,
+html[data-theme="avant-garde"] .tech-corners::after,
+html:not([data-theme="classic"]) .tech-corners::after,
+html[data-theme="avant-garde"] [data-tech-corners]::after,
+html:not([data-theme="classic"]) [data-tech-corners]::after,
 html[data-theme="avant-garde"] [data-slot="popover-content"]::after,
 html:not([data-theme="classic"]) [data-slot="popover-content"]::after,
 html[data-theme="avant-garde"] [data-slot="dialog-content"]::after,
@@ -1130,8 +1134,10 @@ html:not([data-theme="classic"]) [data-slot="context-menu-sub-content"]::after {
   z-index: 30;
 }
 
-.tech-corners::before,
-[data-tech-corners]::before,
+html[data-theme="avant-garde"] .tech-corners::before,
+html:not([data-theme="classic"]) .tech-corners::before,
+html[data-theme="avant-garde"] [data-tech-corners]::before,
+html:not([data-theme="classic"]) [data-tech-corners]::before,
 html[data-theme="avant-garde"] [data-slot="popover-content"]::before,
 html:not([data-theme="classic"]) [data-slot="popover-content"]::before,
 html[data-theme="avant-garde"] [data-slot="dialog-content"]::before,

@@ -699,7 +699,7 @@
 <svelte:window onmousemove={handleWindowMouseMove} onmouseup={handleWindowMouseUp} onpointerup={handleWindowMouseUp} onkeydown={handleHeaderAdjustKeydown} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="table-editor tech-corners flex flex-col h-full bg-background rounded-[var(--radius)] border border-border" onmousedown={handleEditorClick}>
+<div class="table-editor {uiTheme.theme === 'avant-garde' ? 'tech-corners' : ''} flex flex-col h-full bg-background rounded-[var(--radius)] border border-border" onmousedown={handleEditorClick}>
 	<div class="flex justify-between items-center px-4 py-2 bg-muted/25 border-b border-border shrink-0 relative z-0">
 		<div class="flex items-center gap-2.5">
 			<TableSizeSelector
@@ -707,12 +707,12 @@
 				currentCols={colCount}
 				onSizeChange={(r, c) => onResizeTable?.(r, c)}
 			/>
-			<span class="text-[11px] font-terminal text-muted-foreground uppercase tracking-widest">{rowCount} × {colCount}</span>
+			<span class="text-[11px] {uiTheme.theme === 'avant-garde' ? 'font-terminal uppercase tracking-widest' : 'font-sans font-medium'} text-muted-foreground">{rowCount} × {colCount}</span>
 		</div>
 		<div class="flex gap-1.5">
 			<AppTooltip text={t('table.addRow')} onclick={() => executeAddRow()}>
 				{#snippet children({ props })}
-					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => executeAddRow()}>
+					<button class="flex items-center gap-1 px-2.5 py-1 text-foreground bg-background border border-border cursor-pointer transition-all {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal font-semibold uppercase tracking-wider rounded-[2px] hover:bg-foreground hover:text-background' : 'text-xs font-sans font-medium rounded-md hover:bg-muted'}" {...props} onclick={() => executeAddRow()}>
 						<Plus class="w-3 h-3" />
 						{t('table.row')}
 					</button>
@@ -720,7 +720,7 @@
 			</AppTooltip>
 			<AppTooltip text={t('table.addColumn')} onclick={() => executeAddColumn()}>
 				{#snippet children({ props })}
-					<button class="flex items-center gap-1 px-2.5 py-1 text-[11px] font-terminal font-semibold uppercase tracking-wider text-foreground bg-background border border-border rounded-[2px] cursor-pointer transition-all hover:bg-foreground hover:text-background" {...props} onclick={() => executeAddColumn()}>
+					<button class="flex items-center gap-1 px-2.5 py-1 text-foreground bg-background border border-border cursor-pointer transition-all {uiTheme.theme === 'avant-garde' ? 'text-[11px] font-terminal font-semibold uppercase tracking-wider rounded-[2px] hover:bg-foreground hover:text-background' : 'text-xs font-sans font-medium rounded-md hover:bg-muted'}" {...props} onclick={() => executeAddColumn()}>
 						<Plus class="w-3 h-3" />
 						{t('table.col')}
 					</button>
@@ -771,7 +771,7 @@
 								{#each rows[0] || [] as _, colIndex}
 									<th
 										data-col={colIndex}
-										class="relative px-2 py-1.5 bg-muted/30 hover:bg-muted/60 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold text-muted-foreground text-center group select-none cursor-pointer transition-colors"
+										class="relative px-2 py-1.5 bg-muted/30 hover:bg-muted/60 border border-zinc-200 dark:border-zinc-800 text-[11px] {uiTheme.theme === 'avant-garde' ? 'font-terminal font-semibold' : 'font-sans font-medium'} text-muted-foreground text-center group select-none cursor-pointer transition-colors"
 										onclick={() => handleSelectColumn(colIndex)}
 									>
 										<span class="block">{String.fromCharCode(65 + colIndex)}</span>
@@ -803,7 +803,7 @@
 									class={rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)]' : 'bg-muted/40') : ''}
 								>
 									<td
-										class="relative box-border px-0.5 py-1 border border-zinc-200 dark:border-zinc-800 text-[11px] font-terminal font-semibold tabular-nums text-muted-foreground text-center group select-none cursor-pointer hover:bg-muted/50 transition-colors {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
+										class="relative box-border px-0.5 py-1 border border-zinc-200 dark:border-zinc-800 text-[11px] {uiTheme.theme === 'avant-garde' ? 'font-terminal font-semibold' : 'font-sans font-medium'} tabular-nums text-muted-foreground text-center group select-none cursor-pointer hover:bg-muted/50 transition-colors {rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)] text-[var(--cobalt)] font-bold' : 'bg-muted/50 text-foreground font-bold') : 'bg-muted/30'}"
 										style="width: {rowGutterWidth}; min-width: {rowGutterWidth}; max-width: {rowGutterWidth};"
 										onclick={() => handleSelectRow(rowIndex)}
 									>
@@ -906,7 +906,7 @@
 							style:width="{headerBox.width}px"
 							style:height="{headerBox.height}px"
 						>
-							<span class="absolute top-1 left-1 rounded-[1px] select-none {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)] text-white' : 'bg-foreground text-background'} px-1.5 py-0.5 text-[9px] font-terminal uppercase tracking-widest" unselectable="on">
+							<span class="absolute top-1 left-1 rounded-[1px] select-none {uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt)] text-white font-terminal uppercase tracking-widest' : 'bg-foreground text-background font-sans font-medium'} px-1.5 py-0.5 text-[9px]" unselectable="on">
 								{t('table.header')}
 							</span>
 							<button
@@ -932,7 +932,7 @@
 					{/if}
 
 					<ContextMenu.Group>
-						<ContextMenu.Item disabled={!canMerge} onclick={onMergeCells} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+						<ContextMenu.Item disabled={!canMerge} onclick={onMergeCells} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 							<span class="flex items-center justify-center size-2.5 shrink-0">
 								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -941,7 +941,7 @@
 							<TableCellsMerge class="size-3.5 shrink-0" />
 							<span class="flex-1 font-normal">{t('edit.mergeCells')}</span>
 						</ContextMenu.Item>
-						<ContextMenu.Item disabled={!canUnmerge} onclick={onUnmergeCells} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+						<ContextMenu.Item disabled={!canUnmerge} onclick={onUnmergeCells} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 							<span class="flex items-center justify-center size-2.5 shrink-0">
 								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -955,7 +955,7 @@
 					<ContextMenu.Separator />
 
 					<ContextMenu.Group>
-						<ContextMenu.Item disabled={!canAddLine} onclick={() => onAddLine?.('below')} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+						<ContextMenu.Item disabled={!canAddLine} onclick={() => onAddLine?.('below')} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 							<span class="flex items-center justify-center size-2.5 shrink-0">
 								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -964,7 +964,7 @@
 							<ArrowDownToLine class="size-3.5 shrink-0" />
 							<span class="flex-1 font-normal">{t('table.lineBelow')}</span>
 						</ContextMenu.Item>
-						<ContextMenu.Item disabled={!canAddLine} onclick={() => onAddLine?.('above')} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+						<ContextMenu.Item disabled={!canAddLine} onclick={() => onAddLine?.('above')} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 							<span class="flex items-center justify-center size-2.5 shrink-0">
 								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -978,7 +978,7 @@
 					<ContextMenu.Separator />
 
 					<ContextMenu.Sub>
-						<ContextMenu.SubTrigger class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+						<ContextMenu.SubTrigger class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 							<span class="flex items-center justify-center size-2.5 shrink-0">
 								<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 									<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -998,7 +998,7 @@
 									<span class="font-mono text-[8.5px] opacity-60">0x02</span>
 								</div>
 							{/if}
-							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertRowAbove} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertRowAbove} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 								<span class="flex items-center justify-center size-2.5 shrink-0">
 									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -1007,7 +1007,7 @@
 								<ArrowUpToLine class="size-3.5 shrink-0" />
 								<span class="flex-1 font-normal">{t('table.insertRowAbove')}</span>
 							</ContextMenu.Item>
-							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertRowBelow} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertRowBelow} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 								<span class="flex items-center justify-center size-2.5 shrink-0">
 									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -1017,7 +1017,7 @@
 								<span class="flex-1 font-normal">{t('table.insertRowBelow')}</span>
 							</ContextMenu.Item>
 							<ContextMenu.Separator />
-							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnLeft} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnLeft} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 								<span class="flex items-center justify-center size-2.5 shrink-0">
 									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -1026,7 +1026,7 @@
 								<ArrowLeftToLine class="size-3.5 shrink-0" />
 								<span class="flex-1 font-normal">{t('table.insertColumnLeft')}</span>
 							</ContextMenu.Item>
-							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnRight} class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer">
+							<ContextMenu.Item disabled={!canInsertAtTarget} onclick={handleInsertColumnRight} class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer">
 								<span class="flex items-center justify-center size-2.5 shrink-0">
 									<svg class="size-2 transition-transform" viewBox="0 0 8 8" fill="currentColor">
 										<rect x="2.5" y="2.5" width="3" height="3" transform="rotate(45 4 4)" />
@@ -1044,7 +1044,7 @@
 						variant="destructive"
 						disabled={!canDeleteRows}
 						onclick={handleDeleteRowsContext}
-						class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer"
+						class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer"
 					>
 						<span class="flex items-center justify-center size-2.5 shrink-0">
 							<svg class="size-2 transition-transform text-destructive" viewBox="0 0 8 8" fill="currentColor">
@@ -1064,7 +1064,7 @@
 						variant="destructive"
 						disabled={!canDeleteColumns}
 						onclick={handleDeleteColumnsContext}
-						class="group/item font-terminal text-[11px] gap-2 px-2 py-1.5 cursor-pointer"
+						class="group/item {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px]' : 'font-sans text-xs'} gap-2 px-2 py-1.5 cursor-pointer"
 					>
 						<span class="flex items-center justify-center size-2.5 shrink-0">
 							<svg class="size-2 transition-transform text-destructive" viewBox="0 0 8 8" fill="currentColor">
@@ -1087,49 +1087,49 @@
 
 	<!-- HUD Telemetry Bar -->
 	<div
-		class="hud-telemetry flex items-center justify-between px-3 h-[25px] bg-muted/20 border-t border-border shrink-0 select-none font-terminal text-[10px] uppercase tracking-wider text-muted-foreground/80 overflow-hidden whitespace-nowrap"
+		class="hud-telemetry flex items-center justify-between px-3 h-[25px] bg-muted/20 border-t border-border shrink-0 select-none {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[10px] uppercase tracking-wider text-muted-foreground/80' : 'font-sans text-[11px] tracking-normal text-muted-foreground'} overflow-hidden whitespace-nowrap"
 	>
 		<div class="flex items-center gap-2.5 min-w-0 shrink-0">
 			<span class="flex items-center gap-1 shrink-0">
-				<span class="text-muted-foreground/50">POS:</span>
-				<span class="font-bold text-foreground tracking-normal">{posDisplay}</span>
+				<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">POS:</span>
+				<span class="{uiTheme.theme === 'avant-garde' ? 'font-bold' : 'font-medium'} text-foreground tracking-normal">{posDisplay}</span>
 			</span>
 			<span class="text-border shrink-0">/</span>
 			<span class="flex items-center gap-1 shrink-0">
-				<span class="text-muted-foreground/50">GRID:</span>
-				<span class="font-semibold text-foreground/90 tracking-normal">{rowCount}×{colCount}</span>
+				<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">GRID:</span>
+				<span class="{uiTheme.theme === 'avant-garde' ? 'font-semibold text-foreground/90' : 'font-medium text-foreground'} tracking-normal">{rowCount}×{colCount}</span>
 			</span>
 			<span class="hud-item-buf flex items-center gap-2.5 shrink-0">
 				<span class="text-border">/</span>
 				<span class="flex items-center gap-1">
-					<span class="text-muted-foreground/50">BUF:</span>
-					<span class="font-semibold text-foreground/90 tracking-normal">{currentBufferBytes} B</span>
+					<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">BUF:</span>
+					<span class="{uiTheme.theme === 'avant-garde' ? 'font-semibold text-foreground/90' : 'font-medium text-foreground'} tracking-normal">{currentBufferBytes} B</span>
 				</span>
 			</span>
 		</div>
 		<div class="flex items-center gap-2.5 shrink-0">
 			<span class="hud-item-engine flex items-center gap-2.5 shrink-0">
-				<span class="flex items-center gap-1 text-[9.5px] tracking-widest text-muted-foreground/60">
+				<span class="flex items-center gap-1 {uiTheme.theme === 'avant-garde' ? 'text-[9.5px] tracking-widest text-muted-foreground/60' : 'text-[11px] tracking-normal text-muted-foreground/70'}">
 					<span>ENGINE:</span>
-					<span class="text-foreground/80 font-medium">NICEMATRIX</span>
+					<span class="text-foreground/80 font-medium">{uiTheme.theme === 'avant-garde' ? 'NICEMATRIX' : 'nicematrix'}</span>
 				</span>
 				<span class="text-border">/</span>
 			</span>
-			<span class="flex items-center gap-1.5 text-[9.5px] font-semibold shrink-0">
+			<span class="flex items-center gap-1.5 {uiTheme.theme === 'avant-garde' ? 'text-[9.5px]' : 'text-[11px]'} font-semibold shrink-0">
 				{#if draftStatus === 'saving'}
 					<span class="relative flex size-1.5 shrink-0">
 						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
 						<span class="relative inline-flex size-1.5 rounded-full bg-amber-500"></span>
 					</span>
-					<span class="text-amber-500 font-semibold transition-colors">SYNCING</span>
+					<span class="text-amber-500 font-semibold transition-colors">{uiTheme.theme === 'avant-garde' ? 'SYNCING' : 'Syncing'}</span>
 				{:else}
 					<span class="relative flex size-1.5 shrink-0">
 						{#key savePulseKey}
-							<span class="absolute inline-flex h-full w-full animate-ping-once rounded-full bg-[#0202f1]"></span>
+							<span class="absolute inline-flex h-full w-full animate-ping-once rounded-full {uiTheme.theme === 'avant-garde' ? 'bg-[#0202f1]' : 'bg-emerald-500'}"></span>
 						{/key}
-						<span class="relative inline-flex size-1.5 rounded-full bg-[#0202f1]"></span>
+						<span class="relative inline-flex size-1.5 rounded-full {uiTheme.theme === 'avant-garde' ? 'bg-[#0202f1]' : 'bg-emerald-500'}"></span>
 					</span>
-					<span class="text-[#0202f1] font-semibold transition-colors">SYNCED</span>
+					<span class="{uiTheme.theme === 'avant-garde' ? 'text-[#0202f1]' : 'text-emerald-600 dark:text-emerald-400'} font-semibold transition-colors">{uiTheme.theme === 'avant-garde' ? 'SYNCED' : 'Synced'}</span>
 				{/if}
 			</span>
 		</div>
