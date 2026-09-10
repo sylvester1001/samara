@@ -7,6 +7,7 @@
 		TableEditor,
 		FormulaDialog,
 	} from "$lib/components";
+	import TacticalGrip from "$lib/components/effects/TacticalGrip.svelte";
 	import AppTooltip from "$lib/components/AppTooltip.svelte";
 	import SettingsSidebar from "$lib/components/Sidebar.svelte";
 	import { Badge } from "$lib/components/ui/badge/index.js";
@@ -673,7 +674,11 @@
 						</div>
 					</div>
 				</Resizable.Pane>
-				<Resizable.Handle />
+				<Resizable.Handle class={uiTheme.theme === 'avant-garde' ? 'avant-resizable-handle' : ''}>
+					{#if uiTheme.theme === 'avant-garde'}
+						<TacticalGrip />
+					{/if}
+				</Resizable.Handle>
 				<Resizable.Pane
 					defaultSize={54}
 					minSize={30}

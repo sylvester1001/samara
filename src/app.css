@@ -1174,5 +1174,13 @@ html:not([data-theme="classic"]) [data-slot="context-menu-sub-content"]::before 
   animation: ping-once 0.65s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
-
-
+/* Avant-Garde 战术机能中缝分割条 */
+html[data-theme="avant-garde"] [data-slot="resizable-handle"]:hover::after,
+html[data-theme="avant-garde"] [data-slot="resizable-handle"]:active::after,
+html[data-theme="avant-garde"] [data-slot="resizable-handle"][data-state="drag"]::after,
+html[data-theme="avant-garde"] [data-slot="resizable-handle"][data-active]::after,
+html[data-theme="avant-garde"] .avant-resizable-handle:hover::after,
+html[data-theme="avant-garde"] .avant-resizable-handle:active::after {
+  background-color: #0202f1 !important;
+  transition: background-color 60ms ease-out !important;
+}

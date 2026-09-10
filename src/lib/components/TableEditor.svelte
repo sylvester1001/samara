@@ -107,7 +107,7 @@
 
 	const posDisplay = $derived.by(() => {
 		if (!selectedCells || selectedCells.length === 0 || !selectionBounds) {
-			return 'STANDBY';
+			return uiTheme.theme === 'avant-garde' ? 'STANDBY' : 'Standby';
 		}
 		if (selectedCells.length === 1) {
 			const { row, col } = selectedCells[0];
@@ -1091,18 +1091,18 @@
 	>
 		<div class="flex items-center gap-2.5 min-w-0 shrink-0">
 			<span class="flex items-center gap-1 shrink-0">
-				<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">POS:</span>
+				<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">{uiTheme.theme === 'avant-garde' ? 'POS:' : 'Pos:'}</span>
 				<span class="{uiTheme.theme === 'avant-garde' ? 'font-bold' : 'font-medium'} text-foreground tracking-normal">{posDisplay}</span>
 			</span>
 			<span class="text-border shrink-0">/</span>
 			<span class="flex items-center gap-1 shrink-0">
-				<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">GRID:</span>
+				<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">{uiTheme.theme === 'avant-garde' ? 'GRID:' : 'Grid:'}</span>
 				<span class="{uiTheme.theme === 'avant-garde' ? 'font-semibold text-foreground/90' : 'font-medium text-foreground'} tracking-normal">{rowCount}×{colCount}</span>
 			</span>
 			<span class="hud-item-buf flex items-center gap-2.5 shrink-0">
 				<span class="text-border">/</span>
 				<span class="flex items-center gap-1">
-					<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">BUF:</span>
+					<span class="{uiTheme.theme === 'avant-garde' ? 'text-muted-foreground/50' : 'text-muted-foreground/70'}">{uiTheme.theme === 'avant-garde' ? 'BUF:' : 'Buf:'}</span>
 					<span class="{uiTheme.theme === 'avant-garde' ? 'font-semibold text-foreground/90' : 'font-medium text-foreground'} tracking-normal">{currentBufferBytes} B</span>
 				</span>
 			</span>
@@ -1110,7 +1110,7 @@
 		<div class="flex items-center gap-2.5 shrink-0">
 			<span class="hud-item-engine flex items-center gap-2.5 shrink-0">
 				<span class="flex items-center gap-1 {uiTheme.theme === 'avant-garde' ? 'text-[9.5px] tracking-widest text-muted-foreground/60' : 'text-[11px] tracking-normal text-muted-foreground/70'}">
-					<span>ENGINE:</span>
+					<span>{uiTheme.theme === 'avant-garde' ? 'ENGINE:' : 'Engine:'}</span>
 					<span class="text-foreground/80 font-medium">{uiTheme.theme === 'avant-garde' ? 'NICEMATRIX' : 'nicematrix'}</span>
 				</span>
 				<span class="text-border">/</span>
