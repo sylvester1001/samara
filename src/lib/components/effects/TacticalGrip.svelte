@@ -13,33 +13,46 @@
 	class="tactical-grip pointer-events-none absolute top-[40%] left-1/2 select-none z-30 w-[6px] h-[24px]"
 	aria-hidden="true"
 >
-	<!-- 四个直角长方块向心合拢形成 6px x 24px 纯实心矩形滑块 (移除 overflow 裁剪，消除亚像素虚化，动画全程可见) -->
+	<!-- 第一段：四块向心合体的主核（上下两端带 45° 锋利筝形切角 Kite-Faceted Spear） -->
 	<div class="relative size-full">
-		<!-- 左上方块 (Top-Left, 3.5px x 12px) -->
+		<!-- 左上方块 (带顶部 45° 尖角切面) -->
 		<span
 			class="grip-block block-tl absolute top-0 left-0 w-[3.5px] h-[12px]"
 			style:background-color={color}
 		></span>
-		<!-- 右上方块 (Top-Right, 3.5px x 12px) -->
+		<!-- 右上方块 (带顶部 45° 尖角切面) -->
 		<span
 			class="grip-block block-tr absolute top-0 right-0 w-[3.5px] h-[12px]"
 			style:background-color={color}
 		></span>
-		<!-- 左下方块 (Bottom-Left, 3.5px x 12px) -->
+		<!-- 左下方块 (带底部 45° 尖角切面) -->
 		<span
 			class="grip-block block-bl absolute bottom-0 left-0 w-[3.5px] h-[12px]"
 			style:background-color={color}
 		></span>
-		<!-- 右下方块 (Bottom-Right, 3.5px x 12px) -->
+		<!-- 右下方块 (带底部 45° 尖角切面) -->
 		<span
 			class="grip-block block-br absolute bottom-0 right-0 w-[3.5px] h-[12px]"
 			style:background-color={color}
 		></span>
 	</div>
+
+	<!-- 第二段：尼尔经典伴飞菱形晶片 (NieR Satellite Rhombus Chips) -->
+	<!-- 摒弃俗套的播放器实心三角形，采用 45° 旋转的纯正尼尔悬浮菱形晶片，内尖自然朝向主核腰部 -->
+	<!-- 左翼菱形伴飞晶片 (向内靠拢 1px) -->
+	<span
+		class="wing-rhombus wing-left absolute top-1/2 left-[-7px] w-[3.5px] h-[3.5px]"
+		style:background-color={color}
+	></span>
+	<!-- 右翼菱形伴飞晶片 (向内靠拢 1px) -->
+	<span
+		class="wing-rhombus wing-right absolute top-1/2 right-[-7px] w-[3.5px] h-[3.5px]"
+		style:background-color={color}
+	></span>
 </div>
 
 <style>
-	/* 开启 GPU 3D 渲染与消除亚像素模糊 */
+	/* 整体容器居中与防模糊渲染 */
 	.tactical-grip {
 		transform: translate3d(-50%, -50%, 0);
 		opacity: 0;
@@ -47,48 +60,94 @@
 		will-change: transform, opacity;
 	}
 
+	/* =========================================================
+	   第一段动效：中间筝形主核 (Kite Core)
+	   ========================================================= */
 	.grip-block {
-		/* 离开时的退出动画 */
-		transition: transform 140ms cubic-bezier(0.4, 0, 1, 1);
+		transition: transform 120ms cubic-bezier(0.4, 0, 1, 1);
 		box-sizing: border-box;
 		backface-visibility: hidden;
 	}
 
-	/* 待命外展位置（X: ±6px, Y: ±6px）：距离适中，全程可见，绝无裁切 */
+	/* 四个方块自带 45° 筝形尖角切割，合拢后组合成上下收尖的双向筝形棱柱 */
 	.block-tl {
-		transform: translate3d(-6px, -6px, 0);
+		transform: translate3d(-4px, -5px, 0);
+		clip-path: polygon(0% 3px, 100% 0%, 100% 100%, 0% 100%);
 	}
 	.block-tr {
-		transform: translate3d(6px, -6px, 0);
+		transform: translate3d(4px, -5px, 0);
+		clip-path: polygon(0% 0%, 100% 3px, 100% 100%, 0% 100%);
 	}
 	.block-bl {
-		transform: translate3d(-6px, 6px, 0);
+		transform: translate3d(-4px, 5px, 0);
+		clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% calc(100% - 3px));
 	}
 	.block-br {
-		transform: translate3d(6px, 6px, 0);
+		transform: translate3d(4px, 5px, 0);
+		clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 3px), 0% 100%);
 	}
 
-	/* 当 hover 或拖拽时触发合体进场：200ms 阻尼曲线，全程清晰看见 4 块向心咬合 */
+	/* 第一段进场：160ms 快速咬合合体 */
 	:global([data-slot="resizable-handle"]:hover) .tactical-grip,
 	:global([data-slot="resizable-handle"]:active) .tactical-grip,
 	:global([data-slot="resizable-handle"][data-state="drag"]) .tactical-grip,
 	:global([data-slot="resizable-handle"][data-active]) .tactical-grip {
 		opacity: 1;
-		transition: opacity 100ms ease-out;
+		transition: opacity 90ms ease-out;
 	}
 
 	:global([data-slot="resizable-handle"]:hover) .grip-block,
 	:global([data-slot="resizable-handle"]:active) .grip-block,
 	:global([data-slot="resizable-handle"][data-state="drag"]) .grip-block,
 	:global([data-slot="resizable-handle"][data-active]) .grip-block {
-		/* 精准咬合至 (0, 0)，拼合成一块 6px x 24px 锋利纯实心矩形 */
 		transform: translate3d(0, 0, 0);
-		transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+		transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	/* 按住拖拽时轻微高亮增强 */
+	/* =========================================================
+	   第二段动效：左右两翼尼尔伴飞菱形晶片 (NieR Satellite Rhombus)
+	   45° 自旋锁定，带 130ms 机械时序延迟滑入
+	   ========================================================= */
+	.wing-rhombus {
+		box-sizing: border-box;
+		backface-visibility: hidden;
+		transition: transform 100ms ease-in, opacity 80ms ease-in;
+	}
+
+	/* 初始待命位置：在两翼较远方隐形，保持 45° 旋转 */
+	.wing-left {
+		transform: translate3d(-8px, -50%, 0) rotate(45deg);
+		opacity: 0;
+	}
+	.wing-right {
+		transform: translate3d(8px, -50%, 0) rotate(45deg);
+		opacity: 0;
+	}
+
+	/* 第二段进场：主核刚刚合拢（130ms 延迟），两侧菱形晶片平稳滑入腰部两侧对准 */
+	:global([data-slot="resizable-handle"]:hover) .wing-left,
+	:global([data-slot="resizable-handle"]:active) .wing-left,
+	:global([data-slot="resizable-handle"][data-state="drag"]) .wing-left,
+	:global([data-slot="resizable-handle"][data-active]) .wing-left {
+		transform: translate3d(0, -50%, 0) rotate(45deg);
+		opacity: 1;
+		transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1) 130ms, opacity 140ms ease-out 110ms;
+	}
+
+	:global([data-slot="resizable-handle"]:hover) .wing-right,
+	:global([data-slot="resizable-handle"]:active) .wing-right,
+	:global([data-slot="resizable-handle"][data-state="drag"]) .wing-right,
+	:global([data-slot="resizable-handle"][data-active]) .wing-right {
+		transform: translate3d(0, -50%, 0) rotate(45deg);
+		opacity: 1;
+		transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1) 130ms, opacity 140ms ease-out 110ms;
+	}
+
+	/* 按住拖拽时高亮增强与微内缩 */
 	:global([data-slot="resizable-handle"]:active) .grip-block,
-	:global([data-slot="resizable-handle"][data-active]) .grip-block {
+	:global([data-slot="resizable-handle"][data-active]) .grip-block,
+	:global([data-slot="resizable-handle"]:active) .wing-rhombus,
+	:global([data-slot="resizable-handle"][data-active]) .wing-rhombus {
 		filter: brightness(1.2);
 	}
 </style>
