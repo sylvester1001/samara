@@ -33,7 +33,7 @@
 </script>
 
 <div
-	class={cn("tactical-button-wrapper group relative inline-flex items-center select-none", className)}
+	class="tactical-button-wrapper group relative inline-flex items-center select-none"
 	data-active={active ? 'true' : undefined}
 >
 	<!-- 战术标定指针（inset-y-0 flex 严格垂直绝对居中，对齐按钮 50% 中心线） -->
@@ -47,7 +47,7 @@
 		bind:this={ref}
 		type="button"
 		class={cn(
-			"tactical-button w-full relative inline-flex items-center justify-center gap-2 h-9 px-3.5 min-w-0 shrink-0",
+			"tactical-button relative inline-flex items-center justify-center gap-2 h-9 px-3.5 min-w-0 shrink-0 w-[150px]",
 			"bg-background text-foreground border border-border transition-all duration-100 cursor-pointer select-none",
 			"text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
 			"disabled:opacity-40 disabled:pointer-events-none",
@@ -57,7 +57,8 @@
 			isAvantGarde
 				? "hover:bg-[#0202f1] hover:text-white hover:border-[#0202f1] active:bg-[#0202f1]/90"
 				: "hover:bg-muted active:bg-muted/80",
-			active && isAvantGarde && "bg-[#0202f1] text-white border-[#0202f1]"
+			active && isAvantGarde && "bg-[#0202f1] text-white border-[#0202f1]",
+			className
 		)}
 		{disabled}
 		onmouseenter={() => (isHovered = true)}
