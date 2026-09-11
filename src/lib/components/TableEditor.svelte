@@ -298,7 +298,21 @@
 	function autoResizeTextarea(e: Event) {
 		const textarea = e.target as HTMLTextAreaElement;
 		textarea.style.height = 'auto';
-		textarea.style.height = textarea.scrollHeight + 'px';
+		textarea.style.height = `${textarea.scrollHeight}px`;
+	}
+
+	function handleCellFocus(e: FocusEvent, rowIndex: number, colIndex: number) {
+		autoResizeTextarea(e);
+		if (isDragging) return;
+		if (
+			selectedCells.length === 1 &&
+			selectedCells[0].row === rowIndex &&
+			selectedCells[0].col === colIndex
+		) {
+			return;
+		}
+		selectionAnchor = { row: rowIndex, col: colIndex };
+		onSelectionChange([{ row: rowIndex, col: colIndex }]);
 	}
 
 	function handleContextMenu(e: MouseEvent) {
@@ -429,6 +443,15 @@
 		}
 	}
 
+	function navigateToCell(row: number, col: number) {
+		selectionAnchor = { row, col };
+		onSelectionChange([{ row, col }]);
+		const target = gridWrap?.querySelector<HTMLTextAreaElement>(
+			`textarea[data-row="${row}"][data-col="${col}"]`
+		);
+		target?.focus();
+	}
+
 	function handleKeyDown(e: KeyboardEvent, rowIndex: number, colIndex: number) {
 		// Handle delete/backspace for multi-cell selection
 		if ((e.key === 'Backspace' || e.key === 'Delete') && selectedCells.length > 1) {
@@ -448,10 +471,7 @@
 				: (nextCol >= colCount ? 0 : nextCol);
 			
 			if (nextRow >= 0 && nextRow < rowCount) {
-				const nextInput = document.querySelector(
-					`textarea[data-row="${nextRow}"][data-col="${finalCol}"]`
-				) as HTMLTextAreaElement;
-				nextInput?.focus();
+				navigateToCell(nextRow, finalCol);
 			}
 		} else if (e.key === 'Enter') {
 			if (e.shiftKey) {
@@ -459,10 +479,7 @@
 				e.preventDefault();
 				const nextRow = rowIndex + 1;
 				if (nextRow < rowCount) {
-					const nextInput = document.querySelector(
-						`textarea[data-row="${nextRow}"][data-col="${colIndex}"]`
-					) as HTMLTextAreaElement;
-					nextInput?.focus();
+					navigateToCell(nextRow, colIndex);
 				}
 			}
 			// Plain Enter: allow default behavior (insert newline in textarea)
@@ -475,10 +492,7 @@
 				e.preventDefault();
 				const nextRow = rowIndex + 1;
 				if (nextRow < rowCount) {
-					const nextInput = document.querySelector(
-						`textarea[data-row="${nextRow}"][data-col="${colIndex}"]`
-					) as HTMLTextAreaElement;
-					nextInput?.focus();
+					navigateToCell(nextRow, colIndex);
 				}
 			}
 		} else if (e.key === 'ArrowUp') {
@@ -490,10 +504,7 @@
 				e.preventDefault();
 				const prevRow = rowIndex - 1;
 				if (prevRow >= 0) {
-					const prevInput = document.querySelector(
-						`textarea[data-row="${prevRow}"][data-col="${colIndex}"]`
-					) as HTMLTextAreaElement;
-					prevInput?.focus();
+					navigateToCell(prevRow, colIndex);
 				}
 			}
 		}
@@ -866,7 +877,7 @@
 														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex);
 														autoResizeTextarea(e);
 													}}
-													onfocus={autoResizeTextarea}
+													onfocus={(e) => handleCellFocus(e, rowIndex, colIndex)}
 													oncompositionupdate={(e) =>
 														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex)
 													}
