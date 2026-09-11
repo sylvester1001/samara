@@ -8,6 +8,7 @@
 	interface Props extends HTMLButtonAttributes {
 		variant?: 'default' | 'outline' | 'ghost';
 		hasPointer?: boolean;
+		pointerPosition?: 'left' | 'right';
 		active?: boolean;
 		pointerColor?: string;
 		children?: Snippet;
@@ -17,6 +18,7 @@
 	let {
 		variant = 'default',
 		hasPointer = true,
+		pointerPosition = 'left',
 		active = false,
 		pointerColor = 'var(--cobalt, #0202f1)',
 		class: className = '',
@@ -38,9 +40,15 @@
 >
 	<!-- 战术标定指针（inset-y-0 flex 严格垂直绝对居中，对齐按钮 50% 中心线） -->
 	{#if hasPointer && isAvantGarde}
-		<div class="pointer-slot absolute right-full mr-2 inset-y-0 flex items-center justify-center pointer-events-none z-30">
-			<TacticalPointer active={isHighlighted} color={pointerColor} />
-		</div>
+		{#if pointerPosition === 'left'}
+			<div class="pointer-slot absolute right-full mr-2 inset-y-0 flex items-center justify-center pointer-events-none z-30">
+				<TacticalPointer active={isHighlighted} color={pointerColor} direction="right" />
+			</div>
+		{:else}
+			<div class="pointer-slot absolute left-full ml-2 inset-y-0 flex items-center justify-center pointer-events-none z-30">
+				<TacticalPointer active={isHighlighted} color={pointerColor} direction="left" />
+			</div>
+		{/if}
 	{/if}
 
 	<button

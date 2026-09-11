@@ -776,7 +776,7 @@
 							</div>
 						</ScrollArea>
 						<div
-							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-9 z-20"
+							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20"
 						>
 							<Popover.Root bind:open={exportPopoverOpen}>
 								<Popover.Trigger>
@@ -890,6 +890,7 @@
 									{#snippet child({ props })}
 										<TacticalButton
 											class="w-[150px]"
+											pointerPosition="right"
 											active={latexPopoverOpen}
 											{...props}
 										>
