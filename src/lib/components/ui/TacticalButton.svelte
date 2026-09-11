@@ -57,7 +57,7 @@
 		class={cn(
 			"tactical-button relative inline-flex items-center justify-center gap-2 h-9 px-3.5 min-w-0 shrink-0 w-[150px]",
 			"bg-background text-foreground border border-border transition-all duration-100 cursor-pointer select-none",
-			"text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
+			"text-[11px] font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/50",
 			"disabled:opacity-40 disabled:pointer-events-none",
 			/* 先锋主题样式：直角、等宽大写、字距 */
 			isAvantGarde && "font-terminal uppercase tracking-[0.14em] font-semibold",
