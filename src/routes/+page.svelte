@@ -46,6 +46,8 @@
 		FileText,
 		CheckSquare,
 		Download,
+		Minus,
+		Plus,
 	} from "lucide-svelte";
 	import BrandLogo from "$lib/components/BrandLogo.svelte";
 	import { isMac, isTauri } from "$lib/stores/platform.svelte.js";
@@ -705,51 +707,64 @@
 								{t('preview.preview')}
 							</Badge>
 						{/if}
-						<div class="absolute top-3 left-3 flex items-center gap-0.5 z-10">
-							<AppTooltip text={t('preview.resetZoom')} onclick={() => (previewZoom = 1)}>
-								{#snippet children({ props })}
-									<Button
-										variant="ghost"
-										size="icon"
-										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-										{...props}
-										onclick={() => (previewZoom = 1)}
-									>
-										<RotateCcw class="h-3.5 w-3.5" />
-									</Button>
-								{/snippet}
-							</AppTooltip>
+						<!-- 战术取景器缩放控制仪（Unified Viewfinder Zoom Instrument） -->
+						<div
+							class="absolute top-3 left-3 z-10 inline-flex items-center h-7 bg-background/95 backdrop-blur-xs border border-border select-none shadow-2xs overflow-hidden {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : 'rounded-[var(--radius)]'}"
+						>
+							<!-- 缩小 [-] -->
 							<AppTooltip text={t('preview.zoomOut')} onclick={handleZoomOut}>
 								{#snippet children({ props })}
-									<Button
-										variant="ghost"
-										size="icon"
-										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
+									<button
+										type="button"
+										class="w-7 h-full inline-flex items-center justify-center border-r border-border cursor-pointer transition-colors disabled:opacity-30 disabled:pointer-events-none text-foreground {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white active:bg-[#0000d0]' : 'hover:bg-muted'}"
+										disabled={previewZoom <= 0.25}
 										{...props}
 										onclick={handleZoomOut}
+										aria-label={t('preview.zoomOut')}
 									>
-										<ZoomOut class="h-3.5 w-3.5" />
-									</Button>
+										<Minus class="w-3.5 h-3.5 stroke-[2.2]" />
+									</button>
 								{/snippet}
 							</AppTooltip>
-							<AppTooltip text={t('preview.zoomIn')} onclick={handleZoomIn}>
-								{#snippet children({ props })}
-									<Button
-										variant="ghost"
-										size="icon"
-										class="h-7 w-7 transition-colors {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white' : 'rounded-[var(--radius)] hover:bg-muted'}"
-										{...props}
-										onclick={handleZoomIn}
-									>
-										<ZoomIn class="h-3.5 w-3.5" />
-									</Button>
-								{/snippet}
-							</AppTooltip>
+
+							<!-- 等宽数值刻度显示（纯展示） -->
 							<span
-								class="text-[11px] {uiTheme.theme === 'avant-garde' ? 'font-terminal font-semibold' : 'font-sans font-medium'} text-muted-foreground flex items-center px-1.5 select-none"
+								class="h-full px-2.5 inline-flex items-center justify-center border-r border-border select-none tabular-nums text-[11px] font-semibold tracking-wider text-foreground {uiTheme.theme === 'avant-garde' ? 'font-terminal' : 'font-sans'}"
 							>
 								{Math.round(previewZoom * 100)}%
 							</span>
+
+							<!-- 放大 [+] -->
+							<AppTooltip text={t('preview.zoomIn')} onclick={handleZoomIn}>
+								{#snippet children({ props })}
+									<button
+										type="button"
+										class="w-7 h-full inline-flex items-center justify-center border-r border-border cursor-pointer transition-colors disabled:opacity-30 disabled:pointer-events-none text-foreground {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white active:bg-[#0000d0]' : 'hover:bg-muted'}"
+										disabled={previewZoom >= 3}
+										{...props}
+										onclick={handleZoomIn}
+										aria-label={t('preview.zoomIn')}
+									>
+										<Plus class="w-3.5 h-3.5 stroke-[2.2]" />
+									</button>
+								{/snippet}
+							</AppTooltip>
+
+							<!-- 复位按键 [⟲] -->
+							<AppTooltip text={t('preview.resetZoom')} onclick={() => (previewZoom = 1)}>
+								{#snippet children({ props })}
+									<button
+										type="button"
+										class="w-7 h-full inline-flex items-center justify-center cursor-pointer transition-colors text-foreground {previewZoom === 1 ? 'opacity-35 pointer-events-none' : ''} {uiTheme.theme === 'avant-garde' ? 'hover:bg-[#0202f1] hover:text-white active:bg-[#0000d0]' : 'hover:bg-muted'}"
+										disabled={previewZoom === 1}
+										{...props}
+										onclick={() => (previewZoom = 1)}
+										aria-label={t('preview.resetZoom')}
+									>
+										<RotateCcw class="w-3 h-3 stroke-[2.2]" />
+									</button>
+								{/snippet}
+							</AppTooltip>
 						</div>
 						<ScrollArea
 							class="flex-1 w-full h-full min-h-0 min-w-0"
