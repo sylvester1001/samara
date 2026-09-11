@@ -7,6 +7,7 @@
 		TableEditor,
 		FormulaDialog,
 		TacticalButton,
+		LatexLogo,
 	} from "$lib/components";
 	import TacticalGrip from "$lib/components/effects/TacticalGrip.svelte";
 	import AppTooltip from "$lib/components/AppTooltip.svelte";
@@ -910,7 +911,10 @@
 											{...props}
 										>
 											<Code class="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
-											<span class="truncate">{t('preview.exportLatex')}</span>
+											<span class="truncate inline-flex items-center gap-1">
+												<span>{t('preview.exportLatex').replace('LaTeX', '').trim()}</span>
+												<LatexLogo />
+											</span>
 										</TacticalButton>
 									{/snippet}
 								</Popover.Trigger>

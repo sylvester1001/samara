@@ -6,3 +6,4 @@ export * from './table';
 export { default as FormulaDialog } from './math/FormulaDialog.svelte';
 export { default as TacticalPointer } from './effects/TacticalPointer.svelte';
 export { default as TacticalButton } from './ui/TacticalButton.svelte';
+export { default as LatexLogo } from './ui/LatexLogo.svelte';
