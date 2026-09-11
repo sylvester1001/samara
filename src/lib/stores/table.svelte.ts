@@ -133,7 +133,13 @@ class TableStore {
 		if (this.selectedCells.length === 0) return;
 		const shouldEnable = this.selectedCells.some(({ row, col }) => {
 			const cell = this.tableData.rows[row]?.[col];
-			return cell ? !cell[field] : false;
+			if (!cell) return false;
+			if (field === 'isBold') {
+				const isHeader = row < this.tableData.headerRows;
+				const effective = cell.isBold !== undefined ? cell.isBold : isHeader;
+				return !effective;
+			}
+			return !cell[field];
 		});
 		this.applyToSelectedCells({ [field]: shouldEnable } as Partial<Cell>);
 	}

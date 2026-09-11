@@ -30,6 +30,7 @@
 	} from "$lib/utils/notifications";
 	import { generateLatexTable } from "$lib/utils/export-latex";
 	import { isSegmentTrimmed, type LineEdge } from "$lib/utils/table-geometry";
+	import { resolveCell } from "$lib/utils/table-semantics";
 	import type { TableStyle, CanvasConfig } from "$lib/types";
 	import { uiTheme } from "$lib/stores/ui-theme.svelte.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -390,6 +391,20 @@
 		tableStore.historyIndex < tableStore.history.length - 1,
 	);
 	const hasSelection = $derived(tableStore.selectedCells.length > 0);
+	const activeCellSemantics = $derived.by(() => {
+		const first = tableStore.selectedCells[0];
+		if (!first) return null;
+		const raw = tableStore.tableData.rows[first.row]?.[first.col];
+		if (!raw) return null;
+		return resolveCell(raw, first.row, first.col, tableStore.tableData.headerRows ?? 1);
+	});
+	const activeBold = $derived(activeCellSemantics?.effectiveBold ?? false);
+	const activeItalic = $derived(activeCellSemantics?.effectiveItalic ?? false);
+	const activeAlign = $derived(
+		(activeCellSemantics?.effectiveAlign === "decimal" ? "right" : activeCellSemantics?.effectiveAlign) ?? "center"
+	);
+	const activeTextColor = $derived(activeCellSemantics?.textColor);
+	const activeBackgroundColor = $derived(activeCellSemantics?.backgroundColor);
 
 	let formulaDialogOpen = $state(false);
 	let currentFormulaCell = $derived(
@@ -628,6 +643,12 @@
 						<div class="mb-2 shrink-0">
 							<EditToolbar
 								{hasSelection}
+								selectedCellCount={tableStore.selectedCells.length}
+								{activeBold}
+								{activeItalic}
+								{activeAlign}
+								{activeTextColor}
+								{activeBackgroundColor}
 								onAlignChange={handleAlignChange}
 								onToggleBold={handleToggleBold}
 								onToggleItalic={handleToggleItalic}
