@@ -6,6 +6,7 @@
 		AcademicTable,
 		TableEditor,
 		FormulaDialog,
+		TacticalButton,
 	} from "$lib/components";
 	import TacticalGrip from "$lib/components/effects/TacticalGrip.svelte";
 	import AppTooltip from "$lib/components/AppTooltip.svelte";
@@ -775,22 +776,21 @@
 							</div>
 						</ScrollArea>
 						<div
-							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20"
+							class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-9 z-20"
 						>
 							<Popover.Root bind:open={exportPopoverOpen}>
 								<Popover.Trigger>
 									{#snippet child({ props })}
-										<Button
-											variant="default"
-											class="w-[144px] h-9 shadow-lg font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'export-img-btn font-terminal text-xs uppercase tracking-[0.14em] font-bold' : ''}"
-											style={uiTheme.theme === 'avant-garde' ? 'background-color: #0202f1 !important; color: #ffffff !important; border: 1px solid #0202f1 !important; font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
+										<TacticalButton
+											class="w-[150px]"
+											active={exportPopoverOpen}
 											{...props}
 										>
 											<ArrowRightFromLine
-												class="w-3.5 h-3.5 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'stroke-[2.5]' : ''}"
+												class="w-3.5 h-3.5 shrink-0 stroke-[2.2]"
 											/>
-											{t('preview.exportImage')}
-										</Button>
+											<span class="truncate">{t('preview.exportImage')}</span>
+										</TacticalButton>
 									{/snippet}
 								</Popover.Trigger>
 								<Popover.Content
@@ -888,15 +888,14 @@
 							<Popover.Root bind:open={latexPopoverOpen}>
 								<Popover.Trigger>
 									{#snippet child({ props })}
-										<Button
-											variant="outline"
-											class="w-[144px] h-9 bg-background hover:bg-muted shadow-lg font-medium transition-all {uiTheme.theme === 'avant-garde' ? 'hover:text-[#0202f1] hover:border-[#0202f1] font-terminal text-xs uppercase tracking-[0.14em] font-bold' : ''}"
-											style={uiTheme.theme === 'avant-garde' ? 'font-family: "JetBrains Mono", var(--font-cjk), monospace !important;' : undefined}
+										<TacticalButton
+											class="w-[150px]"
+											active={latexPopoverOpen}
 											{...props}
 										>
-											<Code class="w-3.5 h-3.5 mr-1.5 {uiTheme.theme === 'avant-garde' ? 'text-[#0202f1] stroke-[2.5]' : ''}" />
-											{t('preview.exportLatex')}
-										</Button>
+											<Code class="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
+											<span class="truncate">{t('preview.exportLatex')}</span>
+										</TacticalButton>
 									{/snippet}
 								</Popover.Trigger>
 								<Popover.Content
