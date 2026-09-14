@@ -139,13 +139,8 @@
 </script>
 
 <div class="flex flex-col gap-1.5 select-none" unselectable="on">
-	<!-- Main Dual-Tier Control Deck -->
-	<div
-		class="flex flex-col gap-1.5 px-2 py-1.5 select-none {uiTheme.theme === 'avant-garde' ? 'border-b border-border bg-background' : 'rounded-[var(--radius)] border border-border bg-background'}"
-		unselectable="on"
-	>
-		<!-- Row 1: Cell Formatting Keypad Bays (Never wraps, dedicated to cell-level tools) -->
-		<div class="flex items-center gap-1.5 h-7 flex-nowrap overflow-x-hidden">
+	<!-- Row 1: Cell Formatting Keypad Bays (Never wraps, dedicated to cell-level tools) -->
+	<div class="flex items-center gap-1.5 h-7 flex-nowrap overflow-x-hidden">
 			<!-- Bay 1: Alignment Bay [ ⇥ | ↔ | ⇤ ] -->
 			<div
 				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)] overflow-hidden'}"
@@ -490,7 +485,6 @@
 				</DropdownMenu.Root>
 			</div>
 		</div>
-	</div>
 
 	<!-- Row 3: Segments / Line Hints (Underneath as separate dedicated row, exactly as before) -->
 	{#if lineHint || segments.length}

@@ -637,10 +637,10 @@
 					class="min-w-[360px] min-h-0"
 				>
 					<div
-						class="p-3 min-h-0 min-w-0 bg-muted/15 flex flex-col h-full select-none"
+						class="min-h-0 min-w-0 bg-muted/15 flex flex-col h-full select-none"
 						unselectable="on"
 					>
-						<div class="mb-2 shrink-0">
+						<div class="px-3 py-3 shrink-0 flex flex-col justify-center">
 							<EditToolbar
 								{hasSelection}
 								selectedCellCount={tableStore.selectedCells.length}
@@ -669,7 +669,7 @@
 								onSelectSegment={handleSelectSegment}
 							/>
 						</div>
-						<div class="flex-1 min-h-0">
+						<div class="flex-1 min-h-0 px-3 pb-3">
 							<TableEditor
 								rows={tableStore.tableData.rows}
 								selectedCells={tableStore.selectedCells}
