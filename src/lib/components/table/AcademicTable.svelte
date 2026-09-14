@@ -75,14 +75,21 @@
 
 	// ========== Helper: Cell Background Extension ==========
 	// Generates box-shadow to extend background color slightly, preventing gaps between adjacent colored cells
-	// isFirst/isLast: whether this cell is at the left/right edge of the table (to avoid overflow)
-	function getCellBgExtendStyle(bgColor: string | undefined, isFirst: boolean, isLast: boolean): string | undefined {
+	// In 'bordered' mode, cells have solid borders so NO box-shadow is used (prevents bleeding over borders).
+	// In 'booktabs' mode, only extend toward adjacent neighbors that also have a background color.
+	function getCellBgExtendStyle(
+		bgColor: string | undefined,
+		hasLeftColoredNeighbor: boolean,
+		hasRightColoredNeighbor: boolean
+	): string | undefined {
 		if (!bgColor) return undefined;
+		if (tableStyle.preset === 'bordered') return undefined;
+
 		const shadows: string[] = [];
-		if (!isFirst) {
+		if (hasLeftColoredNeighbor) {
 			shadows.push(`${-CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
 		}
-		if (!isLast) {
+		if (hasRightColoredNeighbor) {
 			shadows.push(`${CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
 		}
 		return shadows.length > 0 ? shadows.join(', ') : undefined;
@@ -358,10 +365,9 @@
 						>
 							{#each row as cell, colIndex}
 								{#if !cell.isMerged}
-									{@const isFirstCell = visibleCells[0]?.colIndex === colIndex}
-									{@const lastVisibleIdx = visibleCells[visibleCells.length - 1]?.colIndex ?? -1}
-									{@const cellEndCol = colIndex + (cell.colspan > 1 ? cell.colspan - 1 : 0)}
-									{@const isLastCell = cellEndCol >= row.length - 1 || cellEndCol >= lastVisibleIdx + (row[lastVisibleIdx]?.colspan ?? 1) - 1}
+									{@const visibleIdx = visibleCells.findIndex(x => x.colIndex === colIndex)}
+									{@const hasLeftColoredNeighbor = Boolean(visibleIdx > 0 && visibleCells[visibleIdx - 1]?.cell.backgroundColor)}
+									{@const hasRightColoredNeighbor = Boolean(visibleIdx >= 0 && visibleIdx < visibleCells.length - 1 && visibleCells[visibleIdx + 1]?.cell.backgroundColor)}
 									<th
 										class="table-cell"
 										class:text-left={cell.effectiveAlign === 'left'}
@@ -371,7 +377,7 @@
 										class:font-normal={!cell.effectiveBold}
 										class:italic={cell.effectiveItalic}
 										style:background-color={cell.backgroundColor}
-										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, isFirstCell, isLastCell)}
+										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, hasLeftColoredNeighbor, hasRightColoredNeighbor)}
 										style:color={cell.textColor}
 										colspan={cell.colspan > 1 ? cell.colspan : undefined}
 										rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
@@ -393,10 +399,9 @@
 						>
 							{#each row as cell, colIndex}
 								{#if !cell.isMerged}
-									{@const isFirstCell = visibleCells[0]?.colIndex === colIndex}
-									{@const lastVisibleIdx = visibleCells[visibleCells.length - 1]?.colIndex ?? -1}
-									{@const cellEndCol = colIndex + (cell.colspan > 1 ? cell.colspan - 1 : 0)}
-									{@const isLastCell = cellEndCol >= row.length - 1 || cellEndCol >= lastVisibleIdx + (row[lastVisibleIdx]?.colspan ?? 1) - 1}
+									{@const visibleIdx = visibleCells.findIndex(x => x.colIndex === colIndex)}
+									{@const hasLeftColoredNeighbor = Boolean(visibleIdx > 0 && visibleCells[visibleIdx - 1]?.cell.backgroundColor)}
+									{@const hasRightColoredNeighbor = Boolean(visibleIdx >= 0 && visibleIdx < visibleCells.length - 1 && visibleCells[visibleIdx + 1]?.cell.backgroundColor)}
 									<td
 										class="table-cell"
 										class:text-left={cell.effectiveAlign === 'left'}
@@ -405,7 +410,7 @@
 										class:font-bold={cell.effectiveBold}
 										class:italic={cell.effectiveItalic}
 										style:background-color={cell.backgroundColor}
-										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, isFirstCell, isLastCell)}
+										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, hasLeftColoredNeighbor, hasRightColoredNeighbor)}
 										style:color={cell.textColor}
 										colspan={cell.colspan > 1 ? cell.colspan : undefined}
 										rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
