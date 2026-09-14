@@ -599,19 +599,29 @@ class TableStore {
 	}
 
 	importData(data: string[][]) {
-		const rows: Cell[][] = data.map((row, i) =>
-			row.map((content) => createCell(content))
+		if (!data || data.length === 0 || !data[0] || data[0].length === 0) {
+			return;
+		}
+
+		// 必须先清空选区，防止 Svelte 5 的 $derived 状态在响应 tableData 变动时访问旧坐标抛出越界崩溃
+		this.selectedCells = [];
+		this.history = [];
+		this.historyIndex = -1;
+
+		const colCount = Math.max(...data.map((r) => r.length), 1);
+		const rows: Cell[][] = data.map((row) =>
+			Array(colCount)
+				.fill(null)
+				.map((_, colIdx) => createCell(row[colIdx] ?? ''))
 		);
+
 		this.tableData = {
 			rows,
-			columnWidths: Array(data[0]?.length || 1).fill(100),
+			columnWidths: Array(colCount).fill(100),
 			rowHeights: Array(data.length).fill(32),
 			headerRows: 1,
 			segments: []
 		};
-		this.history = [];
-		this.historyIndex = -1;
-		this.selectedCells = [];
 		this.saveHistory();
 	}
 

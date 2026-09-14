@@ -28,6 +28,7 @@
 		showCopySuccessToast,
 		showCopyErrorToast,
 	} from "$lib/utils/notifications";
+	import { toast } from "svelte-sonner";
 	import { generateLatexTable } from "$lib/utils/export-latex";
 	import { isSegmentTrimmed, type LineEdge } from "$lib/utils/table-geometry";
 	import { resolveCell } from "$lib/utils/table-semantics";
@@ -73,9 +74,15 @@
 		if (file) {
 			try {
 				const data = await handleFileImport(file);
+				if (!data || data.length === 0 || !data[0] || data[0].length === 0) {
+					toast.error("未能在文件中识别到有效的表格内容");
+					return;
+				}
 				tableStore.importData(data);
+				toast.success(`成功导入表格 (${data.length} 行 × ${data[0].length} 列)`);
 			} catch (err) {
 				console.error("Import failed:", err);
+				toast.error(err instanceof Error ? err.message : "表格导入失败，请检查文件格式");
 			}
 		}
 		target.value = "";
@@ -409,9 +416,9 @@
 	let formulaDialogOpen = $state(false);
 	let currentFormulaCell = $derived(
 		tableStore.selectedCells.length === 1
-			? tableStore.tableData.rows[tableStore.selectedCells[0].row][
+			? tableStore.tableData.rows[tableStore.selectedCells[0].row]?.[
 					tableStore.selectedCells[0].col
-				].content
+				]?.content ?? ""
 			: "",
 	);
 
