@@ -1,9 +1,13 @@
 import katex from 'katex';
 
-const LATEX_PATTERN = /\$([^$]+)\$/g;
+const LATEX_TEST_PATTERN = /\$[^$]+\$/;
+const LATEX_GLOBAL_PATTERN = /\$([^$]+)\$/g;
+const LATEX_CACHE_LIMIT = 500;
+const latexCache = new Map<string, string>();
 
 export function hasLatex(content: string): boolean {
-	return LATEX_PATTERN.test(content);
+	if (!content || !content.includes('$')) return false;
+	return LATEX_TEST_PATTERN.test(content);
 }
 
 export function renderLatex(content: string): string {
@@ -11,7 +15,10 @@ export function renderLatex(content: string): string {
 		return escapeHtml(content);
 	}
 
-	return content.replace(LATEX_PATTERN, (_, latex) => {
+	const cached = latexCache.get(content);
+	if (cached !== undefined) return cached;
+
+	const rendered = content.replace(LATEX_GLOBAL_PATTERN, (_, latex) => {
 		try {
 			return katex.renderToString(latex, {
 				throwOnError: false,
@@ -21,10 +28,21 @@ export function renderLatex(content: string): string {
 			return `<span class="katex-error">${escapeHtml(latex)}</span>`;
 		}
 	});
+
+	if (latexCache.size >= LATEX_CACHE_LIMIT) {
+		const oldest = latexCache.keys().next().value;
+		if (oldest !== undefined) latexCache.delete(oldest);
+	}
+	latexCache.set(content, rendered);
+	return rendered;
 }
 
 function escapeHtml(text: string): string {
-	const div = document.createElement('div');
-	div.textContent = text;
-	return div.innerHTML;
+	if (!text) return '';
+	return text
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#039;');
 }

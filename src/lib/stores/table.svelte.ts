@@ -1,3 +1,4 @@
+import { untrack } from 'svelte';
 import {
 	type TableData,
 	type TableStyle,
@@ -13,6 +14,14 @@ import {
 	getLineTarget,
 	type LineEdge
 } from '$lib/utils/table-geometry';
+import {
+	cloneTableData,
+	cowCloneTable,
+	restoreChangedRows,
+	restoreRow,
+	restoreTableInPlace,
+	sameTableShape
+} from '$lib/utils/table-clone';
 
 function createCell(content: string = ''): Cell {
 	return { ...DEFAULT_CELL, content };
@@ -43,31 +52,151 @@ class TableStore {
 	selectedCells = $state<{ row: number; col: number }[]>([]);
 	lockColumnResize = $state(false);
 	lockRowResize = $state(false);
-	history = $state<TableData[]>([]);
+	/** 快照刻意不放进 $state：否则每次操作都会把整表再代理一遍。 */
+	private snapshots: TableData[] = [];
 	historyIndex = $state(-1);
+	historyPending = $state(false);
+	/** 行列/合并变化时 +1，供窗口化派生 untrack 扫描，避免着色误伤整表。 */
+	layoutRev = $state(0);
+	/** 单元格文字变化时 +1，供列宽扫描，与着色解耦。 */
+	contentRev = $state(0);
+	private historyTimer: ReturnType<typeof setTimeout> | null = null;
+	private dirtyRows = new Set<number>();
+	private static readonly MAX_HISTORY = 40;
+	private static readonly HISTORY_COALESCE_MS = 400;
 
-	constructor() {
-		this.saveHistory();
+	get history(): TableData[] {
+		return this.snapshots;
 	}
 
-	private saveHistory() {
-		const snapshot = JSON.parse(JSON.stringify(this.tableData));
-		this.history = this.history.slice(0, this.historyIndex + 1);
-		this.history.push(snapshot);
-		this.historyIndex = this.history.length - 1;
+	constructor() {
+		this.saveHistory(true);
+	}
+
+	private bumpLayout() {
+		this.layoutRev += 1;
+	}
+
+	private bumpContent() {
+		this.contentRev += 1;
+	}
+
+	private markDirtyRow(row: number) {
+		this.dirtyRows.add(row);
+	}
+
+	private cellHasDiff(cell: Cell, updates: Partial<Cell>): boolean {
+		for (const key of Object.keys(updates) as (keyof Cell)[]) {
+			if (cell[key] !== updates[key]) return true;
+		}
+		return false;
+	}
+
+	private patchCell(row: number, col: number, updates: Partial<Cell>): boolean {
+		const cell = this.tableData.rows[row]?.[col];
+		if (!cell || !this.cellHasDiff(cell, updates)) return false;
+		Object.assign(cell, updates);
+		this.markDirtyRow(row);
+		return true;
+	}
+
+	private clearHistoryTimer() {
+		if (this.historyTimer) {
+			clearTimeout(this.historyTimer);
+			this.historyTimer = null;
+		}
+	}
+
+	private resetHistory() {
+		this.clearHistoryTimer();
+		this.historyPending = false;
+		this.dirtyRows.clear();
+		this.snapshots = [];
+		this.historyIndex = -1;
+	}
+
+	/** structure: 增删行列/导入等，必须整表拷贝；否则只拷脏行。 */
+	private saveHistory(structure = false) {
+		this.clearHistoryTimer();
+		this.historyPending = false;
+		const prev = this.snapshots[this.historyIndex];
+		const snapshot = untrack(() =>
+			cowCloneTable(prev, this.tableData, this.dirtyRows, structure)
+		);
+		this.dirtyRows.clear();
+		this.snapshots = this.snapshots.slice(0, this.historyIndex + 1);
+		this.snapshots.push(snapshot);
+		if (this.snapshots.length > TableStore.MAX_HISTORY) {
+			this.snapshots.splice(0, this.snapshots.length - TableStore.MAX_HISTORY);
+		}
+		this.historyIndex = this.snapshots.length - 1;
+	}
+
+	private scheduleHistory() {
+		this.historyPending = true;
+		this.clearHistoryTimer();
+		this.historyTimer = setTimeout(() => {
+			this.historyTimer = null;
+			this.saveHistory(false);
+		}, TableStore.HISTORY_COALESCE_MS);
+	}
+
+	private commitPending() {
+		if (this.historyPending) this.saveHistory(false);
+	}
+
+	private applySnapshot(to: TableData, from?: TableData) {
+		if (from && restoreChangedRows(this.tableData, from, to)) {
+			this.bumpLayout();
+			return;
+		}
+		if (sameTableShape(this.tableData, to)) {
+			untrack(() => restoreTableInPlace(this.tableData, to));
+			this.bumpLayout();
+			return;
+		}
+		this.tableData = cloneTableData(to);
+		this.bumpLayout();
+	}
+
+	/** 草稿/导出用：纯对象，避免 $state.snapshot 扫整张代理表。 */
+	exportTableData(): TableData {
+		return untrack(() => cloneTableData(this.tableData));
 	}
 
 	undo() {
+		if (this.historyPending) {
+			this.clearHistoryTimer();
+			this.historyPending = false;
+			const snapshot = this.snapshots[this.historyIndex];
+			if (snapshot) {
+				if (this.dirtyRows.size > 0 && sameTableShape(this.tableData, snapshot)) {
+					for (const r of this.dirtyRows) {
+						if (snapshot.rows[r] && this.tableData.rows[r]) {
+							restoreRow(this.tableData.rows[r], snapshot.rows[r]);
+						}
+					}
+					this.bumpLayout();
+				} else {
+					this.applySnapshot(snapshot);
+				}
+			}
+			this.dirtyRows.clear();
+			return;
+		}
 		if (this.historyIndex > 0) {
+			const from = this.snapshots[this.historyIndex];
 			this.historyIndex--;
-			this.tableData = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
+			this.applySnapshot(this.snapshots[this.historyIndex], from);
 		}
 	}
 
 	redo() {
-		if (this.historyIndex < this.history.length - 1) {
+		if (this.historyPending) return;
+		if (this.historyIndex < this.snapshots.length - 1) {
+			const from = this.snapshots[this.historyIndex];
 			this.historyIndex++;
-			this.tableData = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
+			this.applySnapshot(this.snapshots[this.historyIndex], from);
 		}
 	}
 
@@ -77,26 +206,28 @@ class TableStore {
 			headerRows: data.headerRows ?? 1,
 			segments: data.segments ?? []
 		};
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(true);
 	}
 
 	setHeaderRows(count: number, recordHistory = true) {
 		const maxRows = this.tableData.rows.length || 1;
 		const next = Math.min(Math.max(1, count), maxRows);
 		if (this.tableData.headerRows === next) return;
+		this.commitPending();
 		this.tableData.headerRows = next;
-		if (recordHistory) this.saveHistory();
+		this.bumpLayout();
+		if (recordHistory) this.saveHistory(false);
 	}
 
 	commitHistory() {
-		this.saveHistory();
+		this.saveHistory(false);
 	}
 
 	updateCell(row: number, col: number, updates: Partial<Cell>) {
-		if (this.tableData.rows[row]?.[col]) {
-			this.tableData.rows[row][col] = { ...this.tableData.rows[row][col], ...updates };
-			this.saveHistory();
-		}
+		if (!this.patchCell(row, col, updates)) return;
+		if (updates.content !== undefined) this.bumpContent();
+		this.scheduleHistory();
 	}
 
 	setSelectedCells(cells: { row: number; col: number }[]) {
@@ -109,24 +240,24 @@ class TableStore {
 
 	applyToSelectedCells(updates: Partial<Cell>) {
 		if (this.selectedCells.length === 0) return;
+		let changed = false;
 		for (const { row, col } of this.selectedCells) {
-			const cell = this.tableData.rows[row]?.[col];
-			if (cell) {
-				this.tableData.rows[row][col] = { ...cell, ...updates };
-			}
+			if (this.patchCell(row, col, updates)) changed = true;
 		}
-		this.saveHistory();
+		if (changed) this.scheduleHistory();
 	}
 
 	clearSelectedCellsContent() {
 		if (this.selectedCells.length === 0) return;
+		this.commitPending();
+		let changed = false;
 		for (const { row, col } of this.selectedCells) {
-			const cell = this.tableData.rows[row]?.[col];
-			if (cell) {
-				this.tableData.rows[row][col] = { ...cell, content: '' };
-			}
+			if (this.patchCell(row, col, { content: '' })) changed = true;
 		}
-		this.saveHistory();
+		if (changed) {
+			this.bumpContent();
+			this.saveHistory(false);
+		}
 	}
 
 	toggleSelectedCells(field: 'isBold' | 'isItalic') {
@@ -178,12 +309,15 @@ class TableStore {
 			if ((cell.colspan ?? 1) > 1 || (cell.rowspan ?? 1) > 1) return;
 		}
 
+		this.commitPending();
+
 		const root = this.tableData.rows[minRow]?.[minCol];
 		if (!root) return;
 
 		root.colspan = maxCol - minCol + 1;
 		root.rowspan = maxRow - minRow + 1;
 		root.isMerged = false;
+		this.markDirtyRow(minRow);
 
 		for (const { row, col } of this.selectedCells) {
 			if (row === minRow && col === minCol) continue;
@@ -192,11 +326,13 @@ class TableStore {
 				cell.isMerged = true;
 				cell.colspan = 1;
 				cell.rowspan = 1;
+				this.markDirtyRow(row);
 			}
 		}
 
 		this.selectedCells = [{ row: minRow, col: minCol }];
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(false);
 	}
 
 	unmergeSelectedCells() {
@@ -219,9 +355,12 @@ class TableStore {
 
 		if (!target) return;
 
+		this.commitPending();
+
 		const rowspan = target.cell.rowspan ?? 1;
 		const colspan = target.cell.colspan ?? 1;
 		for (let r = target.row; r < target.row + rowspan; r++) {
+			this.markDirtyRow(r);
 			for (let c = target.col; c < target.col + colspan; c++) {
 				const cell = this.tableData.rows[r]?.[c];
 				if (cell) {
@@ -231,10 +370,12 @@ class TableStore {
 				}
 			}
 		}
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(false);
 	}
 
 	addRow(index?: number) {
+		this.commitPending();
 		const cols = this.tableData.rows[0]?.length || 4;
 		const newRow = Array(cols).fill(null).map(() => createCell());
 		const idx = index ?? this.tableData.rows.length;
@@ -251,7 +392,8 @@ class TableStore {
 				row: c.row >= idx ? c.row + 1 : c.row
 			}));
 		}
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(true);
 	}
 
 	deleteRows(indices: number[]) {
@@ -261,6 +403,8 @@ class TableStore {
 
 		if (validIndices.length === 0) return;
 		if (this.tableData.rows.length - validIndices.length < 1) return;
+
+		this.commitPending();
 
 		const removedSet = new Set(validIndices);
 
@@ -301,7 +445,8 @@ class TableStore {
 			this.selectedCells = [{ row: targetRow, col: 0 }];
 		}
 
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(true);
 	}
 
 	deleteRow(index: number) {
@@ -309,6 +454,7 @@ class TableStore {
 	}
 
 	addColumn(index?: number) {
+		this.commitPending();
 		const idx = index ?? (this.tableData.rows[0]?.length || 0);
 		const defaultWidth = this.lockColumnResize ? this.tableData.columnWidths[0] ?? 100 : 100;
 		this.tableData.rows.forEach((row) => {
@@ -337,7 +483,8 @@ class TableStore {
 				col: c.col >= idx ? c.col + 1 : c.col
 			}));
 		}
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(true);
 	}
 
 	deleteColumns(indices: number[]) {
@@ -347,6 +494,8 @@ class TableStore {
 
 		if (validIndices.length === 0) return;
 		if (this.tableData.columnWidths.length - validIndices.length < 1) return;
+
+		this.commitPending();
 
 		const removedSet = new Set(validIndices);
 
@@ -394,7 +543,8 @@ class TableStore {
 			this.selectedCells = [{ row: 0, col: targetCol }];
 		}
 
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(true);
 	}
 
 	deleteColumn(index: number) {
@@ -405,6 +555,8 @@ class TableStore {
 		const rowCount = this.tableData.rows.length;
 		const colCount = this.tableData.columnWidths.length;
 		if (rowCount === 0 || colCount === 0) return -1;
+
+		this.commitPending();
 
 		const startCol = Math.max(0, Math.min(segment.startCol, colCount - 1));
 		const endCol = Math.max(startCol, Math.min(segment.endCol, colCount - 1));
@@ -419,7 +571,7 @@ class TableStore {
 				endCol
 			}
 		];
-		this.saveHistory();
+		this.saveHistory(true);
 		return this.tableData.segments.length - 1;
 	}
 
@@ -465,19 +617,19 @@ class TableStore {
 		this.tableData.segments = this.tableData.segments.map((item, i) =>
 			i === index ? { ...item, trimLeft: trim, trimRight: trim } : item
 		);
-		this.saveHistory();
+		this.saveHistory(true);
 	}
 
 	removeSegment(index: number) {
 		if (index < 0 || index >= this.tableData.segments.length) return;
 		this.tableData.segments = this.tableData.segments.filter((_, i) => i !== index);
-		this.saveHistory();
+		this.saveHistory(true);
 	}
 
 	clearSegments() {
 		if (this.tableData.segments.length === 0) return;
 		this.tableData.segments = [];
-		this.saveHistory();
+		this.saveHistory(true);
 	}
 
 	setColumnWidth(index: number, width: number) {
@@ -534,6 +686,7 @@ class TableStore {
 	}
 
 	restoreDraft(draft: { tableData: TableData; tableStyle?: TableStyle; canvasConfig?: CanvasConfig }) {
+		// TODO: 大表草稿会在启动时同步还原整表，窗口可能很久打不开（优先度低于编辑卡死）
 		this.tableData = draft.tableData;
 		if (draft.tableStyle) {
 			this.tableStyle = draft.tableStyle;
@@ -541,21 +694,24 @@ class TableStore {
 		if (draft.canvasConfig) {
 			this.canvasConfig = draft.canvasConfig;
 		}
-		this.history = [];
-		this.historyIndex = -1;
+		this.resetHistory();
 		this.selectedCells = [];
-		this.saveHistory();
+		this.bumpLayout();
+		this.bumpContent();
+		this.saveHistory(true);
 	}
 
 	createNewTable(rows: number, cols: number) {
 		this.tableData = createEmptyTable(rows, cols);
-		this.history = [];
-		this.historyIndex = -1;
+		this.resetHistory();
 		this.selectedCells = [];
-		this.saveHistory();
+		this.bumpLayout();
+		this.bumpContent();
+		this.saveHistory(true);
 	}
 
 	resizeTable(newRows: number, newCols: number) {
+		this.commitPending();
 		const currentRows = this.tableData.rows.length;
 		const currentCols = this.tableData.columnWidths.length;
 
@@ -595,7 +751,8 @@ class TableStore {
 
 		// Clear selection
 		this.selectedCells = [];
-		this.saveHistory();
+		this.bumpLayout();
+		this.saveHistory(true);
 	}
 
 	importData(data: string[][]) {
@@ -605,8 +762,7 @@ class TableStore {
 
 		// 必须先清空选区，防止 Svelte 5 的 $derived 状态在响应 tableData 变动时访问旧坐标抛出越界崩溃
 		this.selectedCells = [];
-		this.history = [];
-		this.historyIndex = -1;
+		this.resetHistory();
 
 		const colCount = Math.max(...data.map((r) => r.length), 1);
 		const rows: Cell[][] = data.map((row) =>
@@ -622,11 +778,14 @@ class TableStore {
 			headerRows: 1,
 			segments: []
 		};
-		this.saveHistory();
+		this.bumpLayout();
+		this.bumpContent();
+		this.saveHistory(true);
 	}
 
 	pasteAtSelection(data: string[][]) {
 		if (data.length === 0 || data[0].length === 0) return;
+		this.commitPending();
 
 		// Determine paste start position from selection, default to (0, 0)
 		let startRow = 0;
@@ -640,6 +799,8 @@ class TableStore {
 		const pasteCols = data[0].length;
 		const requiredRows = startRow + pasteRows;
 		const requiredCols = startCol + pasteCols;
+		const startRowCount = this.tableData.rows.length;
+		const startColCount = this.tableData.columnWidths.length;
 
 		// Expand rows if needed
 		while (this.tableData.rows.length < requiredRows) {
@@ -663,6 +824,9 @@ class TableStore {
 			}
 		}
 
+		const structure = this.tableData.rows.length !== startRowCount
+			|| this.tableData.columnWidths.length !== startColCount;
+
 		// Paste data at the target position
 		for (let r = 0; r < pasteRows; r++) {
 			for (let c = 0; c < pasteCols; c++) {
@@ -670,15 +834,15 @@ class TableStore {
 				const targetCol = startCol + c;
 				const content = data[r][c] ?? '';
 				if (this.tableData.rows[targetRow]?.[targetCol]) {
-					this.tableData.rows[targetRow][targetCol] = {
-						...this.tableData.rows[targetRow][targetCol],
-						content
-					};
+					this.tableData.rows[targetRow][targetCol].content = content;
+					this.markDirtyRow(targetRow);
 				}
 			}
 		}
 
-		this.saveHistory();
+		if (structure) this.bumpLayout();
+		this.bumpContent();
+		this.saveHistory(structure);
 	}
 }
 

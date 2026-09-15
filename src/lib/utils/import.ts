@@ -10,8 +10,8 @@ import * as XLSX from 'xlsx';
  */
 export function cleanAndNormalizeMatrix(
 	rawRows: unknown[][],
-	maxRows: number = 300,
-	maxCols: number = 50
+	maxRows: number = 10000,
+	maxCols: number = 100
 ): string[][] {
 	if (!rawRows || rawRows.length === 0) return [];
 
@@ -78,11 +78,89 @@ export function parseCSV(content: string): string[][] {
 	return cleanAndNormalizeMatrix(result.data);
 }
 
+/**
+ * 智能计算工作表的安全紧凑范围：
+ * 避免 Excel 默认的 A1:XFD1048576 幽灵区域导致 sheet_to_json 百万次虚假遍历卡死主线程
+ */
+function computeSafeSheetRef(
+	sheet: XLSX.WorkSheet,
+	maxRows: number = 10000,
+	maxCols: number = 100
+): string {
+	if (!sheet['!ref']) return 'A1:A1';
+
+	let maxR = 0;
+	let maxC = 0;
+	let found = false;
+
+	// 1. 如果是 dense 模式（targetSheet['!data']）
+	if (Array.isArray(sheet['!data'])) {
+		const data = sheet['!data'];
+		const rowLimit = Math.min(data.length, maxRows);
+		for (let r = 0; r < rowLimit; r++) {
+			const row = data[r];
+			if (!row) continue;
+			const colLimit = Math.min(row.length, maxCols);
+			for (let c = 0; c < colLimit; c++) {
+				const cell = row[c];
+				if (cell && cell.v !== undefined && cell.v !== '') {
+					if (r > maxR) maxR = r;
+					if (c > maxC) maxC = c;
+					found = true;
+				}
+			}
+		}
+	} else {
+		// 2. 稀疏对象模式：遍历属性键
+		const keys = Object.keys(sheet);
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i];
+			if (key.charCodeAt(0) === 33) continue; // 跳过 ! 开头的元属性（!ref, !merges 等）
+			const cell = sheet[key];
+			if (!cell || cell.v === undefined || cell.v === '') continue;
+
+			const coord = XLSX.utils.decode_cell(key);
+			if (coord.r > maxR) maxR = coord.r;
+			if (coord.c > maxC) maxC = coord.c;
+			found = true;
+		}
+	}
+
+	const originalRange = XLSX.utils.decode_range(sheet['!ref']);
+
+	if (!found) {
+		// 未找到显式非空单元格，在原 ref 基础上做安全上限裁剪
+		const clampedRange = {
+			s: { r: Math.max(0, originalRange.s.r), c: Math.max(0, originalRange.s.c) },
+			e: {
+				r: Math.min(originalRange.e.r, maxRows - 1),
+				c: Math.min(originalRange.e.c, maxCols - 1)
+			}
+		};
+		return XLSX.utils.encode_range(clampedRange);
+	}
+
+	// 限制在实际有数据的最大行列范围与安全上限之间
+	const safeRange = {
+		s: { r: 0, c: 0 },
+		e: {
+			r: Math.min(maxR, maxRows - 1),
+			c: Math.min(maxC, maxCols - 1)
+		}
+	};
+	return XLSX.utils.encode_range(safeRange);
+}
+
 export function parseExcel(buffer: ArrayBuffer): string[][] {
 	const workbook = XLSX.read(buffer, {
 		type: 'array',
-		cellFormula: false,
-		cellHTML: false,
+		sheetRows: 10000,       // 安全上限：支持上万行真实数据，同时防止数百万幽灵空行
+		dense: true,            // 核心优化：使用连续内存二维数组，极大降低 GC 和对象分配
+		cellFormula: false,     // 忽略公式计算
+		cellHTML: false,        // 忽略 HTML
+		cellStyles: false,      // 忽略样式
+		cellNF: false,          // 忽略数字格式化正则匹配
+		sheetStubs: false,      // 忽略 stub 占位符
 		raw: false
 	});
 
@@ -107,6 +185,9 @@ export function parseExcel(buffer: ArrayBuffer): string[][] {
 	if (!targetSheet) {
 		throw new Error('工作表内容为空');
 	}
+
+	// 核心优化：计算紧凑的安全范围，彻底消除 Excel/WPS 默认的 A1:XFD1048576 幽灵区域
+	targetSheet['!ref'] = computeSafeSheetRef(targetSheet, 10000, 100);
 
 	const rawData = XLSX.utils.sheet_to_json<unknown[]>(targetSheet, {
 		header: 1,

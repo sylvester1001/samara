@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, tick } from "svelte";
 	import {
 		Toolbar,
 		EditToolbar,
@@ -32,6 +32,7 @@
 	import { generateLatexTable } from "$lib/utils/export-latex";
 	import { isSegmentTrimmed, type LineEdge } from "$lib/utils/table-geometry";
 	import { resolveCell } from "$lib/utils/table-semantics";
+	import { shouldWindowRows, shouldWindowCols } from "$lib/utils/table-window";
 	import type { TableStyle, CanvasConfig } from "$lib/types";
 	import { uiTheme } from "$lib/stores/ui-theme.svelte.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -68,24 +69,63 @@
 		fileInput?.click();
 	}
 
+	let isImporting = $state(false);
+	let exportMountOpen = $state(false);
+	let exportTableEl: HTMLElement | null = $state(null);
+
+	function needsFullExportMount() {
+		const rows = tableStore.tableData.rows.length;
+		const cols = tableStore.tableData.rows[0]?.length ?? 0;
+		return shouldWindowRows(rows) || shouldWindowCols(cols);
+	}
+
+	async function getExportElement(): Promise<HTMLElement | null> {
+		if (!needsFullExportMount()) return tableElement;
+		exportMountOpen = true;
+		await tick();
+		await new Promise<void>((resolve) =>
+			requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+		);
+		try {
+			await document.fonts.ready;
+		} catch {
+			/* ignore */
+		}
+		return exportTableEl;
+	}
+
 	async function handleFileChange(e: Event) {
 		const target = e.target as HTMLInputElement;
 		const file = target.files?.[0];
-		if (file) {
-			try {
-				const data = await handleFileImport(file);
-				if (!data || data.length === 0 || !data[0] || data[0].length === 0) {
-					toast.error("未能在文件中识别到有效的表格内容");
-					return;
-				}
-				tableStore.importData(data);
-				toast.success(`成功导入表格 (${data.length} 行 × ${data[0].length} 列)`);
-			} catch (err) {
-				console.error("Import failed:", err);
-				toast.error(err instanceof Error ? err.message : "表格导入失败，请检查文件格式");
-			}
+		if (!file) {
+			target.value = "";
+			return;
 		}
-		target.value = "";
+
+		isImporting = true;
+		const loadingToastId = toast.loading("正在导入表格...");
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		try {
+			const data = await handleFileImport(file);
+
+			if (!data || data.length === 0 || !data[0] || data[0].length === 0) {
+				toast.dismiss(loadingToastId);
+				toast.error("未能在文件中识别到有效的表格内容");
+				return;
+			}
+
+			tableStore.importData(data);
+			toast.dismiss(loadingToastId);
+			toast.success(`导入完成 (${data.length}行×${data[0].length}列)`);
+		} catch (err) {
+			console.error("Import failed:", err);
+			toast.dismiss(loadingToastId);
+			toast.error(err instanceof Error ? err.message : "表格导入失败，请检查文件格式");
+		} finally {
+			isImporting = false;
+			target.value = "";
+		}
 	}
 
 	let isDraftLoaded = $state(false);
@@ -95,6 +135,7 @@
 	let isInitialMount = true;
 
 	onMount(() => {
+		// TODO: 大表草稿还原是同步 JSON.parse + 整表代理，启动窗口会卡住（低于编辑卡死的优先度）
 		const draft = loadDraft();
 		if (draft) {
 			tableStore.restoreDraft(draft);
@@ -103,9 +144,10 @@
 	});
 
 	$effect(() => {
-		const data = $state.snapshot(tableStore.tableData);
-		const style = $state.snapshot(tableStore.tableStyle);
-		const canvas = $state.snapshot(tableStore.canvasConfig);
+		// 仅建立响应式依赖追踪，不进行昂贵的同步深拷贝
+		tableStore.tableData;
+		tableStore.tableStyle;
+		tableStore.canvasConfig;
 
 		if (!isDraftLoaded) return;
 		if (isInitialMount) {
@@ -121,9 +163,9 @@
 
 		autoSaveTimer = setTimeout(() => {
 			saveDraft({
-				tableData: data,
-				tableStyle: style,
-				canvasConfig: canvas,
+				tableData: tableStore.exportTableData(),
+				tableStyle: $state.snapshot(tableStore.tableStyle),
+				canvasConfig: $state.snapshot(tableStore.canvasConfig),
 			});
 			draftStatus = 'saved';
 			savePulseKey = Date.now();
@@ -140,7 +182,7 @@
 			autoSaveTimer = null;
 		}
 		saveDraft({
-			tableData: $state.snapshot(tableStore.tableData),
+			tableData: tableStore.exportTableData(),
 			tableStyle: $state.snapshot(tableStore.tableStyle),
 			canvasConfig: $state.snapshot(tableStore.canvasConfig),
 		});
@@ -151,7 +193,7 @@
 	function handleBeforeUnload() {
 		if (!isDraftLoaded) return;
 		saveDraft({
-			tableData: $state.snapshot(tableStore.tableData),
+			tableData: tableStore.exportTableData(),
 			tableStyle: $state.snapshot(tableStore.tableStyle),
 			canvasConfig: $state.snapshot(tableStore.canvasConfig),
 		});
@@ -341,22 +383,32 @@
 	}
 
 	async function handleExportPng() {
-		if (tableElement) {
-			const pixelRatio = Math.max(1, exportDpi / 96);
-			await exportAndDownloadPng(tableElement, "table.png", {
-				pixelRatio,
-				backgroundColor: tableStore.canvasConfig.backgroundColor,
-			});
-			showExportToast("table.png");
+		const el = await getExportElement();
+		try {
+			if (el) {
+				const pixelRatio = Math.max(1, exportDpi / 96);
+				await exportAndDownloadPng(el, "table.png", {
+					pixelRatio,
+					backgroundColor: tableStore.canvasConfig.backgroundColor,
+				});
+				showExportToast("table.png");
+			}
+		} finally {
+			exportMountOpen = false;
 		}
 	}
 
 	async function handleExportSvg() {
-		if (tableElement) {
-			await exportAndDownloadSvg(tableElement, "table.svg", {
-				backgroundColor: tableStore.canvasConfig.backgroundColor,
-			});
-			showExportToast("table.svg");
+		const el = await getExportElement();
+		try {
+			if (el) {
+				await exportAndDownloadSvg(el, "table.svg", {
+					backgroundColor: tableStore.canvasConfig.backgroundColor,
+				});
+				showExportToast("table.svg");
+			}
+		} finally {
+			exportMountOpen = false;
 		}
 	}
 
@@ -393,9 +445,10 @@
 		}
 	}
 
-	const canUndo = $derived(tableStore.historyIndex > 0);
+	const canUndo = $derived(tableStore.historyIndex > 0 || tableStore.historyPending);
 	const canRedo = $derived(
-		tableStore.historyIndex < tableStore.history.length - 1,
+		!tableStore.historyPending &&
+			tableStore.historyIndex < tableStore.history.length - 1,
 	);
 	const hasSelection = $derived(tableStore.selectedCells.length > 0);
 	const activeCellSemantics = $derived.by(() => {
@@ -577,6 +630,20 @@
 	onConfirm={handleFormulaConfirm}
 />
 
+{#if exportMountOpen}
+	<div class="pointer-events-none absolute -left-[10000px] top-0" aria-hidden="true">
+		<AcademicTable
+			tableData={tableStore.tableData}
+			tableStyle={tableStore.tableStyle}
+			canvasConfig={tableStore.canvasConfig}
+			fullRender={true}
+			interactive={false}
+			layoutRev={tableStore.layoutRev}
+			canvasRef={(el) => (exportTableEl = el)}
+		/>
+	</div>
+{/if}
+
 <input
 	type="file"
 	accept=".csv,.xlsx,.xls"
@@ -702,6 +769,8 @@
 								onAddLine={handleAddLine}
 								{draftStatus}
 								{savePulseKey}
+								layoutRev={tableStore.layoutRev}
+								contentRev={tableStore.contentRev}
 							/>
 						</div>
 					</div>
@@ -815,6 +884,8 @@
 										onRowResize={handleRowResize}
 										onCanvasResize={handleCanvasChange}
 										canvasRef={(el) => (tableElement = el)}
+										viewScale={previewZoom}
+										layoutRev={tableStore.layoutRev}
 									/>
 								</div>
 							</div>

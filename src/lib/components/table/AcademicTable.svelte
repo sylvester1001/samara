@@ -1,9 +1,24 @@
 <script lang="ts">
 	import type { TableData, TableStyle, CanvasConfig } from '$lib/types';
-	import { resolveTableMatrix } from '$lib/utils/table-semantics';
-	import TableCell from './TableCell.svelte';
+	import { tick, untrack } from 'svelte';
+	import AcademicView from './AcademicView.svelte';
 	import ColumnResizer from './ColumnResizer.svelte';
-	import RowResizer from './RowResizer.svelte';
+	import {
+		shouldWindowRows,
+		shouldWindowCols,
+		prefixSums,
+		computeWindow,
+		expandWindowForSpans,
+		indexAxisSpans,
+		viewRectFromElements,
+		viewRectXFromElements,
+		fullWindow,
+		ROW_OVERSCAN,
+		COL_OVERSCAN,
+		DEFAULT_ROW_HEIGHT,
+		EMPTY_SPANS,
+		type WindowRange
+	} from '$lib/utils/table-window';
 
 	interface Props {
 		tableData: TableData;
@@ -14,47 +29,28 @@
 		onRowResize?: (rowIndex: number, height: number) => void;
 		onCanvasResize?: (config: Partial<CanvasConfig>) => void;
 		canvasRef?: (el: HTMLElement | null) => void;
+		/** 预览缩放，用于把屏幕坐标折回布局坐标 */
+		viewScale?: number;
+		/** 导出离屏挂载：禁用交互并强制全量渲染 */
+		fullRender?: boolean;
+		interactive?: boolean;
+		layoutRev?: number;
 	}
 
-	let { tableData, tableStyle, canvasConfig, onCellUpdate, onColumnResize, onRowResize, onCanvasResize, canvasRef }: Props = $props();
-
-	let canvasElement: HTMLElement | null = $state(null);
-	let contentElement: HTMLElement | null = $state(null);
-
-	$effect(() => {
-		canvasRef?.(canvasElement);
-	});
-
-	// ========== Constants ==========
-	const FONT_FAMILY_MAP: Record<string, string> = {
-		'computer-modern': '"CMU Serif", var(--font-cjk-serif), serif',
-		times: '"Times New Roman", Times, var(--font-cjk-serif), serif',
-		arial: 'Arial, Helvetica, var(--font-cjk), sans-serif'
-	};
-
-	const PADDING_MAP: Record<string, number> = {
-		compact: 4,
-		normal: 8,
-		loose: 16
-	};
-
-	const BORDER_WIDTH_MAP: Record<string, number> = {
-		none: 0,
-		thin: 1,
-		thick: 2,
-		double: 3,
-		'thick-thin': 0,
-		'thin-thick': 0
-	};
-
-	const BORDER_STYLE_MAP: Record<string, string> = {
-		none: 'none',
-		thin: 'solid',
-		thick: 'solid',
-		double: 'double',
-		'thick-thin': 'none',
-		'thin-thick': 'none'
-	};
+	let {
+		tableData,
+		tableStyle,
+		canvasConfig,
+		onCellUpdate,
+		onColumnResize,
+		onRowResize,
+		onCanvasResize,
+		canvasRef,
+		viewScale = 1,
+		fullRender = false,
+		interactive = true,
+		layoutRev = 0
+	}: Props = $props();
 
 	const SEGMENT_WIDTH_MAP: Record<string, number> = {
 		thin: 1,
@@ -70,66 +66,124 @@
 
 	const SEGMENT_TRIM_PX = 8;
 	const DOUBLE_LINE_HEIGHT = 5;
-	// Extend amount for cell background to prevent white lines during export
-	const CELL_BG_EXTEND_PX = 0.5;
 
-	// ========== Helper: Cell Background Extension ==========
-	// Generates box-shadow to extend background color slightly, preventing gaps between adjacent colored cells
-	// In 'bordered' mode, cells have solid borders so NO box-shadow is used (prevents bleeding over borders).
-	// In 'booktabs' mode, only extend toward adjacent neighbors that also have a background color.
-	function getCellBgExtendStyle(
-		bgColor: string | undefined,
-		hasLeftColoredNeighbor: boolean,
-		hasRightColoredNeighbor: boolean
-	): string | undefined {
-		if (!bgColor) return undefined;
-		if (tableStyle.preset === 'bordered') return undefined;
+	let canvasElement: HTMLElement | null = $state(null);
+	let contentElement: HTMLElement | null = $state(null);
+	let tableEl: HTMLTableElement | null = $state(null);
+	let tbodyEl: HTMLTableSectionElement | null = $state(null);
+	let textareaEl: HTMLTextAreaElement | null = $state(null);
+	let scrollViewport: HTMLElement | null = $state(null);
 
-		const shadows: string[] = [];
-		if (hasLeftColoredNeighbor) {
-			shadows.push(`${-CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
-		}
-		if (hasRightColoredNeighbor) {
-			shadows.push(`${CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
-		}
-		return shadows.length > 0 ? shadows.join(', ') : undefined;
-	}
+	let viewStartY = $state(0);
+	let viewSizeY = $state(1200);
+	let viewStartX = $state(0);
+	let viewSizeX = $state(1600);
+	let heightCache: number[] = $state([]);
+	let scrollRaf = 0;
 
-	// ========== Derived: Style Values ==========
-	const fontFamily = $derived(FONT_FAMILY_MAP[tableStyle.fontFamily]);
-	const cellPadding = $derived(
-		typeof tableStyle.padding === 'number' ? tableStyle.padding : PADDING_MAP[tableStyle.padding]
-	);
-
-	const headerRowCount = $derived.by(() => {
-		const requested = tableData.headerRows ?? 1;
-		return Math.min(Math.max(1, requested), tableData.rows.length);
+	$effect(() => {
+		canvasRef?.(canvasElement);
 	});
 
-	const resolvedMatrix = $derived(resolveTableMatrix(tableData));
+	const rowCount = $derived(tableData.rows.length);
+	const colCount = $derived(tableData.columnWidths.length);
+	const headerRowCount = $derived.by(() => {
+		const requested = tableData.headerRows ?? 1;
+		return Math.min(Math.max(1, requested), tableData.rows.length || 1);
+	});
 
-	// ========== Derived: Border Config ==========
+	const virtualizeRows = $derived(!fullRender && shouldWindowRows(rowCount));
+	const virtualizeCols = $derived(!fullRender && shouldWindowCols(colCount));
+
+	const displayRowHeights = $derived.by(() => {
+		const heights = new Array(rowCount);
+		const stored = tableData.rowHeights;
+		const cache = heightCache;
+		for (let i = 0; i < rowCount; i++) {
+			heights[i] = cache[i] || stored[i] || DEFAULT_ROW_HEIGHT;
+		}
+		return heights;
+	});
+
+	const bodyCount = $derived(Math.max(0, rowCount - headerRowCount));
+	const bodyHeights = $derived(displayRowHeights.slice(headerRowCount));
+	const bodyOffsets = $derived(prefixSums(bodyHeights));
+	const colOffsets = $derived.by(() => {
+		const offsets: number[] = [0];
+		let currentLeft = 0;
+		for (const width of tableData.columnWidths) {
+			currentLeft += width;
+			offsets.push(currentLeft);
+		}
+		return offsets;
+	});
+
+	const rowSpanOrigins = $derived.by(() => {
+		void layoutRev;
+		if (!virtualizeRows) return EMPTY_SPANS;
+		return untrack(() => indexAxisSpans(tableData.rows, 'row'));
+	});
+	const colSpanOrigins = $derived.by(() => {
+		void layoutRev;
+		if (!virtualizeCols) return EMPTY_SPANS;
+		return untrack(() => indexAxisSpans(tableData.rows, 'col'));
+	});
+
+	const bodyWindow: WindowRange = $derived.by(() => {
+		if (!virtualizeRows) {
+			return {
+				start: headerRowCount,
+				end: rowCount,
+				padStart: 0,
+				padEnd: 0
+			};
+		}
+		const raw = computeWindow(bodyCount, bodyOffsets, viewStartY, viewSizeY, ROW_OVERSCAN);
+		const localSpans = rowSpanOrigins
+			.filter((span) => span.index + span.span > headerRowCount)
+			.map((span) => ({
+				index: Math.max(0, span.index - headerRowCount),
+				span: span.index >= headerRowCount ? span.span : span.index + span.span - headerRowCount
+			}));
+		const expanded = expandWindowForSpans(raw, bodyCount, bodyOffsets, localSpans);
+		return {
+			start: expanded.start + headerRowCount,
+			end: expanded.end + headerRowCount,
+			padStart: expanded.padStart,
+			padEnd: expanded.padEnd
+		};
+	});
+
+	const colWindow: WindowRange = $derived.by(() => {
+		if (!virtualizeCols) return fullWindow(colCount);
+		const raw = computeWindow(colCount, colOffsets, viewStartX, viewSizeX, COL_OVERSCAN);
+		return expandWindowForSpans(raw, colCount, colOffsets, colSpanOrigins);
+	});
+
 	const isBooktabs = $derived(tableStyle.preset === 'booktabs');
 	const topBorderType = $derived(tableStyle.borders.top);
 	const bottomBorderType = $derived(tableStyle.borders.bottom);
-	
-	const needsTopDoubleLine = $derived(
-		isBooktabs && topBorderType === 'thick-thin'
-	);
-	const needsBottomDoubleLine = $derived(
-		isBooktabs && bottomBorderType === 'thin-thick'
-	);
+	const needsTopDoubleLine = $derived(isBooktabs && topBorderType === 'thick-thin');
+	const needsBottomDoubleLine = $derived(isBooktabs && bottomBorderType === 'thin-thick');
 
-	// ========== Derived: Table Dimensions ==========
 	const tableWidth = $derived(tableData.columnWidths.reduce((sum, w) => sum + w, 0));
 
-	let domRowHeights: number[] = $state([]);
 	let domContentWidth = $state(0);
 	let domContentHeight = $state(0);
 
-	// ========== Derived: Canvas Dimensions ==========
-	const actualContentWidth = $derived(domContentWidth || tableWidth);
-	const actualContentHeight = $derived(domContentHeight || 100);
+	const estimatedContentHeight = $derived.by(() => {
+		let total = needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0;
+		if (needsBottomDoubleLine) total += DOUBLE_LINE_HEIGHT;
+		for (let i = 0; i < displayRowHeights.length; i++) {
+			total += displayRowHeights[i];
+		}
+		return total;
+	});
+
+	const actualContentWidth = $derived(virtualizeRows || virtualizeCols ? tableWidth : domContentWidth || tableWidth);
+	const actualContentHeight = $derived(
+		virtualizeRows ? estimatedContentHeight : domContentHeight || estimatedContentHeight
+	);
 
 	const requestedCanvasWidth = $derived(
 		canvasConfig.width === 'auto'
@@ -144,28 +198,21 @@
 
 	const minCanvasWidth = $derived(actualContentWidth);
 	const minCanvasHeight = $derived(actualContentHeight);
-	
-	// 当 canvas 尺寸接近最小值时，精确匹配内容尺寸
+
 	const canvasWidth = $derived.by(() => {
-		if (requestedCanvasWidth <= minCanvasWidth + 1) {
-			return minCanvasWidth;
-		}
+		if (requestedCanvasWidth <= minCanvasWidth + 1) return minCanvasWidth;
 		return Math.max(requestedCanvasWidth, minCanvasWidth);
 	});
 	const canvasHeight = $derived.by(() => {
-		if (requestedCanvasHeight <= minCanvasHeight + 1) {
-			return minCanvasHeight;
-		}
+		if (requestedCanvasHeight <= minCanvasHeight + 1) return minCanvasHeight;
 		return Math.max(requestedCanvasHeight, minCanvasHeight);
 	});
 
-	// ========== Derived: Resizer Positions ==========
 	const rowResizerPositions = $derived.by(() => {
 		const positions: number[] = [];
 		let currentTop = needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0;
-		for (let i = 0; i < tableData.rowHeights.length; i++) {
-			const height = domRowHeights[i] ?? tableData.rowHeights[i] ?? 32;
-			currentTop += height;
+		for (let i = 0; i < displayRowHeights.length; i++) {
+			currentTop += displayRowHeights[i];
 			positions.push(currentTop);
 		}
 		return positions;
@@ -181,21 +228,15 @@
 		return positions;
 	});
 
-	const colOffsets = $derived.by(() => {
-		const offsets: number[] = [0];
-		let currentLeft = 0;
-		for (const width of tableData.columnWidths) {
-			currentLeft += width;
-			offsets.push(currentLeft);
-		}
-		return offsets;
-	});
-
-	// ========== Derived: Segment Lines ==========
 	const segmentLines = $derived.by(() => {
-		const lines: { id: number; left: number; top: number; width: number; borderWidth: number; borderStyle: string }[] = [];
-		const rowCount = tableData.rows.length;
-		const colCount = tableData.columnWidths.length;
+		const lines: {
+			id: number;
+			left: number;
+			top: number;
+			width: number;
+			borderWidth: number;
+			borderStyle: string;
+		}[] = [];
 		if (rowCount === 0 || colCount === 0) return lines;
 
 		const segments = tableData.segments ?? [];
@@ -229,7 +270,37 @@
 		return lines;
 	});
 
-	// ========== Event Handlers ==========
+	let editingCell = $state<{ row: number; col: number } | null>(null);
+	let editValue = $state('');
+
+	async function startCellEdit(row: number, col: number, content: string) {
+		if (!interactive) return;
+		editingCell = { row, col };
+		editValue = content;
+		await tick();
+		textareaEl?.focus();
+		textareaEl?.select();
+	}
+
+	function finishCellEdit() {
+		if (editingCell) {
+			const { row, col } = editingCell;
+			if (editValue !== (tableData.rows[row]?.[col]?.content ?? '')) {
+				onCellUpdate?.(row, col, editValue);
+			}
+			editingCell = null;
+		}
+	}
+
+	function handleCellKeydown(e: KeyboardEvent) {
+		if (e.key === 'Enter' && e.shiftKey) {
+			e.preventDefault();
+			finishCellEdit();
+		} else if (e.key === 'Escape') {
+			editingCell = null;
+		}
+	}
+
 	function handleColumnResize(colIndex: number, delta: number) {
 		const currentWidth = tableData.columnWidths[colIndex] || 100;
 		const newWidth = Math.max(40, currentWidth + delta);
@@ -239,10 +310,39 @@
 	function handleRowResize(rowIndex: number, delta: number) {
 		const currentSetting = tableData.rowHeights[rowIndex] || 32;
 		const newHeight = Math.max(32, currentSetting + delta);
+		const next = heightCache.slice();
+		if (next.length !== rowCount) next.length = rowCount;
+		next[rowIndex] = newHeight;
+		heightCache = next;
 		onRowResize?.(rowIndex, newHeight);
 	}
 
-	// ========== Canvas Resize ==========
+	let draggingRowIndex = $state<number | null>(null);
+	let dragRowStartY = 0;
+
+	function handleRowResizeStart(e: MouseEvent, rowIndex: number) {
+		e.preventDefault();
+		e.stopPropagation();
+		draggingRowIndex = rowIndex;
+		dragRowStartY = e.clientY;
+
+		const onMove = (ev: MouseEvent) => {
+			if (draggingRowIndex === null) return;
+			const delta = ev.clientY - dragRowStartY;
+			dragRowStartY = ev.clientY;
+			handleRowResize(rowIndex, delta);
+		};
+
+		const onUp = () => {
+			draggingRowIndex = null;
+			document.removeEventListener('mousemove', onMove);
+			document.removeEventListener('mouseup', onUp);
+		};
+
+		document.addEventListener('mousemove', onMove);
+		document.addEventListener('mouseup', onUp);
+	}
+
 	let isCanvasResizing = $state(false);
 	let resizeCorner = $state<'nw' | 'ne' | 'sw' | 'se' | null>(null);
 	let startX = 0;
@@ -269,10 +369,19 @@
 		let nextWidth = startWidth;
 		let nextHeight = startHeight;
 
-		if (resizeCorner === 'se') { nextWidth = startWidth + dx; nextHeight = startHeight + dy; }
-		else if (resizeCorner === 'sw') { nextWidth = startWidth - dx; nextHeight = startHeight + dy; }
-		else if (resizeCorner === 'ne') { nextWidth = startWidth + dx; nextHeight = startHeight - dy; }
-		else if (resizeCorner === 'nw') { nextWidth = startWidth - dx; nextHeight = startHeight - dy; }
+		if (resizeCorner === 'se') {
+			nextWidth = startWidth + dx;
+			nextHeight = startHeight + dy;
+		} else if (resizeCorner === 'sw') {
+			nextWidth = startWidth - dx;
+			nextHeight = startHeight + dy;
+		} else if (resizeCorner === 'ne') {
+			nextWidth = startWidth + dx;
+			nextHeight = startHeight - dy;
+		} else if (resizeCorner === 'nw') {
+			nextWidth = startWidth - dx;
+			nextHeight = startHeight - dy;
+		}
 
 		nextWidth = Math.max(minCanvasWidth, Math.round(nextWidth));
 		nextHeight = Math.max(minCanvasHeight, Math.round(nextHeight));
@@ -286,7 +395,89 @@
 		document.removeEventListener('mouseup', handleCanvasResizeEnd);
 	}
 
+	function syncViewWindow() {
+		if (!scrollViewport || !tbodyEl) return;
+		const scale = viewScale > 0 ? viewScale : 1;
+		const y = viewRectFromElements(scrollViewport, tbodyEl, scale);
+		viewStartY = y.start;
+		viewSizeY = y.size;
+		if (virtualizeCols && tableEl) {
+			const x = viewRectXFromElements(scrollViewport, tableEl, scale);
+			viewStartX = x.start;
+			viewSizeX = x.size;
+		}
+	}
+
+	function measureVisibleHeights() {
+		if (!tbodyEl && !tableEl) return;
+		const root = tableEl ?? tbodyEl;
+		if (!root) return;
+		const trs = root.querySelectorAll<HTMLTableRowElement>('tr[data-table-row]');
+		if (trs.length === 0) return;
+		let changed = false;
+		const next = heightCache.length === rowCount ? heightCache.slice() : tableData.rowHeights.slice();
+		if (next.length !== rowCount) {
+			next.length = rowCount;
+			for (let i = 0; i < rowCount; i++) {
+				if (!next[i]) next[i] = tableData.rowHeights[i] || DEFAULT_ROW_HEIGHT;
+			}
+		}
+		for (const tr of trs) {
+			const i = Number(tr.dataset.tableRow);
+			if (Number.isNaN(i) || i < 0 || i >= rowCount) continue;
+			const h = tr.offsetHeight;
+			if (h > 0 && Math.abs((next[i] || 0) - h) > 0.5) {
+				next[i] = h;
+				changed = true;
+			}
+		}
+		if (changed) heightCache = next;
+	}
+
 	$effect(() => {
+		if (!canvasElement) return;
+		scrollViewport = canvasElement.closest('[data-slot="scroll-area-viewport"]');
+		if (!virtualizeRows && !virtualizeCols) return;
+		const viewport = scrollViewport;
+		if (!viewport) return;
+		const onScroll = () => {
+			if (scrollRaf) return;
+			scrollRaf = requestAnimationFrame(() => {
+				scrollRaf = 0;
+				syncViewWindow();
+			});
+		};
+		viewport.addEventListener('scroll', onScroll, { passive: true });
+		const ro = new ResizeObserver(onScroll);
+		ro.observe(viewport);
+		onScroll();
+		return () => {
+			viewport.removeEventListener('scroll', onScroll);
+			ro.disconnect();
+			if (scrollRaf) cancelAnimationFrame(scrollRaf);
+			scrollRaf = 0;
+		};
+	});
+
+	$effect(() => {
+		if (!virtualizeRows) return;
+		bodyWindow.start;
+		bodyWindow.end;
+		void tick().then(measureVisibleHeights);
+	});
+
+	$effect(() => {
+		const r = tableData.rows.length;
+		const c = tableData.columnWidths.length;
+		untrack(() => {
+			heightCache = tableData.rowHeights.slice();
+		});
+		void r;
+		void c;
+	});
+
+	$effect(() => {
+		if (virtualizeRows) return;
 		if (canvasConfig.width !== 'auto' && canvasConfig.width < minCanvasWidth) {
 			onCanvasResize?.({ width: minCanvasWidth });
 		}
@@ -296,7 +487,6 @@
 	});
 </script>
 
-<!-- Canvas: the exportable area -->
 <div
 	class="canvas-wrapper"
 	class:resizing={isCanvasResizing}
@@ -305,26 +495,22 @@
 	style:width="{canvasWidth}px"
 	style:height="{canvasHeight}px"
 >
-	<!-- Content: table + double lines, used for size measurement -->
-	<div 
+	<div
 		class="table-content"
 		bind:this={contentElement}
 		bind:clientWidth={domContentWidth}
 		bind:clientHeight={domContentHeight}
 	>
-		<!-- Top double line (if needed) -->
 		{#if needsTopDoubleLine}
-			<div 
+			<div
 				class="double-line double-line-top {topBorderType}"
 				style:width="{tableWidth}px"
 			></div>
 		{/if}
 
-		<!-- Table wrapper for segment lines overlay -->
 		<div class="table-wrapper" style:width="{tableWidth}px">
-			<!-- Segment lines layer -->
 			<div class="segment-layer">
-				{#each segmentLines as segment}
+				{#each segmentLines as segment (segment.id)}
 					<div
 						class="segment-line"
 						style:left="{segment.left}px"
@@ -336,121 +522,92 @@
 				{/each}
 			</div>
 
-			<!-- The actual table -->
-			<table
-				class="academic-table preset-{tableStyle.preset}"
-				style:width="{tableWidth}px"
-				style:font-family={fontFamily}
-				style:font-size="{tableStyle.fontSize}pt"
-				style:--cell-padding="{cellPadding}px"
-				style:--border-top="{BORDER_WIDTH_MAP[topBorderType]}px"
-				style:--border-bottom="{BORDER_WIDTH_MAP[bottomBorderType]}px"
-				style:--border-header="{BORDER_WIDTH_MAP[tableStyle.borders.headerBottom]}px"
-				style:--border-top-style={BORDER_STYLE_MAP[topBorderType]}
-				style:--border-bottom-style={BORDER_STYLE_MAP[bottomBorderType]}
-				style:--border-header-style={BORDER_STYLE_MAP[tableStyle.borders.headerBottom]}
-			>
-				<colgroup>
-					{#each tableData.columnWidths as width}
-						<col style:width="{width}px" />
-					{/each}
-				</colgroup>
-
-				<thead>
-					{#each resolvedMatrix.slice(0, headerRowCount) as row, rowIndex}
-						{@const visibleCells = row.map((c, i) => ({ cell: c, colIndex: i })).filter(x => !x.cell.isMerged)}
-						<tr 
-							style:height="{tableData.rowHeights[rowIndex] || 32}px"
-							bind:clientHeight={domRowHeights[rowIndex]}
-						>
-							{#each row as cell, colIndex}
-								{#if !cell.isMerged}
-									{@const visibleIdx = visibleCells.findIndex(x => x.colIndex === colIndex)}
-									{@const hasLeftColoredNeighbor = Boolean(visibleIdx > 0 && visibleCells[visibleIdx - 1]?.cell.backgroundColor)}
-									{@const hasRightColoredNeighbor = Boolean(visibleIdx >= 0 && visibleIdx < visibleCells.length - 1 && visibleCells[visibleIdx + 1]?.cell.backgroundColor)}
-									<th
-										class="table-cell"
-										class:text-left={cell.effectiveAlign === 'left'}
-										class:text-center={cell.effectiveAlign === 'center'}
-										class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
-										class:font-bold={cell.effectiveBold}
-										class:font-normal={!cell.effectiveBold}
-										class:italic={cell.effectiveItalic}
-										style:background-color={cell.backgroundColor}
-										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, hasLeftColoredNeighbor, hasRightColoredNeighbor)}
-										style:color={cell.textColor}
-										colspan={cell.colspan > 1 ? cell.colspan : undefined}
-										rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
-									>
-										<TableCell cell={cell.raw} isHeader={true} onupdate={(content) => onCellUpdate?.(rowIndex, colIndex, content)} />
-									</th>
-								{/if}
-							{/each}
-						</tr>
-					{/each}
-				</thead>
-
-				<tbody>
-					{#each resolvedMatrix.slice(headerRowCount) as row, rowIndex}
-						{@const visibleCells = row.map((c, i) => ({ cell: c, colIndex: i })).filter(x => !x.cell.isMerged)}
-						<tr 
-							style:height="{tableData.rowHeights[rowIndex + headerRowCount] || 32}px"
-							bind:clientHeight={domRowHeights[rowIndex + headerRowCount]}
-						>
-							{#each row as cell, colIndex}
-								{#if !cell.isMerged}
-									{@const visibleIdx = visibleCells.findIndex(x => x.colIndex === colIndex)}
-									{@const hasLeftColoredNeighbor = Boolean(visibleIdx > 0 && visibleCells[visibleIdx - 1]?.cell.backgroundColor)}
-									{@const hasRightColoredNeighbor = Boolean(visibleIdx >= 0 && visibleIdx < visibleCells.length - 1 && visibleCells[visibleIdx + 1]?.cell.backgroundColor)}
-									<td
-										class="table-cell"
-										class:text-left={cell.effectiveAlign === 'left'}
-										class:text-center={cell.effectiveAlign === 'center'}
-										class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
-										class:font-bold={cell.effectiveBold}
-										class:italic={cell.effectiveItalic}
-										style:background-color={cell.backgroundColor}
-										style:box-shadow={getCellBgExtendStyle(cell.backgroundColor, hasLeftColoredNeighbor, hasRightColoredNeighbor)}
-										style:color={cell.textColor}
-										colspan={cell.colspan > 1 ? cell.colspan : undefined}
-										rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
-									>
-										<TableCell cell={cell.raw} onupdate={(content) => onCellUpdate?.(rowIndex + headerRowCount, colIndex, content)} />
-									</td>
-								{/if}
-							{/each}
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+			<AcademicView
+				{tableData}
+				{tableStyle}
+				{headerRowCount}
+				rowHeights={displayRowHeights}
+				{bodyWindow}
+				{colWindow}
+				{interactive}
+				{editingCell}
+				{editValue}
+				onEditValue={(value) => (editValue = value)}
+				onStartEdit={startCellEdit}
+				onFinishEdit={finishCellEdit}
+				onEditKeydown={handleCellKeydown}
+				bind:tableEl
+				bind:tbodyEl
+				bind:textareaEl
+			/>
 		</div>
 
-		<!-- Bottom double line (if needed) -->
 		{#if needsBottomDoubleLine}
-			<div 
+			<div
 				class="double-line double-line-bottom {bottomBorderType}"
 				style:width="{tableWidth}px"
 			></div>
 		{/if}
 
-		<!-- Resizers layer (inside table-content for correct positioning) -->
-		<div class="resizers-layer">
-			{#each colResizerPositions as left, colIndex}
-				<ColumnResizer onResize={(delta) => handleColumnResize(colIndex, delta)} style="left: {left}px" />
-			{/each}
-			{#each rowResizerPositions as top, rowIndex}
-				<RowResizer onResize={(delta) => handleRowResize(rowIndex, delta)} style="top: {top}px" />
-			{/each}
-		</div>
+		{#if interactive}
+			<div class="resizers-layer">
+				{#each colResizerPositions as left, colIndex}
+					<ColumnResizer onResize={(delta) => handleColumnResize(colIndex, delta)} style="left: {left}px" />
+				{/each}
+				{#if rowCount <= 40}
+					{#each rowResizerPositions as top, rowIndex}
+						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+						<div
+							class="row-resizer"
+							class:dragging={draggingRowIndex === rowIndex}
+							style="top: {top}px"
+							onmousedown={(e) => handleRowResizeStart(e, rowIndex)}
+							role="separator"
+							aria-orientation="horizontal"
+							tabindex="-1"
+						></div>
+					{/each}
+				{/if}
+			</div>
+		{/if}
 	</div>
 
-	<!-- Canvas resize handles -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="canvas-resizer nw" onmousedown={(e) => handleCanvasResizeStart(e, 'nw')}></div>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="canvas-resizer ne" onmousedown={(e) => handleCanvasResizeStart(e, 'ne')}></div>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="canvas-resizer sw" onmousedown={(e) => handleCanvasResizeStart(e, 'sw')}></div>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="canvas-resizer se" onmousedown={(e) => handleCanvasResizeStart(e, 'se')}></div>
+	{#if interactive}
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div class="canvas-resizer nw" onmousedown={(e) => handleCanvasResizeStart(e, 'nw')}></div>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div class="canvas-resizer ne" onmousedown={(e) => handleCanvasResizeStart(e, 'ne')}></div>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div class="canvas-resizer sw" onmousedown={(e) => handleCanvasResizeStart(e, 'sw')}></div>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div class="canvas-resizer se" onmousedown={(e) => handleCanvasResizeStart(e, 'se')}></div>
+	{/if}
 </div>
+
+<style>
+	:global(.academic-table .table-cell) {
+		white-space: pre-wrap;
+	}
+	:global(.academic-table .virtual-spacer) {
+		padding: 0 !important;
+		border: none !important;
+		line-height: 0 !important;
+		font-size: 0 !important;
+		background: transparent !important;
+		pointer-events: none;
+	}
+	.row-resizer {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 7px;
+		margin-top: -3px;
+		cursor: row-resize;
+		z-index: 10;
+		transition: background-color 0.15s;
+	}
+	.row-resizer:hover,
+	.row-resizer.dragging {
+		background-color: var(--primary, #3b82f6);
+	}
+</style>

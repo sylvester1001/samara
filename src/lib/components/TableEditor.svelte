@@ -2,7 +2,7 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import TableSizeSelector from './TableSizeSelector.svelte';
 	import AppTooltip from '$lib/components/AppTooltip.svelte';
-	import { tick } from 'svelte';
+	import { tick, untrack } from 'svelte';
 	import {
 		Plus,
 		X,
@@ -19,6 +19,23 @@
 	import type { Cell } from '$lib/types';
 	import type { LineEdge } from '$lib/utils/table-geometry';
 	import { resolveCell } from '$lib/utils/table-semantics';
+	import {
+		shouldWindowRows,
+		shouldWindowCols,
+		prefixSums,
+		computeWindow,
+		expandWindowForSpans,
+		indexAxisSpans,
+		rangeIndices,
+		viewRectFromElements,
+		viewRectXFromElements,
+		fullWindow,
+		ROW_OVERSCAN,
+		COL_OVERSCAN,
+		DEFAULT_EDITOR_ROW_HEIGHT,
+		EMPTY_SPANS,
+		findIndex
+	} from '$lib/utils/table-window';
 	import { uiTheme, themeFeatures } from '$lib/stores/ui-theme.svelte.js';
 	import CellReticle from './effects/CellReticle.svelte';
 	import LineSlice from './effects/LineSlice.svelte';
@@ -47,6 +64,9 @@
 		onAddLine?: (edge: LineEdge) => void;
 		draftStatus?: 'saved' | 'saving';
 		savePulseKey?: number;
+		/** 行列结构/合并变化计数，避免着色时重扫整表 span */
+		layoutRev?: number;
+		contentRev?: number;
 	}
 
 	let {
@@ -71,7 +91,9 @@
 		onUnmergeCells,
 		onAddLine,
 		draftStatus = 'saved',
-		savePulseKey = 0
+		savePulseKey = 0,
+		layoutRev = 0,
+		contentRev = 0
 	}: Props = $props();
 
 	const rowCount = $derived(rows.length);
@@ -123,45 +145,110 @@
 	let isDragging = $state(false);
 	let dragStartCell = $state<{ row: number; col: number } | null>(null);
 	let tableElement: HTMLTableElement | null = $state(null);
-	let cachedColBounds: { left: number; right: number }[] | null = null;
-	let cachedRowBounds: { top: number; bottom: number }[] | null = null;
 	let lastHoverRow: number | null = null;
 	let lastHoverCol: number | null = null;
 	const inputPaddingXRem = 1.25;
 	let contextCell = $state<{ row: number; col: number } | null>(null);
 
-	const wideCharPattern =
-		/[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/;
-
 	function getDisplayLength(value: string) {
 		let length = 0;
-		for (const char of value) {
-			length += wideCharPattern.test(char) ? 2 : 1;
+		for (let i = 0; i < value.length; i++) {
+			length += value.charCodeAt(i) > 255 ? 2 : 1;
 		}
 		return length;
 	}
 
 	const columnCharWidths = $derived.by(() => {
-		const columns = rows[0]?.length || 0;
-		const widths = Array(columns).fill(1);
-		for (let r = 0; r < rows.length; r++) {
-			const row = rows[r] ?? [];
-			for (let c = 0; c < columns; c++) {
-				const cell = row[c];
-				if (!cell || cell.isMerged) continue;
-				const content = cell.content ?? '';
-				const length = Math.max(1, getDisplayLength(content));
-				const colspan = Math.max(1, cell.colspan ?? 1);
-				const perColumn = Math.ceil(length / colspan);
-				for (let span = 0; span < colspan && c + span < columns; span++) {
-					if (perColumn > widths[c + span]) {
-						widths[c + span] = perColumn;
+		void contentRev;
+		void layoutRev;
+		return untrack(() => {
+			const columns = rows[0]?.length || 0;
+			const widths = Array(columns).fill(1);
+			const scanLimit = Math.min(rows.length, 250);
+			for (let r = 0; r < scanLimit; r++) {
+				const row = rows[r] ?? [];
+				for (let c = 0; c < columns; c++) {
+					const cell = row[c];
+					if (!cell || cell.isMerged) continue;
+					const content = cell.content ?? '';
+					const length = Math.max(1, getDisplayLength(content));
+					const colspan = Math.max(1, cell.colspan ?? 1);
+					const perColumn = Math.ceil(length / colspan);
+					for (let span = 0; span < colspan && c + span < columns; span++) {
+						if (perColumn > widths[c + span]) {
+							widths[c + span] = perColumn;
+						}
 					}
 				}
 			}
-		}
-		return widths;
+			return widths;
+		});
 	});
+
+	const virtualizeRows = $derived(shouldWindowRows(rowCount) && !headerAdjustMode);
+	const virtualizeCols = $derived(shouldWindowCols(colCount));
+
+	const editorRowHeights = $derived.by(() => {
+		const heights = new Array(rowCount);
+		const cache = rowHeightCache;
+		const fallback = typicalRowHeight;
+		for (let i = 0; i < rowCount; i++) {
+			heights[i] = cache[i] || fallback;
+		}
+		return heights;
+	});
+	const editorRowOffsets = $derived(prefixSums(editorRowHeights));
+	const rowSpanOrigins = $derived.by(() => {
+		void layoutRev;
+		if (!virtualizeRows) return EMPTY_SPANS;
+		return untrack(() => indexAxisSpans(rows, 'row'));
+	});
+	const colSpanOrigins = $derived.by(() => {
+		void layoutRev;
+		if (!virtualizeCols) return EMPTY_SPANS;
+		return untrack(() => indexAxisSpans(rows, 'col'));
+	});
+
+	const rowWindow = $derived.by(() => {
+		if (!virtualizeRows) return fullWindow(rowCount);
+		const raw = computeWindow(rowCount, editorRowOffsets, viewStartY, viewSizeY, ROW_OVERSCAN);
+		return expandWindowForSpans(raw, rowCount, editorRowOffsets, rowSpanOrigins);
+	});
+
+	const colPixelOffsets = $derived.by(() => {
+		if (!virtualizeCols) return [] as number[];
+		const gutterGuess = 40;
+		const viewportW = editorViewport?.clientWidth ?? 800;
+		const tableW = tableElement?.offsetWidth ?? Math.max(viewportW, colCount * 48 + gutterGuess);
+		const dataW = Math.max(colCount, tableW - gutterGuess);
+		return prefixSums(Array.from({ length: colCount }, () => dataW / colCount));
+	});
+
+	const colWindow = $derived.by(() => {
+		if (!virtualizeCols) return fullWindow(colCount);
+		const raw = computeWindow(colCount, colPixelOffsets, viewStartX, viewSizeX, COL_OVERSCAN);
+		return expandWindowForSpans(raw, colCount, colPixelOffsets, colSpanOrigins);
+	});
+
+	const visibleRowIndices = $derived(rangeIndices(rowWindow.start, rowWindow.end));
+	const visibleColIndices = $derived(rangeIndices(colWindow.start, colWindow.end));
+	const showColPadStart = $derived(virtualizeCols && colWindow.start > 0);
+	const showColPadEnd = $derived(virtualizeCols && colWindow.end < colCount);
+	const colPadStartChars = $derived.by(() => {
+		if (!showColPadStart) return 0;
+		let sum = 0;
+		for (let c = 0; c < colWindow.start; c++) sum += columnCharWidths[c] ?? 1;
+		return sum;
+	});
+	const colPadEndChars = $derived.by(() => {
+		if (!showColPadEnd) return 0;
+		let sum = 0;
+		for (let c = colWindow.end; c < colCount; c++) sum += columnCharWidths[c] ?? 1;
+		return sum;
+	});
+	const editorSpacerColspan = $derived(
+		1 + visibleColIndices.length + (showColPadStart ? 1 : 0) + (showColPadEnd ? 1 : 0)
+	);
 
 	function getColumnWidthStyle(chars: number) {
 		return `calc(${chars}ch + ${inputPaddingXRem}rem)`;
@@ -220,9 +307,18 @@
 	const canAddLine = $derived(selectedCells.length > 0);
 
 	let gridWrap: HTMLElement | null = $state(null);
+	let editorViewport: HTMLElement | null = $state(null);
+	let tbodyEl: HTMLTableSectionElement | null = $state(null);
 	let headerBox = $state({ top: 0, left: 0, width: 0, height: 0 });
 	let headerDragStart = 1;
 	let headerDragCount = 1;
+	let viewStartY = $state(0);
+	let viewSizeY = $state(800);
+	let viewStartX = $state(0);
+	let viewSizeX = $state(1200);
+	let typicalRowHeight = $state(DEFAULT_EDITOR_ROW_HEIGHT);
+	let rowHeightCache: number[] = $state([]);
+	let scrollRaf = 0;
 
 	function measureHeaderBox() {
 		if (!gridWrap || !headerAdjustMode) return;
@@ -241,6 +337,62 @@
 		};
 	}
 
+	function syncEditorWindow() {
+		if (!editorViewport || !tbodyEl) return;
+		const y = viewRectFromElements(editorViewport, tbodyEl, 1);
+		viewStartY = y.start;
+		viewSizeY = y.size;
+		if (virtualizeCols && tableElement) {
+			const gutterEl = tableElement.tHead?.rows[0]?.cells[0];
+			const gutterW = gutterEl?.getBoundingClientRect().width ?? 0;
+			const x = viewRectXFromElements(editorViewport, tableElement, 1);
+			viewStartX = x.start - gutterW;
+			viewSizeX = x.size;
+		}
+	}
+
+	function refreshRowHeightCache() {
+		if (!tbodyEl) return;
+		const trs = tbodyEl.querySelectorAll<HTMLTableRowElement>('tr[data-table-row]');
+		if (trs.length === 0) return;
+		let changed = false;
+		const next = rowHeightCache.length === rowCount ? rowHeightCache.slice() : new Array(rowCount);
+		if (next.length !== rowCount) next.length = rowCount;
+		let sample = 0;
+		for (const tr of trs) {
+			const i = Number(tr.dataset.tableRow);
+			if (Number.isNaN(i) || i < 0 || i >= rowCount) continue;
+			const h = tr.offsetHeight;
+			if (h > 0) {
+				if (!sample) sample = h;
+				if (next[i] !== h) {
+					next[i] = h;
+					changed = true;
+				}
+			}
+		}
+		if (sample && sample !== typicalRowHeight) {
+			typicalRowHeight = sample;
+			changed = true;
+		}
+		if (changed) rowHeightCache = next;
+	}
+
+	function hitTestCell(clientX: number, clientY: number): { row: number; col: number } | null {
+		if (!tableElement || !tbodyEl || rowCount === 0 || colCount === 0) return null;
+		const tbodyRect = tbodyEl.getBoundingClientRect();
+		const y = clientY - tbodyRect.top;
+		const row = Math.max(0, Math.min(rowCount - 1, findIndex(editorRowOffsets, y)));
+
+		const tableRect = tableElement.getBoundingClientRect();
+		const gutterEl = tableElement.tHead?.rows[0]?.cells[0];
+		const gutterW = gutterEl?.getBoundingClientRect().width ?? 0;
+		const dataW = Math.max(1, tableRect.width - gutterW);
+		const x = clientX - tableRect.left - gutterW;
+		const col = Math.max(0, Math.min(colCount - 1, Math.floor((x / dataW) * colCount)));
+		return { row, col };
+	}
+
 	$effect(() => {
 		if (!headerAdjustMode) return;
 		headerRows;
@@ -257,6 +409,42 @@
 			window.removeEventListener('resize', onScroll);
 			observer.disconnect();
 		};
+	});
+
+	$effect(() => {
+		const r = rowCount;
+		rowHeightCache = new Array(r);
+		typicalRowHeight = DEFAULT_EDITOR_ROW_HEIGHT;
+	});
+
+	$effect(() => {
+		const viewport = editorViewport;
+		if (!viewport || (!virtualizeRows && !virtualizeCols)) return;
+		const onScroll = () => {
+			if (scrollRaf) return;
+			scrollRaf = requestAnimationFrame(() => {
+				scrollRaf = 0;
+				syncEditorWindow();
+			});
+		};
+		viewport.addEventListener('scroll', onScroll, { passive: true });
+		const ro = new ResizeObserver(onScroll);
+		ro.observe(viewport);
+		onScroll();
+		return () => {
+			viewport.removeEventListener('scroll', onScroll);
+			ro.disconnect();
+			if (scrollRaf) cancelAnimationFrame(scrollRaf);
+			scrollRaf = 0;
+		};
+	});
+
+	$effect(() => {
+		rowWindow.start;
+		rowWindow.end;
+		colWindow.start;
+		colWindow.end;
+		void tick().then(refreshRowHeightCache);
 	});
 
 	function handleHeaderDragStart(e: MouseEvent) {
@@ -284,9 +472,18 @@
 		document.addEventListener('mouseup', onUp);
 	}
 
-	function handleHeaderAdjustKeydown(e: KeyboardEvent) {
+	function handleWindowKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape' && headerAdjustMode) {
 			onHeaderAdjustModeChange?.(false);
+			return;
+		}
+		// 多选状态下按 Backspace 或 Delete 直接清空选中单元格
+		if ((e.key === 'Backspace' || e.key === 'Delete') && selectedCells.length > 1) {
+			const activeTag = (document.activeElement as HTMLElement)?.tagName;
+			if (activeTag !== 'INPUT' && activeTag !== 'TEXTAREA') {
+				e.preventDefault();
+				onClearSelectedCells?.();
+			}
 		}
 	}
 
@@ -295,10 +492,25 @@
 	}
 
 	// Auto-resize textarea height (fallback for browsers without field-sizing support)
-	function autoResizeTextarea(e: Event) {
-		const textarea = e.target as HTMLTextAreaElement;
+	function autoResizeTextarea(target: HTMLTextAreaElement | Event) {
+		const textarea = (target instanceof Event ? target.target : target) as HTMLTextAreaElement;
+		if (!textarea) return;
 		textarea.style.height = 'auto';
 		textarea.style.height = `${textarea.scrollHeight}px`;
+	}
+
+	function focusOnMount(node: HTMLTextAreaElement) {
+		node.focus();
+		autoResizeTextarea(node);
+	}
+
+	function isSingleActive(rowIndex: number, colIndex: number) {
+		return (
+			!isDragging &&
+			selectedCells.length === 1 &&
+			selectedCells[0].row === rowIndex &&
+			selectedCells[0].col === colIndex
+		);
 	}
 
 	function handleCellFocus(e: FocusEvent, rowIndex: number, colIndex: number) {
@@ -443,13 +655,32 @@
 		}
 	}
 
-	function navigateToCell(row: number, col: number) {
+	async function navigateToCell(row: number, col: number) {
 		selectionAnchor = { row, col };
 		onSelectionChange([{ row, col }]);
+		if ((virtualizeRows || virtualizeCols) && editorViewport) {
+			if (virtualizeRows) {
+				const padding = 16;
+				const theadH = tableElement?.tHead?.offsetHeight ?? 28;
+				const top = editorRowOffsets[row] ?? row * typicalRowHeight;
+				editorViewport.scrollTop = Math.max(0, padding + theadH + top - editorViewport.clientHeight / 3);
+			}
+			if (virtualizeCols && tableElement) {
+				const gutterW = tableElement.tHead?.rows[0]?.cells[0]?.getBoundingClientRect().width ?? 40;
+				const dataW = Math.max(1, tableElement.offsetWidth - gutterW);
+				const colW = dataW / colCount;
+				editorViewport.scrollLeft = Math.max(0, gutterW + col * colW - 80);
+			}
+			syncEditorWindow();
+		}
+		await tick();
+		gridWrap?.querySelector(`tr[data-table-row="${row}"]`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+		await tick();
 		const target = gridWrap?.querySelector<HTMLTextAreaElement>(
 			`textarea[data-row="${row}"][data-col="${col}"]`
 		);
 		target?.focus();
+		if (target) autoResizeTextarea(target);
 	}
 
 	function handleKeyDown(e: KeyboardEvent, rowIndex: number, colIndex: number) {
@@ -559,38 +790,19 @@
 		selectionAnchor = { row: rowIndex, col: colIndex };
 		lastHoverRow = rowIndex;
 		lastHoverCol = colIndex;
-		measureTableGrid();
 
 		if (!isSelected(rowIndex, colIndex) || selectedCells.length > 1) {
 			onSelectionChange([{ row: rowIndex, col: colIndex }]);
 		}
 	}
 
-	function measureTableGrid() {
-		if (!tableElement) return;
-		const tableRect = tableElement.getBoundingClientRect();
-		const ths = tableElement.querySelectorAll<HTMLTableCellElement>('thead tr th[data-col]');
-		const colBounds: { left: number; right: number }[] = [];
-		ths.forEach((th) => {
-			const rect = th.getBoundingClientRect();
-			colBounds.push({
-				left: rect.left - tableRect.left,
-				right: rect.right - tableRect.left
-			});
-		});
-
-		const trs = tableElement.querySelectorAll<HTMLTableRowElement>('tbody tr[data-table-row]');
-		const rowBounds: { top: number; bottom: number }[] = [];
-		trs.forEach((tr) => {
-			const rect = tr.getBoundingClientRect();
-			rowBounds.push({
-				top: rect.top - tableRect.top,
-				bottom: rect.bottom - tableRect.top
-			});
-		});
-
-		cachedColBounds = colBounds;
-		cachedRowBounds = rowBounds;
+	function handleTbodyMouseDown(e: MouseEvent) {
+		const target = (e.target as HTMLElement | null)?.closest('td[data-row][data-col]');
+		if (!target) return;
+		const row = Number(target.getAttribute('data-row'));
+		const col = Number(target.getAttribute('data-col'));
+		if (Number.isNaN(row) || Number.isNaN(col)) return;
+		handleCellMouseDown(e, row, col);
 	}
 
 	function handleWindowMouseMove(e: MouseEvent) {
@@ -598,29 +810,11 @@
 			handleWindowMouseUp();
 			return;
 		}
-		if (!dragStartCell || !cachedColBounds || !cachedRowBounds || !tableElement) return;
+		if (!dragStartCell || !tableElement) return;
 
-		const tableRect = tableElement.getBoundingClientRect();
-		const mouseX = e.clientX - tableRect.left;
-		const mouseY = e.clientY - tableRect.top;
-
-		let targetCol = cachedColBounds.length - 1;
-		for (let c = 0; c < cachedColBounds.length; c++) {
-			if (mouseX < cachedColBounds[c].right) {
-				targetCol = c;
-				break;
-			}
-		}
-		if (mouseX < cachedColBounds[0].left) targetCol = 0;
-
-		let targetRow = cachedRowBounds.length - 1;
-		for (let r = 0; r < cachedRowBounds.length; r++) {
-			if (mouseY < cachedRowBounds[r].bottom) {
-				targetRow = r;
-				break;
-			}
-		}
-		if (mouseY < cachedRowBounds[0].top) targetRow = 0;
+		const hit = hitTestCell(e.clientX, e.clientY);
+		if (!hit) return;
+		const { row: targetRow, col: targetCol } = hit;
 
 		if (!isDragging) {
 			if (targetRow === dragStartCell.row && targetCol === dragStartCell.col) {
@@ -648,8 +842,6 @@
 		dragStartCell = null;
 		lastHoverRow = null;
 		lastHoverCol = null;
-		cachedColBounds = null;
-		cachedRowBounds = null;
 	}
 
 	function isSelected(rowIndex: number, colIndex: number) {
@@ -707,7 +899,7 @@
 	}
 </script>
 
-<svelte:window onmousemove={handleWindowMouseMove} onmouseup={handleWindowMouseUp} onpointerup={handleWindowMouseUp} onkeydown={handleHeaderAdjustKeydown} />
+<svelte:window onmousemove={handleWindowMouseMove} onmouseup={handleWindowMouseUp} onpointerup={handleWindowMouseUp} onkeydown={handleWindowKeydown} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="table-editor {uiTheme.theme === 'avant-garde' ? 'tech-corners' : ''} flex flex-col h-full bg-background rounded-[var(--radius)] border border-border" onmousedown={handleEditorClick}>
@@ -740,7 +932,7 @@
 		</div>
 	</div>
 
-	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both">
+	<ScrollArea class="flex-1 min-h-0 relative z-10" orientation="both" bind:viewportRef={editorViewport}>
 		<div class="p-4 w-full">
 			<ContextMenu.Root>
 				<ContextMenu.Trigger class="block w-full select-none" oncontextmenu={handleContextMenu}>
@@ -748,9 +940,15 @@
 					<table bind:this={tableElement} class="w-full border-collapse table-fixed select-none">
 						<colgroup>
 							<col style="width: {rowGutterWidth};" />
-							{#each columnCharWidths as width}
-								<col style="width: {dataColWidth}; min-width: {getColumnWidthStyle(width)};" />
+							{#if showColPadStart}
+								<col style="width: calc((100% - {rowGutterWidth}) * {colWindow.start} / {colCount}); min-width: {getColumnWidthStyle(colPadStartChars)};" />
+							{/if}
+							{#each visibleColIndices as colIndex (colIndex)}
+								<col style="width: {dataColWidth}; min-width: {getColumnWidthStyle(columnCharWidths[colIndex] ?? 1)};" />
 							{/each}
+							{#if showColPadEnd}
+								<col style="width: calc((100% - {rowGutterWidth}) * {colCount - colWindow.end} / {colCount}); min-width: {getColumnWidthStyle(colPadEndChars)};" />
+							{/if}
 						</colgroup>
 						<thead>
 							<tr>
@@ -779,7 +977,10 @@
 										{/snippet}
 									</AppTooltip>
 								</th>
-								{#each rows[0] || [] as _, colIndex}
+								{#if showColPadStart}
+									<th class="virtual-spacer" aria-hidden="true"></th>
+								{/if}
+								{#each visibleColIndices as colIndex (colIndex)}
 									<th
 										data-col={colIndex}
 										class="relative px-2 py-1.5 bg-muted/30 hover:bg-muted/60 border border-zinc-200 dark:border-zinc-800 text-[11px] {uiTheme.theme === 'avant-garde' ? 'font-terminal font-semibold' : 'font-sans font-medium'} text-muted-foreground text-center group select-none cursor-pointer transition-colors"
@@ -798,17 +999,27 @@
 															onDeleteColumn(colIndex);
 														}}
 													>
-														<X class="size-2.5 stroke-[2.2]" />
+														<svg class="size-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
 													</button>
 												{/snippet}
 											</AppTooltip>
 										{/if}
 									</th>
 								{/each}
+								{#if showColPadEnd}
+									<th class="virtual-spacer" aria-hidden="true"></th>
+								{/if}
 							</tr>
 						</thead>
-						<tbody>
-							{#each rows as row, rowIndex}
+						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+						<tbody bind:this={tbodyEl} onmousedown={handleTbodyMouseDown}>
+							{#if rowWindow.padStart > 0}
+								<tr class="virtual-spacer" aria-hidden="true">
+									<td colspan={editorSpacerColspan} style:height="{rowWindow.padStart}px"></td>
+								</tr>
+							{/if}
+							{#each visibleRowIndices as rowIndex (rowIndex)}
+								{@const row = rows[rowIndex] ?? []}
 								<tr
 									data-table-row={rowIndex}
 									class={rowIndex < headerRows ? (uiTheme.theme === 'avant-garde' ? 'bg-[var(--cobalt-subtle)]' : 'bg-muted/40') : ''}
@@ -820,26 +1031,27 @@
 									>
 										<span class="row-header-num block leading-none transition-opacity">{rowIndex + 1}</span>
 										{#if rowCount > 1}
-											<AppTooltip text={t('table.deleteRow', { n: rowIndex + 1 })}>
-												{#snippet children({ props })}
-													<button 
-														type="button"
-														class="header-delete-btn absolute inset-0 m-auto size-4 flex items-center justify-center rounded-[2px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 opacity-0 transition-all cursor-pointer pointer-events-none hover:pointer-events-auto" 
-														{...props}
-														onclick={(e) => {
-															e.stopPropagation();
-															onDeleteRow(rowIndex);
-														}}
-													>
-														<X class="size-2.5 stroke-[2.2]" />
-													</button>
-												{/snippet}
-											</AppTooltip>
+											<button 
+												type="button"
+												class="header-delete-btn absolute inset-0 m-auto size-4 flex items-center justify-center rounded-[2px] text-muted-foreground hover:text-destructive hover:bg-destructive/10 dark:hover:bg-destructive/20 opacity-0 transition-all cursor-pointer pointer-events-none hover:pointer-events-auto" 
+												title={t('table.deleteRow', { n: rowIndex + 1 })}
+												aria-label={t('table.deleteRow', { n: rowIndex + 1 })}
+												onclick={(e) => {
+													e.stopPropagation();
+													onDeleteRow(rowIndex);
+												}}
+											>
+												<svg class="size-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+											</button>
 										{/if}
 									</td>
-									{#each row as rawCell, colIndex}
-										{@const cell = resolveCell(rawCell, rowIndex, colIndex, headerRows)}
-										{#if !cell.isMerged}
+									{#if showColPadStart}
+										<td class="virtual-spacer" aria-hidden="true"></td>
+									{/if}
+									{#each visibleColIndices as colIndex (colIndex)}
+										{@const rawCell = row[colIndex]}
+										{@const cell = rawCell ? resolveCell(rawCell, rowIndex, colIndex, headerRows) : null}
+										{#if cell && !cell.isMerged}
 											<td
 												class="p-0 relative align-middle {isSelected(rowIndex, colIndex) ? 'bg-blue-50/90 dark:bg-[#1e3a5f]/80 border border-blue-200/90 dark:border-[#2d5282]' : 'border border-zinc-200 dark:border-zinc-800'}"
 												class:font-bold={cell.effectiveBold}
@@ -850,7 +1062,6 @@
 												rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
 												data-row={rowIndex}
 												data-col={colIndex}
-												onmousedown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
 											>
 												{#if themeFeatures[uiTheme.theme]?.reticleCorners && selectionBounds && isSelected(rowIndex, colIndex)}
 													{@const isTL = rowIndex === selectionBounds.minR && colIndex === selectionBounds.minC}
@@ -861,33 +1072,55 @@
 														<CellReticle tl={isTL} tr={isTR} bl={isBL} br={isBR} />
 													{/if}
 												{/if}
-												<textarea
-													rows="1"
-													cols="1"
-													class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden select-text {cell.effectiveBold ? 'font-bold' : ''}"
-													class:pointer-events-none={isDragging}
-													class:select-none={isDragging}
-													style="vertical-align: middle; min-height: 1.5em; user-select: text; -webkit-user-select: text;"
-													class:text-left={cell.effectiveAlign === 'left'}
-													class:text-center={cell.effectiveAlign === 'center'}
-													class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
-													data-row={rowIndex}
-													data-col={colIndex}
-													oninput={(e) => {
-														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex);
-														autoResizeTextarea(e);
-													}}
-													onfocus={(e) => handleCellFocus(e, rowIndex, colIndex)}
-													oncompositionupdate={(e) =>
-														handleCellInput((e.target as HTMLTextAreaElement).value, rowIndex, colIndex)
-													}
-													onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-												>{cell.content}</textarea>
+												{#if isSingleActive(rowIndex, colIndex)}
+													<textarea
+														use:focusOnMount
+														rows="1"
+														cols="1"
+														class="w-full min-w-0 px-2 py-1.5 text-xs bg-transparent border-none outline-none text-inherit font-inherit resize-none overflow-hidden select-text {cell.effectiveBold ? 'font-bold' : ''}"
+														class:pointer-events-none={isDragging}
+														class:select-none={isDragging}
+														style="vertical-align: middle; min-height: 1.5em; user-select: text; -webkit-user-select: text;"
+														class:text-left={cell.effectiveAlign === 'left'}
+														class:text-center={cell.effectiveAlign === 'center'}
+														class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
+														data-row={rowIndex}
+														data-col={colIndex}
+														oninput={(e) => {
+															const target = e.target as HTMLTextAreaElement;
+															handleCellInput(target.value, rowIndex, colIndex);
+															autoResizeTextarea(target);
+														}}
+														oncompositionupdate={(e) => {
+															const target = e.target as HTMLTextAreaElement;
+															handleCellInput(target.value, rowIndex, colIndex);
+														}}
+														onkeydown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+													>{cell.content}</textarea>
+												{:else}
+													<div
+														class="w-full min-w-0 px-2 py-1.5 text-xs select-none truncate overflow-hidden pointer-events-none leading-normal {cell.effectiveBold ? 'font-bold' : ''}"
+														style="vertical-align: middle; min-height: 1.5em;"
+														class:text-left={cell.effectiveAlign === 'left'}
+														class:text-center={cell.effectiveAlign === 'center'}
+														class:text-right={cell.effectiveAlign === 'right' || cell.effectiveAlign === 'decimal'}
+													>
+														{cell.content || '\u00A0'}
+													</div>
+												{/if}
 											</td>
 										{/if}
 									{/each}
+									{#if showColPadEnd}
+										<td class="virtual-spacer" aria-hidden="true"></td>
+									{/if}
 								</tr>
 							{/each}
+							{#if rowWindow.padEnd > 0}
+								<tr class="virtual-spacer" aria-hidden="true">
+									<td colspan={editorSpacerColspan} style:height="{rowWindow.padEnd}px"></td>
+								</tr>
+							{/if}
 						</tbody>
 					</table>
 					{#if activeLaser}
@@ -1168,6 +1401,14 @@
 	}
 	:global(.table-editor td:hover .row-header-num) {
 		opacity: 0 !important;
+	}
+	:global(.table-editor .virtual-spacer) {
+		padding: 0 !important;
+		border: none !important;
+		line-height: 0 !important;
+		font-size: 0 !important;
+		background: transparent !important;
+		pointer-events: none;
 	}
 
 	.nier-diamond-tl,
