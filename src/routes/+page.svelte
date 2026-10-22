@@ -886,6 +886,8 @@
 										canvasRef={(el) => (tableElement = el)}
 										viewScale={previewZoom}
 										layoutRev={tableStore.layoutRev}
+										lockColumnResize={tableStore.lockColumnResize}
+										lockRowResize={tableStore.lockRowResize}
 									/>
 								</div>
 							</div>

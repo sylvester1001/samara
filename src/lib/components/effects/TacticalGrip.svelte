@@ -2,15 +2,24 @@
 	interface Props {
 		/** 矩形滑块颜色，默认采用先锋标志性钴蓝 */
 		color?: string;
+		/** 由父级控制展开（轴抓手 hover/drag），不依赖分栏 data-slot */
+		active?: boolean;
+		/** 横放：行高抓手 */
+		horizontal?: boolean;
+		/** 由父级定位中心点，不再绝对铺在分栏中间 */
+		embedded?: boolean;
 	}
 
 	let {
-		color = 'var(--cobalt, #0202f1)'
+		color = 'var(--cobalt, #0202f1)',
+		active = false,
+		horizontal = false,
+		embedded = false
 	}: Props = $props();
 </script>
 
 <div
-	class="tactical-grip pointer-events-none absolute top-[40%] left-1/2 select-none z-30 w-[6px] h-[24px]"
+	class="tactical-grip pointer-events-none select-none z-30 w-[6px] h-[24px] {embedded ? 'absolute left-0 top-0' : 'absolute top-[40%] left-1/2'} {active ? 'is-active' : ''} {horizontal ? 'is-horizontal' : ''}"
 	aria-hidden="true"
 >
 	<!-- 第一段：四块向心合体的主核（上下两端带 45° 锋利筝形切角 Kite-Faceted Spear） -->
@@ -60,6 +69,10 @@
 		will-change: transform, opacity;
 	}
 
+	.tactical-grip.is-horizontal {
+		transform: translate3d(-50%, -50%, 0) rotate(90deg);
+	}
+
 	/* =========================================================
 	   第一段动效：中间筝形主核 (Kite Core)
 	   ========================================================= */
@@ -84,6 +97,7 @@
 	}
 
 	/* 第一段进场：160ms 快速咬合合体 */
+	.tactical-grip.is-active,
 	:global([data-slot="resizable-handle"]:hover) .tactical-grip,
 	:global([data-slot="resizable-handle"]:active) .tactical-grip,
 	:global([data-slot="resizable-handle"][data-state="drag"]) .tactical-grip,
@@ -92,6 +106,7 @@
 		transition: opacity 90ms ease-out;
 	}
 
+	.tactical-grip.is-active .grip-block,
 	:global([data-slot="resizable-handle"]:hover) .grip-block,
 	:global([data-slot="resizable-handle"]:active) .grip-block,
 	:global([data-slot="resizable-handle"][data-state="drag"]) .grip-block,
@@ -121,6 +136,7 @@
 	}
 
 	/* 第二段进场：主核刚刚合拢（130ms 延迟），两侧菱形晶片平稳滑入腰部两侧对准 */
+	.tactical-grip.is-active .wing-left,
 	:global([data-slot="resizable-handle"]:hover) .wing-left,
 	:global([data-slot="resizable-handle"]:active) .wing-left,
 	:global([data-slot="resizable-handle"][data-state="drag"]) .wing-left,
@@ -130,6 +146,7 @@
 		transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1) 130ms, opacity 140ms ease-out 110ms;
 	}
 
+	.tactical-grip.is-active .wing-right,
 	:global([data-slot="resizable-handle"]:hover) .wing-right,
 	:global([data-slot="resizable-handle"]:active) .wing-right,
 	:global([data-slot="resizable-handle"][data-state="drag"]) .wing-right,

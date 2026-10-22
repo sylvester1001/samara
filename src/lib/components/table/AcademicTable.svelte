@@ -2,7 +2,7 @@
 	import type { TableData, TableStyle, CanvasConfig } from '$lib/types';
 	import { tick, untrack } from 'svelte';
 	import AcademicView from './AcademicView.svelte';
-	import ColumnResizer from './ColumnResizer.svelte';
+	import AxisResizers from './AxisResizers.svelte';
 	import {
 		shouldWindowRows,
 		shouldWindowCols,
@@ -35,6 +35,8 @@
 		fullRender?: boolean;
 		interactive?: boolean;
 		layoutRev?: number;
+		lockColumnResize?: boolean;
+		lockRowResize?: boolean;
 	}
 
 	let {
@@ -49,7 +51,9 @@
 		viewScale = 1,
 		fullRender = false,
 		interactive = true,
-		layoutRev = 0
+		layoutRev = 0,
+		lockColumnResize = false,
+		lockRowResize = false
 	}: Props = $props();
 
 	const SEGMENT_WIDTH_MAP: Record<string, number> = {
@@ -208,12 +212,55 @@
 		return Math.max(requestedCanvasHeight, minCanvasHeight);
 	});
 
+	let measuredRowPositions = $state<(number | undefined)[]>([]);
+	let measuredColPositions = $state<(number | undefined)[]>([]);
+
+	function syncDomPositions() {
+		if (!tableEl || !contentElement) return;
+		const contentRect = contentElement.getBoundingClientRect();
+		if (contentRect.height <= 0 || contentRect.width <= 0) return;
+		const scale = viewScale > 0 ? viewScale : 1;
+
+		// 1. Measure rows: exactly at bottom edge of each <tr> in tableEl
+		const trs = tableEl.querySelectorAll<HTMLTableRowElement>('tr[data-table-row]');
+		if (trs.length > 0) {
+			const rowPositions: (number | undefined)[] = new Array(rowCount);
+			for (const tr of trs) {
+				const idx = Number(tr.dataset.tableRow);
+				if (Number.isNaN(idx) || idx < 0 || idx >= rowCount) continue;
+				const trRect = tr.getBoundingClientRect();
+				// 在 border-collapse: collapse 下，trRect.bottom 恰为行底折叠边框的中轴线
+				const pos = (trRect.bottom - contentRect.top) / scale;
+				rowPositions[idx] = pos;
+			}
+			measuredRowPositions = rowPositions;
+		}
+
+		// 2. Measure columns: exactly at right edge of column cells
+		const ths = tableEl.querySelectorAll<HTMLTableCellElement>('thead tr:first-child > th[data-col]');
+		if (ths.length > 0) {
+			const colPositions: (number | undefined)[] = new Array(colCount);
+			for (const th of ths) {
+				const colIdx = Number(th.dataset.col);
+				const colspan = Number(th.getAttribute('colspan') || 1);
+				if (Number.isNaN(colIdx) || colIdx < 0) continue;
+				const targetCol = colIdx + colspan - 1;
+				if (targetCol >= colCount) continue;
+				const thRect = th.getBoundingClientRect();
+				// 在 border-collapse: collapse 下，thRect.right 恰为列边框中轴线
+				const pos = (thRect.right - contentRect.left) / scale;
+				colPositions[targetCol] = pos;
+			}
+			measuredColPositions = colPositions;
+		}
+	}
+
 	const rowResizerPositions = $derived.by(() => {
 		const positions: number[] = [];
 		let currentTop = needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0;
 		for (let i = 0; i < displayRowHeights.length; i++) {
 			currentTop += displayRowHeights[i];
-			positions.push(currentTop);
+			positions.push(measuredRowPositions[i] ?? currentTop);
 		}
 		return positions;
 	});
@@ -221,11 +268,34 @@
 	const colResizerPositions = $derived.by(() => {
 		const positions: number[] = [];
 		let currentLeft = 0;
-		for (const width of tableData.columnWidths) {
-			currentLeft += width;
-			positions.push(currentLeft);
+		for (let i = 0; i < tableData.columnWidths.length; i++) {
+			currentLeft += tableData.columnWidths[i];
+			positions.push(measuredColPositions[i] ?? currentLeft);
 		}
 		return positions;
+	});
+
+	const visibleColSeams = $derived.by(() => {
+		const out: { index: number; pos: number }[] = [];
+		for (let i = colWindow.start; i < colWindow.end; i++) {
+			const pos = colResizerPositions[i];
+			if (pos == null) continue;
+			out.push({ index: i, pos });
+		}
+		return out;
+	});
+
+	const visibleRowSeams = $derived.by(() => {
+		const seen = new Set<number>();
+		const out: { index: number; pos: number }[] = [];
+		const add = (i: number) => {
+			if (seen.has(i) || i < 0 || i >= rowResizerPositions.length) return;
+			seen.add(i);
+			out.push({ index: i, pos: rowResizerPositions[i] });
+		};
+		for (let i = 0; i < headerRowCount; i++) add(i);
+		for (let i = bodyWindow.start; i < bodyWindow.end; i++) add(i);
+		return out;
 	});
 
 	const segmentLines = $derived.by(() => {
@@ -301,15 +371,19 @@
 		}
 	}
 
-	function handleColumnResize(colIndex: number, delta: number) {
-		const currentWidth = tableData.columnWidths[colIndex] || 100;
-		const newWidth = Math.max(40, currentWidth + delta);
-		onColumnResize?.(colIndex, newWidth);
+	function handleColumnResize(colIndex: number, seamPos: number) {
+		const left = colOffsets[colIndex] ?? 0;
+		onColumnResize?.(colIndex, Math.max(40, Math.round(seamPos - left)));
 	}
 
-	function handleRowResize(rowIndex: number, delta: number) {
-		const currentSetting = tableData.rowHeights[rowIndex] || 32;
-		const newHeight = Math.max(32, currentSetting + delta);
+	function handleRowResize(rowIndex: number, seamPos: number) {
+		const top =
+			rowIndex === 0
+				? needsTopDoubleLine
+					? DOUBLE_LINE_HEIGHT
+					: 0
+				: (rowResizerPositions[rowIndex - 1] ?? 0);
+		const newHeight = Math.max(32, Math.round(seamPos - top));
 		const next = heightCache.slice();
 		if (next.length !== rowCount) next.length = rowCount;
 		next[rowIndex] = newHeight;
@@ -317,31 +391,12 @@
 		onRowResize?.(rowIndex, newHeight);
 	}
 
-	let draggingRowIndex = $state<number | null>(null);
-	let dragRowStartY = 0;
-
-	function handleRowResizeStart(e: MouseEvent, rowIndex: number) {
-		e.preventDefault();
-		e.stopPropagation();
-		draggingRowIndex = rowIndex;
-		dragRowStartY = e.clientY;
-
-		const onMove = (ev: MouseEvent) => {
-			if (draggingRowIndex === null) return;
-			const delta = ev.clientY - dragRowStartY;
-			dragRowStartY = ev.clientY;
-			handleRowResize(rowIndex, delta);
-		};
-
-		const onUp = () => {
-			draggingRowIndex = null;
-			document.removeEventListener('mousemove', onMove);
-			document.removeEventListener('mouseup', onUp);
-		};
-
-		document.addEventListener('mousemove', onMove);
-		document.addEventListener('mouseup', onUp);
-	}
+	const innerCenterColumns = $derived(
+		canvasConfig.width !== 'auto' && canvasWidth > actualContentWidth + 8
+	);
+	const innerCenterRows = $derived(
+		canvasConfig.height !== 'auto' && canvasHeight > actualContentHeight + 8
+	);
 
 	let isCanvasResizing = $state(false);
 	let resizeCorner = $state<'nw' | 'ne' | 'sw' | 'se' | null>(null);
@@ -485,8 +540,31 @@
 			onCanvasResize?.({ height: minCanvasHeight });
 		}
 	});
+
+	$effect(() => {
+		if (!tableEl) return;
+		const ro = new ResizeObserver(() => {
+			syncDomPositions();
+		});
+		ro.observe(tableEl);
+		syncDomPositions();
+		return () => ro.disconnect();
+	});
+
+	$effect(() => {
+		void tableData.rows;
+		void tableData.columnWidths;
+		void tableData.rowHeights;
+		void tableStyle;
+		void layoutRev;
+		void viewScale;
+		void tick().then(syncDomPositions);
+	});
+
+	let isCanvasHovered = $state(false);
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="canvas-wrapper"
 	class:resizing={isCanvasResizing}
@@ -494,6 +572,8 @@
 	style:background-color={canvasConfig.backgroundColor}
 	style:width="{canvasWidth}px"
 	style:height="{canvasHeight}px"
+	onmouseenter={() => (isCanvasHovered = true)}
+	onmouseleave={() => (isCanvasHovered = false)}
 >
 	<div
 		class="table-content"
@@ -550,25 +630,22 @@
 		{/if}
 
 		{#if interactive}
-			<div class="resizers-layer">
-				{#each colResizerPositions as left, colIndex}
-					<ColumnResizer onResize={(delta) => handleColumnResize(colIndex, delta)} style="left: {left}px" />
-				{/each}
-				{#if rowCount <= 40}
-					{#each rowResizerPositions as top, rowIndex}
-						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<div
-							class="row-resizer"
-							class:dragging={draggingRowIndex === rowIndex}
-							style="top: {top}px"
-							onmousedown={(e) => handleRowResizeStart(e, rowIndex)}
-							role="separator"
-							aria-orientation="horizontal"
-							tabindex="-1"
-						></div>
-					{/each}
-				{/if}
-			</div>
+			<AxisResizers
+				colSeams={visibleColSeams}
+				rowSeams={visibleRowSeams}
+				colWidths={tableData.columnWidths}
+				rowHeights={displayRowHeights}
+				{tableWidth}
+				tableHeight={actualContentHeight}
+				lockColumns={lockColumnResize}
+				lockRows={lockRowResize}
+				centerColumns={innerCenterColumns}
+				centerRows={innerCenterRows}
+				isStageHovered={isCanvasHovered}
+				viewScale={viewScale}
+				onColumnResize={handleColumnResize}
+				onRowResize={handleRowResize}
+			/>
 		{/if}
 	</div>
 
@@ -595,19 +672,5 @@
 		font-size: 0 !important;
 		background: transparent !important;
 		pointer-events: none;
-	}
-	.row-resizer {
-		position: absolute;
-		left: 0;
-		right: 0;
-		height: 7px;
-		margin-top: -3px;
-		cursor: row-resize;
-		z-index: 10;
-		transition: background-color 0.15s;
-	}
-	.row-resizer:hover,
-	.row-resizer.dragging {
-		background-color: var(--primary, #3b82f6);
 	}
 </style>

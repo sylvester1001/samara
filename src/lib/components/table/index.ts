@@ -3,3 +3,4 @@ export { default as AcademicView } from './AcademicView.svelte';
 export { default as TableCell } from './TableCell.svelte';
 export { default as ColumnResizer } from './ColumnResizer.svelte';
 export { default as RowResizer } from './RowResizer.svelte';
+export { default as AxisResizers } from './AxisResizers.svelte';
