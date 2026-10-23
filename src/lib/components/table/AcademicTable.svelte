@@ -276,22 +276,25 @@
 	});
 
 	const visibleColSeams = $derived.by(() => {
-		const out: { index: number; pos: number }[] = [];
+		const out: { index: number; pos: number; start: number }[] = [];
 		for (let i = colWindow.start; i < colWindow.end; i++) {
 			const pos = colResizerPositions[i];
 			if (pos == null) continue;
-			out.push({ index: i, pos });
+			const start = i === 0 ? 0 : (colResizerPositions[i - 1] ?? colOffsets[i] ?? 0);
+			out.push({ index: i, pos, start });
 		}
 		return out;
 	});
 
 	const visibleRowSeams = $derived.by(() => {
 		const seen = new Set<number>();
-		const out: { index: number; pos: number }[] = [];
+		const out: { index: number; pos: number; start: number }[] = [];
+		const top0 = needsTopDoubleLine ? DOUBLE_LINE_HEIGHT : 0;
 		const add = (i: number) => {
 			if (seen.has(i) || i < 0 || i >= rowResizerPositions.length) return;
 			seen.add(i);
-			out.push({ index: i, pos: rowResizerPositions[i] });
+			const start = i === 0 ? top0 : (rowResizerPositions[i - 1] ?? top0);
+			out.push({ index: i, pos: rowResizerPositions[i], start });
 		};
 		for (let i = 0; i < headerRowCount; i++) add(i);
 		for (let i = bodyWindow.start; i < bodyWindow.end; i++) add(i);
@@ -371,24 +374,21 @@
 		}
 	}
 
-	function handleColumnResize(colIndex: number, seamPos: number) {
-		const left = colOffsets[colIndex] ?? 0;
-		onColumnResize?.(colIndex, Math.max(40, Math.round(seamPos - left)));
+	function handleColumnResize(colIndex: number, newWidth: number) {
+		onColumnResize?.(colIndex, Math.max(40, Math.round(newWidth)));
 	}
 
-	function handleRowResize(rowIndex: number, seamPos: number) {
-		const top =
-			rowIndex === 0
-				? needsTopDoubleLine
-					? DOUBLE_LINE_HEIGHT
-					: 0
-				: (rowResizerPositions[rowIndex - 1] ?? 0);
-		const newHeight = Math.max(32, Math.round(seamPos - top));
+	function handleRowResize(rowIndex: number, newHeight: number) {
+		const clamped = Math.max(32, Math.round(newHeight));
 		const next = heightCache.slice();
 		if (next.length !== rowCount) next.length = rowCount;
-		next[rowIndex] = newHeight;
+		if (lockRowResize) {
+			next.fill(clamped);
+		} else {
+			next[rowIndex] = clamped;
+		}
 		heightCache = next;
-		onRowResize?.(rowIndex, newHeight);
+		onRowResize?.(rowIndex, clamped);
 	}
 
 	const innerCenterColumns = $derived(

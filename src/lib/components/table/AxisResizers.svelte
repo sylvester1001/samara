@@ -5,6 +5,7 @@
 	export interface AxisSeam {
 		index: number;
 		pos: number;
+		start?: number;
 	}
 
 	interface Props {
@@ -20,8 +21,8 @@
 		centerRows?: boolean;
 		isStageHovered?: boolean;
 		viewScale?: number;
-		onColumnResize?: (index: number, seamPos: number) => void;
-		onRowResize?: (index: number, seamPos: number) => void;
+		onColumnResize?: (index: number, newWidth: number) => void;
+		onRowResize?: (index: number, newHeight: number) => void;
 	}
 
 	let {
@@ -62,6 +63,7 @@
 		originClient: number;
 		scale: number;
 		pos0: number;
+		size0: number;
 		layout0: number;
 		recenter: boolean;
 	} | null = null;
@@ -128,9 +130,12 @@
 		return pr.left - (sr.left + padL) > 8 && sr.right - padR - pr.right > 8;
 	}
 
-	function startDrag(axis: Axis, index: number, pos: number, e: MouseEvent) {
+	function startDrag(axis: Axis, seam: AxisSeam, e: MouseEvent) {
 		e.preventDefault();
 		e.stopPropagation();
+		const { index, pos } = seam;
+		const fallbackSize = axis === 'col' ? (colWidths[index] ?? 100) : (rowHeights[index] ?? 32);
+		const size0 = seam.start !== undefined ? pos - seam.start : fallbackSize;
 		const point = layoutPointFromEvent(e);
 		const rect = layerEl?.getBoundingClientRect();
 		const scale =
@@ -143,6 +148,7 @@
 			originClient,
 			scale,
 			pos0: pos,
+			size0,
 			layout0: (along0 - originClient) / scale,
 			recenter: axis === 'col' ? centerColumns || detectOuterColRecenter() : centerRows
 		};
@@ -163,10 +169,11 @@
 		if (!drag || !dragMath) return;
 		const along = drag.axis === 'col' ? e.clientX : e.clientY;
 		const layoutAlong = (along - dragMath.originClient) / dragMath.scale;
-		const factor = dragMath.recenter ? 2 : 1;
-		const seamPos = dragMath.pos0 + factor * (layoutAlong - dragMath.layout0);
-		if (drag.axis === 'col') onColumnResize?.(drag.index, seamPos);
-		else onRowResize?.(drag.index, seamPos);
+		const isLocked = drag.axis === 'col' ? lockColumns : lockRows;
+		const factor = !isLocked && dragMath.recenter ? 2 : 1;
+		const newSize = dragMath.size0 + factor * (layoutAlong - dragMath.layout0);
+		if (drag.axis === 'col') onColumnResize?.(drag.index, newSize);
+		else onRowResize?.(drag.index, newSize);
 		const point = layoutPointFromEvent(e);
 		drag = {
 			...drag,
@@ -224,63 +231,55 @@
 >
 	<!-- 全表精密工程发丝参考线（全表常驻引导，移开画布自动消失，少即是多） -->
 	<div class="caliper-guides-layer" class:is-visible={showGuides} aria-hidden="true">
-		{#if !lockColumns}
-			<!-- 表格最左侧基准发丝线 (x = 0，左右对称闭环，形成完整测绘方格网) -->
-			<div class="ghost-guide col" style:left="0px"></div>
-			{#each colSeams as seam (seam.index)}
-				{@const isCurrentActive = active?.axis === 'col' && active?.index === seam.index}
-				{#if !isCurrentActive}
-					<!-- 纵向极淡发丝引导轨 (Hairline Guide) -->
-					<div
-						class="ghost-guide col"
-						style:left="{seam.pos}px"
-					></div>
-				{/if}
-			{/each}
-		{/if}
+		<!-- 表格最左侧基准发丝线 (x = 0，左右对称闭环，形成完整测绘方格网) -->
+		<div class="ghost-guide col" style:left="0px"></div>
+		{#each colSeams as seam (seam.index)}
+			{@const isCurrentActive = active?.axis === 'col' && active?.index === seam.index}
+			{#if !isCurrentActive}
+				<!-- 纵向极淡发丝引导轨 (Hairline Guide) -->
+				<div
+					class="ghost-guide col"
+					style:left="{seam.pos}px"
+				></div>
+			{/if}
+		{/each}
 
-		{#if !lockRows}
-			{#each rowSeams as seam (seam.index)}
-				{@const isCurrentActive = active?.axis === 'row' && active?.index === seam.index}
-				{#if !isCurrentActive}
-					<!-- 横向极淡发丝引导轨 (Hairline Guide) -->
-					<div
-						class="ghost-guide row"
-						style:top="{seam.pos}px"
-					></div>
-				{/if}
-			{/each}
-		{/if}
+		{#each rowSeams as seam (seam.index)}
+			{@const isCurrentActive = active?.axis === 'row' && active?.index === seam.index}
+			{#if !isCurrentActive}
+				<!-- 横向极淡发丝引导轨 (Hairline Guide) -->
+				<div
+					class="ghost-guide row"
+					style:top="{seam.pos}px"
+				></div>
+			{/if}
+		{/each}
 	</div>
 
 	<!-- 交互感应判定层（Hitbox 扩大到 18px，保证全高度任何空白处随手捕捉） -->
-	{#if !lockColumns}
-		{#each colSeams as seam (seam.index)}
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
-				class="axis-hit col"
-				style:left="{seam.pos}px"
-				style:width="{HIT}px"
-				onmousemove={(e) => setHover('col', seam.index, seam.pos, e)}
-				onmouseleave={clearHover}
-				onmousedown={(e) => startDrag('col', seam.index, seam.pos, e)}
-			></div>
-		{/each}
-	{/if}
+	{#each colSeams as seam (seam.index)}
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div
+			class="axis-hit col"
+			style:left="{seam.pos}px"
+			style:width="{HIT}px"
+			onmousemove={(e) => setHover('col', seam.index, seam.pos, e)}
+			onmouseleave={clearHover}
+			onmousedown={(e) => startDrag('col', seam, e)}
+		></div>
+	{/each}
 
-	{#if !lockRows}
-		{#each rowSeams as seam (seam.index)}
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
-				class="axis-hit row"
-				style:top="{seam.pos}px"
-				style:height="{HIT}px"
-				onmousemove={(e) => setHover('row', seam.index, seam.pos, e)}
-				onmouseleave={clearHover}
-				onmousedown={(e) => startDrag('row', seam.index, seam.pos, e)}
-			></div>
-		{/each}
-	{/if}
+	{#each rowSeams as seam (seam.index)}
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div
+			class="axis-hit row"
+			style:top="{seam.pos}px"
+			style:height="{HIT}px"
+			onmousemove={(e) => setHover('row', seam.index, seam.pos, e)}
+			onmouseleave={clearHover}
+			onmousedown={(e) => startDrag('row', seam, e)}
+		></div>
+	{/each}
 
 	<!-- 激活点亮状态（Active Laser Rule + 物理内嵌 TacticalGrip + HUD 战术刻度标） -->
 	{#if active}
@@ -306,7 +305,15 @@
 			<!-- 战术 HUD 尺寸实时浮标（拖拽时跟随光标） -->
 			{#if drag}
 				<div class="tactical-hud-bubble {active.axis}">
-					<span class="hud-label">{active.axis === 'col' ? `COL ${active.index + 1}` : `ROW ${active.index + 1}`}</span>
+					<span class="hud-label">
+						{active.axis === 'col'
+							? lockColumns
+								? 'ALL COLS'
+								: `COL ${active.index + 1}`
+							: lockRows
+								? 'ALL ROWS'
+								: `ROW ${active.index + 1}`}
+					</span>
 					<span class="hud-val">{Math.round(activeDimensionValue)}px</span>
 				</div>
 			{/if}
