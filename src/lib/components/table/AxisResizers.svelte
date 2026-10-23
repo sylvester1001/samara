@@ -222,19 +222,14 @@
 		if (!drag) isHoveringLayer = false;
 	}}
 >
-	<!-- 方案 C：底图精密发丝参考线 + 顶沿/左沿战术游标小卡扣（全表常驻引导，移开消失） -->
+	<!-- 全表精密工程发丝参考线（全表常驻引导，移开画布自动消失，少即是多） -->
 	<div class="caliper-guides-layer" class:is-visible={showGuides} aria-hidden="true">
 		{#if !lockColumns}
+			<!-- 表格最左侧基准发丝线 (x = 0，左右对称闭环，形成完整测绘方格网) -->
+			<div class="ghost-guide col" style:left="0px"></div>
 			{#each colSeams as seam (seam.index)}
 				{@const isCurrentActive = active?.axis === 'col' && active?.index === seam.index}
 				{#if !isCurrentActive}
-					<!-- 顶沿外侧悬浮战术卡爪 (Top Caliper Tab) -->
-					<div
-						class="caliper-tab col"
-						style:left="{seam.pos}px"
-					>
-						<span class="tab-body"></span>
-					</div>
 					<!-- 纵向极淡发丝引导轨 (Hairline Guide) -->
 					<div
 						class="ghost-guide col"
@@ -248,13 +243,6 @@
 			{#each rowSeams as seam (seam.index)}
 				{@const isCurrentActive = active?.axis === 'row' && active?.index === seam.index}
 				{#if !isCurrentActive}
-					<!-- 左沿外侧悬浮战术卡爪 (Left Caliper Tab) -->
-					<div
-						class="caliper-tab row"
-						style:top="{seam.pos}px"
-					>
-						<span class="tab-body"></span>
-					</div>
 					<!-- 横向极淡发丝引导轨 (Hairline Guide) -->
 					<div
 						class="ghost-guide row"
@@ -296,15 +284,12 @@
 
 	<!-- 激活点亮状态（Active Laser Rule + 物理内嵌 TacticalGrip + HUD 战术刻度标） -->
 	{#if active}
-		<!-- 激光发丝指示线：绝对坐标严格对准缝隙中轴 -->
+		<!-- 激光发丝指示线：绝对坐标严格对准缝隙中轴，悬浮加深纯平纯正钴蓝 -->
 		<div
 			class="axis-rule {active.axis} {isAvant ? 'avant' : 'classic'}"
 			style:left={active.axis === 'col' ? `${activeRulePos}px` : '0'}
 			style:top={active.axis === 'row' ? `${activeRulePos}px` : '0'}
-		>
-			<!-- 顶部/左部点亮卡扣 -->
-			<div class="active-caliper-anchor {active.axis}"></div>
-		</div>
+		></div>
 
 		<!-- 战术滑块手柄：独立挂在 (X, Y) 绝对物理坐标上，消除父级百分比变换干扰 -->
 		<div
@@ -365,43 +350,6 @@
 
 	.caliper-guides-layer.is-visible {
 		opacity: 1;
-	}
-
-	/* 顶沿/左沿外侧小卡扣：浮停在黑线外侧，绝不盖住正文 */
-	.caliper-tab {
-		position: absolute;
-		pointer-events: none;
-		z-index: 2;
-	}
-
-	.caliper-tab.col {
-		top: -6px;
-		transform: translateX(-50%);
-		width: 8px;
-		height: 4px;
-	}
-
-	.caliper-tab.col .tab-body {
-		display: block;
-		width: 100%;
-		height: 100%;
-		background: var(--resizer-tab);
-		border-radius: 1px 1px 0 0;
-	}
-
-	.caliper-tab.row {
-		left: -6px;
-		transform: translateY(-50%);
-		width: 4px;
-		height: 8px;
-	}
-
-	.caliper-tab.row .tab-body {
-		display: block;
-		width: 100%;
-		height: 100%;
-		background: var(--resizer-tab);
-		border-radius: 1px 0 0 1px;
 	}
 
 	/* 极淡发丝引导轨：极其克制的高级工程水印线，常驻且绝不显脏 */
@@ -481,29 +429,6 @@
 
 	.axis-rule.classic {
 		background: rgba(0, 0, 0, 0.5);
-	}
-
-	/* 激活状态顶端卡扣高亮 */
-	.active-caliper-anchor.col {
-		position: absolute;
-		top: -6px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 8px;
-		height: 5px;
-		background: var(--cobalt, #0202f1);
-		border-radius: 1px 1px 0 0;
-	}
-
-	.active-caliper-anchor.row {
-		position: absolute;
-		left: -6px;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 5px;
-		height: 8px;
-		background: var(--cobalt, #0202f1);
-		border-radius: 1px 0 0 1px;
 	}
 
 	/* 滑块定位容器：由线自身 50% 物理居中锁定 */
