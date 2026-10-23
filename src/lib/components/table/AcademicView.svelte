@@ -73,8 +73,6 @@
 		'thin-thick': 'none'
 	};
 
-	const CELL_BG_EXTEND_PX = 0.5;
-
 	const fontFamily = $derived(FONT_FAMILY_MAP[tableStyle.fontFamily]);
 	const cellPadding = $derived(
 		typeof tableStyle.padding === 'number' ? tableStyle.padding : PADDING_MAP[tableStyle.padding]
@@ -96,22 +94,6 @@
 		if (align === 'left') return 'text-left';
 		if (align === 'right' || align === 'decimal') return 'text-right';
 		return 'text-center';
-	}
-
-	function bgExtend(
-		bgColor: string | undefined,
-		row: { backgroundColor?: string }[],
-		colIndex: number
-	): string | undefined {
-		if (!bgColor || tableStyle.preset === 'bordered') return undefined;
-		const shadows: string[] = [];
-		if (colIndex > 0 && row[colIndex - 1]?.backgroundColor) {
-			shadows.push(`${-CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
-		}
-		if (colIndex < row.length - 1 && row[colIndex + 1]?.backgroundColor) {
-			shadows.push(`${CELL_BG_EXTEND_PX}px 0 0 0 ${bgColor}`);
-		}
-		return shadows.length > 0 ? shadows.join(', ') : undefined;
 	}
 
 	function handleDoubleClick(e: MouseEvent) {
@@ -171,7 +153,6 @@
 							class:font-normal={!cell.effectiveBold}
 							class:italic={cell.effectiveItalic}
 							style:background-color={cell.backgroundColor}
-							style:box-shadow={bgExtend(cell.backgroundColor, row, colIndex)}
 							style:color={cell.textColor}
 							colspan={cell.colspan > 1 ? cell.colspan : undefined}
 							rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}
@@ -223,7 +204,6 @@
 							class:font-bold={cell.effectiveBold}
 							class:italic={cell.effectiveItalic}
 							style:background-color={cell.backgroundColor}
-							style:box-shadow={bgExtend(cell.backgroundColor, row, colIndex)}
 							style:color={cell.textColor}
 							colspan={cell.colspan > 1 ? cell.colspan : undefined}
 							rowspan={cell.rowspan > 1 ? cell.rowspan : undefined}

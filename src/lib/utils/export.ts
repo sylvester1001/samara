@@ -8,8 +8,9 @@ export interface ExportOptions {
 
 // 过滤掉不需要导出的元素
 function filterExportElements(node: HTMLElement): boolean {
-	// 排除 resizers-layer 和 canvas-resizer
+	// 排除 resizers-layer、axis-resizers 和 canvas-resizer
 	if (node.classList?.contains('resizers-layer')) return false;
+	if (node.classList?.contains('axis-resizers')) return false;
 	if (node.classList?.contains('canvas-resizer')) return false;
 	return true;
 }
@@ -19,9 +20,11 @@ export async function exportToPng(
 	options: ExportOptions = {}
 ): Promise<string> {
 	const { pixelRatio = 2, backgroundColor = '#ffffff', includeBackground = true } = options;
+	// 强制对齐到整数物理像素倍率，消除 SVG foreignObject 非整数缩放导致的单元格接缝白线与边缘半像素虚化
+	const crispPixelRatio = Math.max(1, Math.round(pixelRatio));
 
 	const dataUrl = await toPng(element, {
-		pixelRatio,
+		pixelRatio: crispPixelRatio,
 		backgroundColor: includeBackground ? backgroundColor : undefined,
 		filter: filterExportElements,
 		style: {
