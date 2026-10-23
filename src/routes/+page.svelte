@@ -65,6 +65,13 @@
 	let exportDpi = $state(300);
 	let previewZoom = $state(1);
 
+	function getPreviewAvailableWidth(): number | undefined {
+		if (!previewContainer || previewContainer.clientWidth <= 0) return undefined;
+		const pad = (tableStore.canvasConfig.padding ?? 24) * 2;
+		const stageMargin = 64;
+		return Math.max(320, previewContainer.clientWidth - stageMargin - pad);
+	}
+
 	function handleImportClick() {
 		fileInput?.click();
 	}
@@ -115,7 +122,7 @@
 				return;
 			}
 
-			tableStore.importData(data);
+			tableStore.importData(data, getPreviewAvailableWidth());
 			toast.dismiss(loadingToastId);
 			toast.success(`导入完成 (${data.rows.length}行×${data.rows[0].length}列)`);
 		} catch (err) {
@@ -417,7 +424,7 @@
 			const data = handlePaste(e.clipboardData);
 			if (data) {
 				e.preventDefault();
-				tableStore.pasteAtSelection(data);
+				tableStore.pasteAtSelection(data, getPreviewAvailableWidth());
 			}
 		}
 	}

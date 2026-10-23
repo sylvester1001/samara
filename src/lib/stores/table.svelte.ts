@@ -821,9 +821,127 @@ class TableStore {
 		}
 	}
 
-	importData(input: string[][] | ImportedTableData, mergesArg?: CellMergeRange[]) {
+	/**
+	 * 根据当前表格各列内容长度比例与预览区可用宽度，智能自适应列宽：
+	 * - 当各列单行理想总宽 <= 预览区目标总宽时：先保证每列完整容纳单行内容（零换行），再将富余空间按内容权重比例分配
+	 * - 当各列单行理想总宽 > 预览区目标总宽时：短列最高不超过自身单行所需宽度（不浪费空间），剩余宽度按长列权重比例分配以最小化换行
+	 */
+	autoFitColumnWidths(availableWidth?: number) {
+		const rows = this.tableData.rows;
+		const colCount = this.tableData.columnWidths.length;
+		if (colCount === 0 || rows.length === 0) return;
+
+		const MIN_COL_WIDTH = 64;
+		const MAX_SINGLE_COL_CAP = 320;
+		const fallbackAvailable = Math.max(480, colCount * 140);
+		const rawAvail = availableWidth && availableWidth > 0 ? availableWidth : fallbackAvailable;
+		const targetTotalWidth = Math.max(
+			colCount * MIN_COL_WIDTH,
+			Math.min(rawAvail, colCount * MAX_SINGLE_COL_CAP)
+		);
+
+		if (this.lockColumnResize) {
+			const uniformWidth = Math.max(MIN_COL_WIDTH, Math.round(targetTotalWidth / colCount));
+			this.tableData.columnWidths = Array(colCount).fill(uniformWidth);
+			return;
+		}
+
+		const fontSizePt = this.tableStyle.fontSize || 10.5;
+		const fontSizePx = fontSizePt * (96 / 72);
+		const padPx =
+			typeof this.tableStyle.padding === 'number'
+				? this.tableStyle.padding
+				: this.tableStyle.padding === 'compact'
+					? 4
+					: this.tableStyle.padding === 'loose'
+						? 16
+						: 8;
+		const cellExtraPx = padPx * 2 + 16;
+
+		const scanLimit = Math.min(rows.length, 250);
+		const idealWidths = new Array<number>(colCount).fill(MIN_COL_WIDTH);
+
+		for (let r = 0; r < scanLimit; r++) {
+			const row = rows[r];
+			if (!row) continue;
+			for (let c = 0; c < colCount; c++) {
+				const cell = row[c];
+				if (!cell || cell.isMerged) continue;
+				const content = cell.content ?? '';
+				if (!content) continue;
+
+				const lines = content.split(/\r?\n/);
+				let maxLinePx = 0;
+				for (const line of lines) {
+					let px = 0;
+					for (let i = 0; i < line.length; i++) {
+						px += line.charCodeAt(i) > 255 ? fontSizePx * 1.02 : fontSizePx * 0.58;
+					}
+					if (px > maxLinePx) maxLinePx = px;
+				}
+
+				const totalCellPx = Math.ceil(maxLinePx + cellExtraPx);
+				const colspan = Math.max(1, Math.min(cell.colspan ?? 1, colCount - c));
+				const perColPx = Math.ceil(totalCellPx / colspan);
+
+				for (let s = 0; s < colspan; s++) {
+					if (perColPx > idealWidths[c + s]) {
+						idealWidths[c + s] = perColPx;
+					}
+				}
+			}
+		}
+
+		const idealSum = idealWidths.reduce((acc, w) => acc + w, 0);
+		const weights = idealWidths.map((w) => Math.pow(Math.min(w, 520), 0.85));
+		const weightSum = weights.reduce((acc, w) => acc + w, 0) || colCount;
+
+		if (idealSum <= targetTotalWidth) {
+			const extra = targetTotalWidth - idealSum;
+			this.tableData.columnWidths = idealWidths.map((ideal, c) =>
+				Math.max(MIN_COL_WIDTH, Math.round(ideal + extra * (weights[c] / weightSum)))
+			);
+			return;
+		}
+
+		const allocated = new Array<number>(colCount).fill(0);
+		const fixed = new Array<boolean>(colCount).fill(false);
+		let remainingBudget = targetTotalWidth;
+
+		for (let iter = 0; iter < colCount; iter++) {
+			let activeWeightSum = 0;
+			for (let c = 0; c < colCount; c++) {
+				if (!fixed[c]) activeWeightSum += weights[c];
+			}
+			if (activeWeightSum <= 0) break;
+
+			let clampedAny = false;
+			for (let c = 0; c < colCount; c++) {
+				if (fixed[c]) continue;
+				const share = (weights[c] / activeWeightSum) * remainingBudget;
+				if (share < MIN_COL_WIDTH) {
+					allocated[c] = MIN_COL_WIDTH;
+					fixed[c] = true;
+					remainingBudget -= MIN_COL_WIDTH;
+					clampedAny = true;
+				} else if (share > idealWidths[c]) {
+					allocated[c] = idealWidths[c];
+					fixed[c] = true;
+					remainingBudget -= idealWidths[c];
+					clampedAny = true;
+				} else {
+					allocated[c] = share;
+				}
+			}
+			if (!clampedAny) break;
+		}
+
+		this.tableData.columnWidths = allocated.map((w) => Math.max(MIN_COL_WIDTH, Math.round(w)));
+	}
+
+	importData(input: string[][] | ImportedTableData, availableWidth?: number) {
 		const data = Array.isArray(input) ? input : input.rows;
-		const merges = Array.isArray(input) ? (mergesArg ?? []) : (input.merges ?? []);
+		const merges = Array.isArray(input) ? [] : (input.merges ?? []);
 		if (!data || data.length === 0 || !data[0] || data[0].length === 0) {
 			return;
 		}
@@ -849,14 +967,15 @@ class TableStore {
 		if (merges.length > 0) {
 			this.applyMergeRanges(merges);
 		}
+		this.autoFitColumnWidths(availableWidth);
 		this.bumpLayout();
 		this.bumpContent();
 		this.saveHistory(true);
 	}
 
-	pasteAtSelection(input: string[][] | ImportedTableData, mergesArg?: CellMergeRange[]) {
+	pasteAtSelection(input: string[][] | ImportedTableData, availableWidth?: number) {
 		const data = Array.isArray(input) ? input : input.rows;
-		const merges = Array.isArray(input) ? (mergesArg ?? []) : (input.merges ?? []);
+		const merges = Array.isArray(input) ? [] : (input.merges ?? []);
 		if (data.length === 0 || data[0].length === 0) return;
 		this.commitPending();
 
@@ -955,9 +1074,10 @@ class TableStore {
 			structure = true;
 		}
 
-		if (structure) this.bumpLayout();
+		this.autoFitColumnWidths(availableWidth);
+		this.bumpLayout();
 		this.bumpContent();
-		this.saveHistory(structure);
+		this.saveHistory(true);
 	}
 }
 
