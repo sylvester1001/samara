@@ -1,19 +1,32 @@
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 
+export interface CellMergeRange {
+	row: number;
+	col: number;
+	rowspan: number;
+	colspan: number;
+}
+
+export interface ImportedTableData {
+	rows: string[][];
+	merges: CellMergeRange[];
+}
+
 /**
- * 清洗和规整二维矩阵：
- * 1. 过滤开头与末尾的连续空行
- * 2. 截断每行末尾的连续空单元格
+ * 清洗和规整二维矩阵并同步校准合并单元格坐标：
+ * 1. 过滤开头与末尾的连续空行（同时保护纵向合并覆盖到的末尾行）
+ * 2. 截断每行末尾的连续空单元格（同时保护横向合并覆盖到的末尾列）
  * 3. 计算实际有效最大列数并规整为矩形矩阵（补全较短行）
  * 4. 设置安全上限，防止 Excel 幽灵区域（如 100 万行空范围）卡死主线程
  */
-export function cleanAndNormalizeMatrix(
+export function cleanAndNormalizeMatrixWithMerges(
 	rawRows: unknown[][],
+	rawMerges: CellMergeRange[] = [],
 	maxRows: number = 10000,
 	maxCols: number = 100
-): string[][] {
-	if (!rawRows || rawRows.length === 0) return [];
+): ImportedTableData {
+	if (!rawRows || rawRows.length === 0) return { rows: [], merges: [] };
 
 	// 统一转成 string 并去除首尾空白
 	const stringRows = rawRows.map((row) =>
@@ -38,7 +51,17 @@ export function cleanAndNormalizeMatrix(
 	}
 
 	if (firstNonEmptyRow > lastNonEmptyRow) {
-		return [];
+		return { rows: [], merges: [] };
+	}
+
+	// 若合并单元格起点位于有效行内，且纵向跨越到了末尾空行，扩展 lastNonEmptyRow 以保留完整合并范围
+	for (const m of rawMerges) {
+		if (m.row >= firstNonEmptyRow && m.row <= lastNonEmptyRow) {
+			const mergeEndRow = Math.min(stringRows.length - 1, m.row + m.rowspan - 1);
+			if (mergeEndRow > lastNonEmptyRow) {
+				lastNonEmptyRow = mergeEndRow;
+			}
+		}
 	}
 
 	const activeRows = stringRows.slice(firstNonEmptyRow, lastNonEmptyRow + 1);
@@ -50,6 +73,16 @@ export function cleanAndNormalizeMatrix(
 			if (row[c] !== '') {
 				if (c > maxColIdx) maxColIdx = c;
 				break;
+			}
+		}
+	}
+
+	// 若合并单元格横向跨越到了更右侧的列，扩展 maxColIdx
+	for (const m of rawMerges) {
+		if (m.row >= firstNonEmptyRow && m.row <= lastNonEmptyRow) {
+			const mergeEndCol = m.col + m.colspan - 1;
+			if (mergeEndCol > maxColIdx) {
+				maxColIdx = mergeEndCol;
 			}
 		}
 	}
@@ -68,14 +101,45 @@ export function cleanAndNormalizeMatrix(
 		normalized.push(newRow);
 	}
 
-	return normalized;
+	// 4. 校准合并区域坐标（扣除被裁掉的顶部空行偏移 firstNonEmptyRow）
+	const normalizedMerges: CellMergeRange[] = [];
+	for (const m of rawMerges) {
+		const shiftedRow = m.row - firstNonEmptyRow;
+		const col = m.col;
+		if (shiftedRow < 0 || shiftedRow >= safeRowCount || col < 0 || col >= safeColCount) {
+			continue;
+		}
+		const rowspan = Math.min(m.rowspan, safeRowCount - shiftedRow);
+		const colspan = Math.min(m.colspan, safeColCount - col);
+		if (rowspan > 1 || colspan > 1) {
+			normalizedMerges.push({
+				row: shiftedRow,
+				col,
+				rowspan,
+				colspan
+			});
+		}
+	}
+
+	return {
+		rows: normalized,
+		merges: normalizedMerges
+	};
 }
 
-export function parseCSV(content: string): string[][] {
+export function cleanAndNormalizeMatrix(
+	rawRows: unknown[][],
+	maxRows: number = 10000,
+	maxCols: number = 100
+): string[][] {
+	return cleanAndNormalizeMatrixWithMerges(rawRows, [], maxRows, maxCols).rows;
+}
+
+export function parseCSV(content: string): ImportedTableData {
 	const result = Papa.parse<string[]>(content, {
 		skipEmptyLines: true
 	});
-	return cleanAndNormalizeMatrix(result.data);
+	return cleanAndNormalizeMatrixWithMerges(result.data);
 }
 
 /**
@@ -126,6 +190,17 @@ function computeSafeSheetRef(
 		}
 	}
 
+	// 3. 将合并单元格终点纳入有效边界（防止末尾行被纵向合并覆盖而无独立值时被截断）
+	const sheetMerges = sheet['!merges'];
+	if (Array.isArray(sheetMerges) && found) {
+		for (const merge of sheetMerges) {
+			if (merge.s.r <= maxR && merge.s.c <= maxC) {
+				if (merge.e.r < maxRows && merge.e.r > maxR) maxR = merge.e.r;
+				if (merge.e.c < maxCols && merge.e.c > maxC) maxC = merge.e.c;
+			}
+		}
+	}
+
 	const originalRange = XLSX.utils.decode_range(sheet['!ref']);
 
 	if (!found) {
@@ -151,7 +226,7 @@ function computeSafeSheetRef(
 	return XLSX.utils.encode_range(safeRange);
 }
 
-export function parseExcel(buffer: ArrayBuffer): string[][] {
+export function parseExcel(buffer: ArrayBuffer): ImportedTableData {
 	const workbook = XLSX.read(buffer, {
 		type: 'array',
 		sheetRows: 10000,       // 安全上限：支持上万行真实数据，同时防止数百万幽灵空行
@@ -189,50 +264,115 @@ export function parseExcel(buffer: ArrayBuffer): string[][] {
 	// 核心优化：计算紧凑的安全范围，彻底消除 Excel/WPS 默认的 A1:XFD1048576 幽灵区域
 	targetSheet['!ref'] = computeSafeSheetRef(targetSheet, 10000, 100);
 
+	// 保持 blankrows: true 以确保行号与 targetSheet['!merges'] 的物理坐标 1:1 严格对齐
 	const rawData = XLSX.utils.sheet_to_json<unknown[]>(targetSheet, {
 		header: 1,
 		defval: '',
-		blankrows: false,
+		blankrows: true,
 		raw: false
 	});
 
-	const normalized = cleanAndNormalizeMatrix(rawData);
-	if (normalized.length === 0 || normalized[0].length === 0) {
+	const rawMerges: CellMergeRange[] = [];
+	if (Array.isArray(targetSheet['!merges'])) {
+		for (const merge of targetSheet['!merges']) {
+			const rowspan = merge.e.r - merge.s.r + 1;
+			const colspan = merge.e.c - merge.s.c + 1;
+			if (rowspan > 1 || colspan > 1) {
+				rawMerges.push({
+					row: merge.s.r,
+					col: merge.s.c,
+					rowspan,
+					colspan
+				});
+			}
+		}
+	}
+
+	const normalized = cleanAndNormalizeMatrixWithMerges(rawData, rawMerges);
+	if (normalized.rows.length === 0 || normalized.rows[0].length === 0) {
 		throw new Error('未能从 Excel 中识别到有效的表格内容');
 	}
 
 	return normalized;
 }
 
-export function parseTSV(content: string): string[][] {
+export function parseTSV(content: string): ImportedTableData {
 	const rows = content
 		.trim()
 		.split('\n')
 		.map((line) => line.split('\t'));
-	return cleanAndNormalizeMatrix(rows);
+	return cleanAndNormalizeMatrixWithMerges(rows);
 }
 
-export function parseHTMLTable(html: string): string[][] | null {
+export function parseHTMLTable(html: string): ImportedTableData | null {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString(html, 'text/html');
 	const table = doc.querySelector('table');
 	if (!table) return null;
 
-	const rows: string[][] = [];
-	table.querySelectorAll('tr').forEach((tr) => {
-		const cells: string[] = [];
-		tr.querySelectorAll('td, th').forEach((cell) => {
-			cells.push(cell.textContent?.trim() || '');
+	const trList = Array.from(table.querySelectorAll('tr'));
+	if (trList.length === 0) return null;
+
+	const grid: string[][] = [];
+	const occupied: boolean[][] = [];
+	const rawMerges: CellMergeRange[] = [];
+
+	for (let r = 0; r < trList.length; r++) {
+		if (!grid[r]) grid[r] = [];
+		if (!occupied[r]) occupied[r] = [];
+
+		let c = 0;
+		const cells = trList[r].querySelectorAll('td, th');
+		cells.forEach((cell) => {
+			// 跳过已被上方/左侧合并单元格（rowspan/colspan）占用的格位
+			while (occupied[r][c]) {
+				c++;
+			}
+
+			const text = cell.textContent?.trim() || '';
+			const rawRowSpan = parseInt(cell.getAttribute('rowspan') || '1', 10);
+			const rawColSpan = parseInt(cell.getAttribute('colspan') || '1', 10);
+			const maxPossibleRowSpan = Math.max(1, trList.length - r);
+			const rowspan =
+				Number.isFinite(rawRowSpan) && rawRowSpan > 1
+					? Math.min(rawRowSpan, maxPossibleRowSpan, 1000)
+					: 1;
+			const colspan =
+				Number.isFinite(rawColSpan) && rawColSpan > 1 ? Math.min(rawColSpan, 100) : 1;
+
+			grid[r][c] = text;
+
+			for (let dr = 0; dr < rowspan; dr++) {
+				const targetR = r + dr;
+				if (!grid[targetR]) grid[targetR] = [];
+				if (!occupied[targetR]) occupied[targetR] = [];
+				for (let dc = 0; dc < colspan; dc++) {
+					const targetC = c + dc;
+					occupied[targetR][targetC] = true;
+					if (dr !== 0 || dc !== 0) {
+						grid[targetR][targetC] = '';
+					}
+				}
+			}
+
+			if (rowspan > 1 || colspan > 1) {
+				rawMerges.push({
+					row: r,
+					col: c,
+					rowspan,
+					colspan
+				});
+			}
+
+			c += colspan;
 		});
-		if (cells.length > 0) {
-			rows.push(cells);
-		}
-	});
-	const normalized = cleanAndNormalizeMatrix(rows);
-	return normalized.length > 0 ? normalized : null;
+	}
+
+	const normalized = cleanAndNormalizeMatrixWithMerges(grid, rawMerges);
+	return normalized.rows.length > 0 ? normalized : null;
 }
 
-export async function handleFileImport(file: File): Promise<string[][]> {
+export async function handleFileImport(file: File): Promise<ImportedTableData> {
 	const ext = file.name.split('.').pop()?.toLowerCase();
 
 	if (ext === 'csv') {
@@ -248,7 +388,7 @@ export async function handleFileImport(file: File): Promise<string[][]> {
 	throw new Error(`不支持的文件格式: .${ext}，请选择 .xlsx、.xls 或 .csv 文件`);
 }
 
-export function handlePaste(clipboardData: DataTransfer): string[][] | null {
+export function handlePaste(clipboardData: DataTransfer): ImportedTableData | null {
 	const html = clipboardData.getData('text/html');
 	if (html) {
 		const tableData = parseHTMLTable(html);

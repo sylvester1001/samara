@@ -109,7 +109,7 @@
 		try {
 			const data = await handleFileImport(file);
 
-			if (!data || data.length === 0 || !data[0] || data[0].length === 0) {
+			if (!data || data.rows.length === 0 || !data.rows[0] || data.rows[0].length === 0) {
 				toast.dismiss(loadingToastId);
 				toast.error("未能在文件中识别到有效的表格内容");
 				return;
@@ -117,7 +117,7 @@
 
 			tableStore.importData(data);
 			toast.dismiss(loadingToastId);
-			toast.success(`导入完成 (${data.length}行×${data[0].length}列)`);
+			toast.success(`导入完成 (${data.rows.length}行×${data.rows[0].length}列)`);
 		} catch (err) {
 			console.error("Import failed:", err);
 			toast.dismiss(loadingToastId);

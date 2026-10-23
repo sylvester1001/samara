@@ -22,6 +22,7 @@ import {
 	restoreTableInPlace,
 	sameTableShape
 } from '$lib/utils/table-clone';
+import type { CellMergeRange, ImportedTableData } from '$lib/utils/import';
 
 function createCell(content: string = ''): Cell {
 	return { ...DEFAULT_CELL, content };
@@ -755,7 +756,74 @@ class TableStore {
 		this.saveHistory(true);
 	}
 
-	importData(data: string[][]) {
+	private applyMergeRanges(merges: CellMergeRange[]) {
+		const rowCount = this.tableData.rows.length;
+		const colCount = this.tableData.columnWidths.length;
+		if (rowCount === 0 || colCount === 0 || merges.length === 0) return;
+
+		// 若表头起始行存在多行表头纵向合并（如 2~4 行复合表头），自动适配 headerRows，避免跨 thead/tbody 造成 HTML 表格错位
+		let headerRows = this.tableData.headerRows;
+		for (const m of merges) {
+			if (m.row < headerRows && m.row + m.rowspan > headerRows) {
+				const endRow = m.row + m.rowspan;
+				if (endRow <= Math.min(4, rowCount - 1)) {
+					headerRows = endRow;
+				}
+			}
+		}
+		this.tableData.headerRows = headerRows;
+
+		// 对仍跨越 headerRows 边界的超长纵向合并，在边界处安全切分以保证 thead 与 tbody 网格闭合
+		const safeMerges: CellMergeRange[] = [];
+		for (const m of merges) {
+			if (m.row < headerRows && m.row + m.rowspan > headerRows) {
+				const topSpan = headerRows - m.row;
+				const bottomSpan = m.row + m.rowspan - headerRows;
+				if (topSpan > 1 || m.colspan > 1) {
+					safeMerges.push({ row: m.row, col: m.col, rowspan: topSpan, colspan: m.colspan });
+				}
+				if (bottomSpan > 1 || m.colspan > 1) {
+					safeMerges.push({ row: headerRows, col: m.col, rowspan: bottomSpan, colspan: m.colspan });
+				}
+			} else {
+				safeMerges.push(m);
+			}
+		}
+
+		for (const m of safeMerges) {
+			const maxR = Math.min(rowCount, m.row + m.rowspan);
+			const maxC = Math.min(colCount, m.col + m.colspan);
+			const rowspan = maxR - m.row;
+			const colspan = maxC - m.col;
+			if (m.row < 0 || m.col < 0 || (rowspan <= 1 && colspan <= 1)) continue;
+
+			const root = this.tableData.rows[m.row]?.[m.col];
+			if (!root || root.isMerged) continue;
+
+			root.rowspan = rowspan;
+			root.colspan = colspan;
+			root.isMerged = false;
+			this.markDirtyRow(m.row);
+
+			for (let r = m.row; r < maxR; r++) {
+				this.markDirtyRow(r);
+				for (let c = m.col; c < maxC; c++) {
+					if (r === m.row && c === m.col) continue;
+					const cell = this.tableData.rows[r]?.[c];
+					if (cell) {
+						cell.isMerged = true;
+						cell.rowspan = 1;
+						cell.colspan = 1;
+						cell.content = '';
+					}
+				}
+			}
+		}
+	}
+
+	importData(input: string[][] | ImportedTableData, mergesArg?: CellMergeRange[]) {
+		const data = Array.isArray(input) ? input : input.rows;
+		const merges = Array.isArray(input) ? (mergesArg ?? []) : (input.merges ?? []);
 		if (!data || data.length === 0 || !data[0] || data[0].length === 0) {
 			return;
 		}
@@ -778,12 +846,17 @@ class TableStore {
 			headerRows: 1,
 			segments: []
 		};
+		if (merges.length > 0) {
+			this.applyMergeRanges(merges);
+		}
 		this.bumpLayout();
 		this.bumpContent();
 		this.saveHistory(true);
 	}
 
-	pasteAtSelection(data: string[][]) {
+	pasteAtSelection(input: string[][] | ImportedTableData, mergesArg?: CellMergeRange[]) {
+		const data = Array.isArray(input) ? input : input.rows;
+		const merges = Array.isArray(input) ? (mergesArg ?? []) : (input.merges ?? []);
 		if (data.length === 0 || data[0].length === 0) return;
 		this.commitPending();
 
@@ -824,8 +897,34 @@ class TableStore {
 			}
 		}
 
-		const structure = this.tableData.rows.length !== startRowCount
-			|| this.tableData.columnWidths.length !== startColCount;
+		let structure =
+			this.tableData.rows.length !== startRowCount ||
+			this.tableData.columnWidths.length !== startColCount;
+
+		// 若目标粘贴区域内原本存在旧的合并单元格，先解开重叠的合并范围以免残留脏状态
+		for (let r = 0; r < this.tableData.rows.length; r++) {
+			for (let c = 0; c < this.tableData.rows[r].length; c++) {
+				const cell = this.tableData.rows[r][c];
+				const rs = cell.rowspan ?? 1;
+				const cs = cell.colspan ?? 1;
+				if (rs > 1 || cs > 1) {
+					const overlapsRow = r < requiredRows && r + rs > startRow;
+					const overlapsCol = c < requiredCols && c + cs > startCol;
+					if (overlapsRow && overlapsCol) {
+						for (let rr = r; rr < r + rs && rr < this.tableData.rows.length; rr++) {
+							this.markDirtyRow(rr);
+							for (let cc = c; cc < c + cs && cc < this.tableData.rows[rr].length; cc++) {
+								const target = this.tableData.rows[rr][cc];
+								target.isMerged = false;
+								target.rowspan = 1;
+								target.colspan = 1;
+							}
+						}
+						structure = true;
+					}
+				}
+			}
+		}
 
 		// Paste data at the target position
 		for (let r = 0; r < pasteRows; r++) {
@@ -833,11 +932,27 @@ class TableStore {
 				const targetRow = startRow + r;
 				const targetCol = startCol + c;
 				const content = data[r][c] ?? '';
-				if (this.tableData.rows[targetRow]?.[targetCol]) {
-					this.tableData.rows[targetRow][targetCol].content = content;
+				const cell = this.tableData.rows[targetRow]?.[targetCol];
+				if (cell) {
+					cell.content = content;
+					cell.isMerged = false;
+					cell.rowspan = 1;
+					cell.colspan = 1;
 					this.markDirtyRow(targetRow);
 				}
 			}
+		}
+
+		// 还原剪贴板中携带的合并单元格结构
+		if (merges.length > 0) {
+			const offsetMerges = merges.map((m) => ({
+				row: startRow + m.row,
+				col: startCol + m.col,
+				rowspan: m.rowspan,
+				colspan: m.colspan
+			}));
+			this.applyMergeRanges(offsetMerges);
+			structure = true;
 		}
 
 		if (structure) this.bumpLayout();
