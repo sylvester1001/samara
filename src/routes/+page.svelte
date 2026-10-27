@@ -419,8 +419,65 @@
 		}
 	}
 
+	function isExternalEditable(target: EventTarget | null): boolean {
+		if (!(target instanceof HTMLElement)) return false;
+		if (target.isContentEditable) return true;
+		if (target.tagName === "INPUT") return true;
+		if (target.tagName === "TEXTAREA") {
+			return !target.hasAttribute("data-row");
+		}
+		return false;
+	}
+
+	function hasActiveTextSubstringSelection(target: EventTarget | null): boolean {
+		if (target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement) {
+			return (
+				target.selectionStart != null &&
+				target.selectionEnd != null &&
+				target.selectionStart !== target.selectionEnd
+			);
+		}
+		return false;
+	}
+
+	function handleGlobalCopy(e: ClipboardEvent) {
+		if (isExternalEditable(e.target) || hasActiveTextSubstringSelection(e.target)) return;
+		const payload = tableStore.serializeSelectionForClipboard();
+		if (payload && e.clipboardData) {
+			e.preventDefault();
+			e.clipboardData.setData("text/plain", payload.text);
+			e.clipboardData.setData("text/html", payload.html);
+		}
+	}
+
+	function handleGlobalCut(e: ClipboardEvent) {
+		if (isExternalEditable(e.target) || hasActiveTextSubstringSelection(e.target)) return;
+		const payload = tableStore.serializeSelectionForClipboard();
+		if (payload && e.clipboardData) {
+			e.preventDefault();
+			e.clipboardData.setData("text/plain", payload.text);
+			e.clipboardData.setData("text/html", payload.html);
+			tableStore.clearSelectedCellsContent();
+		}
+	}
+
 	function handleGlobalPaste(e: ClipboardEvent) {
+		if (isExternalEditable(e.target)) return;
 		if (e.clipboardData) {
+			const html = e.clipboardData.getData("text/html");
+			const plain = e.clipboardData.getData("text/plain");
+			const hasTablePayload =
+				(html && /<table[\s>]/i.test(html)) ||
+				plain.includes("\t") ||
+				plain.includes("\n");
+			if (
+				!hasTablePayload &&
+				e.target instanceof HTMLTextAreaElement &&
+				e.target.hasAttribute("data-row") &&
+				e.target.value.length > 0
+			) {
+				return;
+			}
 			const data = handlePaste(e.clipboardData);
 			if (data) {
 				e.preventDefault();
@@ -430,9 +487,38 @@
 	}
 
 	function handleGlobalKeydown(e: KeyboardEvent) {
-		if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+		const mod = e.ctrlKey || e.metaKey;
+		const key = e.key.toLowerCase();
+
+		if (mod && key === "s") {
 			e.preventDefault();
 			handleManualSave();
+			return;
+		}
+
+		if (isExternalEditable(e.target)) return;
+
+		if (mod && !e.shiftKey && key === "z") {
+			e.preventDefault();
+			handleUndo();
+			return;
+		}
+
+		if (mod && (key === "y" || (e.shiftKey && key === "z"))) {
+			e.preventDefault();
+			handleRedo();
+			return;
+		}
+
+		if (mod && key === "b" && tableStore.selectedCells.length > 0) {
+			e.preventDefault();
+			handleToggleBold();
+			return;
+		}
+
+		if (mod && key === "i" && tableStore.selectedCells.length > 0) {
+			e.preventDefault();
+			handleToggleItalic();
 			return;
 		}
 
@@ -621,6 +707,8 @@
 </script>
 
 <svelte:window
+	oncopy={handleGlobalCopy}
+	oncut={handleGlobalCut}
 	onpaste={handleGlobalPaste}
 	onkeydown={handleGlobalKeydown}
 	onbeforeunload={handleBeforeUnload}

@@ -368,6 +368,15 @@ export function parseHTMLTable(html: string): ImportedTableData | null {
 		});
 	}
 
+	if (table.hasAttribute('data-samara-clipboard')) {
+		const maxCols = Math.max(0, ...grid.map((row) => row.length));
+		if (grid.length === 0 || maxCols === 0) return null;
+		const padded = grid.map((row) =>
+			Array.from({ length: maxCols }, (_, i) => row[i] ?? '')
+		);
+		return { rows: padded, merges: rawMerges };
+	}
+
 	const normalized = cleanAndNormalizeMatrixWithMerges(grid, rawMerges);
 	return normalized.rows.length > 0 ? normalized : null;
 }

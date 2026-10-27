@@ -273,6 +273,73 @@ class TableStore {
 		}
 	}
 
+	serializeSelectionForClipboard(): { text: string; html: string } | null {
+		if (this.selectedCells.length === 0) return null;
+		const rowCount = this.tableData.rows.length;
+		const colCount = this.tableData.columnWidths.length;
+		if (rowCount === 0 || colCount === 0) return null;
+
+		let minR = Infinity;
+		let maxR = -Infinity;
+		let minC = Infinity;
+		let maxC = -Infinity;
+		for (const { row, col } of this.selectedCells) {
+			if (row < minR) minR = row;
+			if (row > maxR) maxR = row;
+			if (col < minC) minC = col;
+			if (col > maxC) maxC = col;
+		}
+		minR = Math.max(0, minR);
+		minC = Math.max(0, minC);
+		maxR = Math.min(rowCount - 1, maxR);
+		maxC = Math.min(colCount - 1, maxC);
+		if (minR > maxR || minC > maxC) return null;
+
+		for (let r = minR; r <= maxR; r++) {
+			for (let c = minC; c <= maxC; c++) {
+				const cell = this.tableData.rows[r]?.[c];
+				if (!cell || cell.isMerged) continue;
+				const rs = cell.rowspan ?? 1;
+				const cs = cell.colspan ?? 1;
+				if (r + rs - 1 > maxR) maxR = Math.min(rowCount - 1, r + rs - 1);
+				if (c + cs - 1 > maxC) maxC = Math.min(colCount - 1, c + cs - 1);
+			}
+		}
+
+		const tsvLines: string[] = [];
+		const htmlRows: string[] = [];
+
+		for (let r = minR; r <= maxR; r++) {
+			const tsvCols: string[] = [];
+			const htmlCells: string[] = [];
+			for (let c = minC; c <= maxC; c++) {
+				const cell = this.tableData.rows[r]?.[c];
+				const content = cell && !cell.isMerged ? (cell.content ?? '') : '';
+				tsvCols.push(content.replace(/\t/g, ' ').replace(/\r?\n/g, ' '));
+
+				if (cell && !cell.isMerged) {
+					const rs = Math.min(cell.rowspan ?? 1, maxR - r + 1);
+					const cs = Math.min(cell.colspan ?? 1, maxC - c + 1);
+					const rsAttr = rs > 1 ? ` rowspan="${rs}"` : '';
+					const csAttr = cs > 1 ? ` colspan="${cs}"` : '';
+					const escaped = content
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;');
+					htmlCells.push(`<td${rsAttr}${csAttr}>${escaped}</td>`);
+				}
+			}
+			tsvLines.push(tsvCols.join('\t'));
+			htmlRows.push(`<tr>${htmlCells.join('')}</tr>`);
+		}
+
+		return {
+			text: tsvLines.join('\n'),
+			html: `<table data-samara-clipboard="1"><tbody>${htmlRows.join('')}</tbody></table>`
+		};
+	}
+
 	toggleSelectedCells(field: 'isBold' | 'isItalic') {
 		if (this.selectedCells.length === 0) return;
 		const shouldEnable = this.selectedCells.some(({ row, col }) => {
@@ -1009,6 +1076,9 @@ class TableStore {
 		const requiredCols = startCol + pasteCols;
 		const startRowCount = this.tableData.rows.length;
 		const startColCount = this.tableData.columnWidths.length;
+		const wasTableEmpty = this.tableData.rows.every((row) =>
+			row.every((c) => !c.content || c.content.trim() === '')
+		);
 
 		// Expand rows if needed
 		while (this.tableData.rows.length < requiredRows) {
@@ -1090,7 +1160,13 @@ class TableStore {
 			structure = true;
 		}
 
-		this.autoFitColumnWidths(availableWidth);
+		const shouldAutoFit =
+			wasTableEmpty ||
+			requiredCols > currentCols ||
+			(pasteCols >= this.tableData.columnWidths.length && pasteRows >= 2);
+		if (shouldAutoFit) {
+			this.autoFitColumnWidths(availableWidth);
+		}
 		this.bumpLayout();
 		this.bumpContent();
 		this.saveHistory(true);
