@@ -560,18 +560,59 @@
 	const activeBackgroundColor = $derived(activeCellSemantics?.backgroundColor);
 
 	let formulaDialogOpen = $state(false);
-	let currentFormulaCell = $derived(
-		tableStore.selectedCells.length === 1
-			? tableStore.tableData.rows[tableStore.selectedCells[0].row]?.[
-					tableStore.selectedCells[0].col
-				]?.content ?? ""
-			: "",
-	);
+	let currentFormulaCell = $state("");
+	let formulaTargetRange = $state<{ row: number; col: number; start: number; end: number } | null>(null);
+
+	function stripOuterDollar(str: string): string {
+		const trimmed = str.trim();
+		if (trimmed.length >= 2 && trimmed.startsWith("$") && trimmed.endsWith("$")) {
+			return trimmed.slice(1, -1);
+		}
+		return str;
+	}
 
 	function handleInsertFormula() {
-		if (tableStore.selectedCells.length === 1) {
-			formulaDialogOpen = true;
+		if (tableStore.selectedCells.length !== 1) return;
+		const { row, col } = tableStore.selectedCells[0];
+		const cellContent = tableStore.tableData.rows[row]?.[col]?.content ?? "";
+		const textarea = document.querySelector<HTMLTextAreaElement>(
+			`textarea[data-row="${row}"][data-col="${col}"]`
+		);
+
+		let start = cellContent.length;
+		let end = cellContent.length;
+		if (textarea && textarea.selectionStart != null && textarea.selectionEnd != null) {
+			start = Math.max(0, Math.min(cellContent.length, textarea.selectionStart));
+			end = Math.max(start, Math.min(cellContent.length, textarea.selectionEnd));
 		}
+
+		if (start !== end) {
+			// 用户显式选中了一段文本：只将该选中片段放入公式编辑器，其余文字保持原样
+			currentFormulaCell = stripOuterDollar(cellContent.slice(start, end));
+			formulaTargetRange = { row, col, start, end };
+		} else {
+			// 未选中文本：若光标恰好位于已有的 $...$ 行内公式内部，则编辑该公式；否则在光标处新插入空公式
+			let matchedFormula: { start: number; end: number; inner: string } | null = null;
+			const regex = /\$([^$]+)\$/g;
+			let match: RegExpExecArray | null;
+			while ((match = regex.exec(cellContent)) !== null) {
+				const mStart = match.index;
+				const mEnd = mStart + match[0].length;
+				if (start > mStart && start < mEnd) {
+					matchedFormula = { start: mStart, end: mEnd, inner: match[1] };
+					break;
+				}
+			}
+			if (matchedFormula) {
+				currentFormulaCell = matchedFormula.inner;
+				formulaTargetRange = { row, col, start: matchedFormula.start, end: matchedFormula.end };
+			} else {
+				currentFormulaCell = "";
+				formulaTargetRange = { row, col, start, end };
+			}
+		}
+
+		formulaDialogOpen = true;
 	}
 
 	function handleFormulaDialogOpen(open: boolean) {
@@ -579,13 +620,28 @@
 	}
 
 	function handleFormulaConfirm(latex: string) {
-		if (tableStore.selectedCells.length === 1) {
-			const { row, col } = tableStore.selectedCells[0];
-			// 简单的将公式作为内容插入，这里暂时不处理混合文本
-			// 使用 formatCellContent 确保格式（虽然目前只是包裹 $...$）
-			const formatted = formatCellContent(latex, true);
-			tableStore.updateCell(row, col, { content: formatted });
-		}
+		const range =
+			formulaTargetRange ??
+			(tableStore.selectedCells.length === 1
+				? {
+						row: tableStore.selectedCells[0].row,
+						col: tableStore.selectedCells[0].col,
+						start: (tableStore.tableData.rows[tableStore.selectedCells[0].row]?.[tableStore.selectedCells[0].col]?.content ?? "").length,
+						end: (tableStore.tableData.rows[tableStore.selectedCells[0].row]?.[tableStore.selectedCells[0].col]?.content ?? "").length,
+					}
+				: null);
+		if (!range) return;
+
+		const { row, col, start, end } = range;
+		const cellContent = tableStore.tableData.rows[row]?.[col]?.content ?? "";
+		const trimmed = latex.trim();
+		if (!trimmed && start === end) return;
+
+		const formatted = trimmed ? formatCellContent(trimmed, true) : "";
+		const safeStart = Math.max(0, Math.min(cellContent.length, start));
+		const safeEnd = Math.max(safeStart, Math.min(cellContent.length, end));
+		const nextContent = cellContent.slice(0, safeStart) + formatted + cellContent.slice(safeEnd);
+		tableStore.updateCell(row, col, { content: nextContent });
 	}
 
 	const dpiOptions = [

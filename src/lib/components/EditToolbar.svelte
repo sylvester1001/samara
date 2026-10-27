@@ -523,6 +523,7 @@
 							type="button"
 							class="h-full px-2 inline-flex items-center gap-1 last:border-r-0 cursor-pointer transition-colors disabled:opacity-30 disabled:pointer-events-none select-none {uiTheme.theme === 'avant-garde' ? 'font-terminal text-[11px] uppercase tracking-wider' : 'text-xs font-medium'} {getButtonActiveClasses(false)}"
 							disabled={!hasSelection || !canInsertFormula}
+							onmousedown={(e) => e.preventDefault()}
 							onclick={onInsertFormula}
 							aria-label={t('edit.insertFormula')}
 							{...props}
