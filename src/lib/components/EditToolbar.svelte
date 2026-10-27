@@ -165,7 +165,7 @@
 
 <div class="flex flex-col gap-1.5 select-none" unselectable="on">
 	<!-- Row 1: Cell Formatting Keypad Bays (Never wraps, dedicated to cell-level tools) -->
-	<div class="flex items-center gap-1.5 h-7 flex-nowrap overflow-hidden">
+	<div class="flex items-center flex-wrap gap-1.5 select-none" unselectable="on">
 			<!-- Bay 1: Alignment Bay [ ⇥ | ↔ | ⇤ ] -->
 			<div
 				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)] overflow-hidden'}"
@@ -534,10 +534,8 @@
 					{/snippet}
 				</AppTooltip>
 			</div>
-		</div>
 
-		<!-- Row 2: Table Architecture Instruments -->
-		<div class="flex items-center gap-1.5 h-7 select-none">
+		<!-- Table Architecture Instruments (Header & Line) -->
 			<!-- Header Adjust Mode Toggle Bay -->
 			<div
 				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)] overflow-hidden'}"
