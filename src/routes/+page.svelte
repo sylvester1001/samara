@@ -3,6 +3,7 @@
 	import {
 		Toolbar,
 		EditToolbar,
+		CanvasToolbar,
 		AcademicTable,
 		TableEditor,
 		FormulaDialog,
@@ -60,6 +61,20 @@
 	import { t } from "$lib/i18n";
 
 	let tableElement: HTMLElement | null = $state(null);
+	let actualCanvasWidth = $state(0);
+	let actualCanvasHeight = $state(0);
+
+	$effect(() => {
+		if (!tableElement) return;
+		const observer = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				actualCanvasWidth = Math.round(entry.contentRect.width);
+				actualCanvasHeight = Math.round(entry.contentRect.height);
+			}
+		});
+		observer.observe(tableElement);
+		return () => observer.disconnect();
+	});
 	let previewContainer: HTMLElement;
 	let fileInput: HTMLInputElement;
 	let exportDpi = $state(300);
@@ -1014,6 +1029,15 @@
 									</button>
 								{/snippet}
 							</AppTooltip>
+						</div>
+						<!-- 画布控制器仪表（Canvas Controller Toolbar） -->
+						<div class="absolute top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
+							<CanvasToolbar
+								canvasConfig={tableStore.canvasConfig}
+								onCanvasChange={handleCanvasChange}
+								actualWidth={actualCanvasWidth}
+								actualHeight={actualCanvasHeight}
+							/>
 						</div>
 						<ScrollArea
 							class="flex-1 w-full h-full min-h-0 min-w-0"
