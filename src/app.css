@@ -1099,15 +1099,7 @@ html:not([data-theme="classic"]) [data-sonner-toast] [data-close-button]:hover {
 html[data-theme="avant-garde"] .tech-corners,
 html:not([data-theme="classic"]) .tech-corners,
 html[data-theme="avant-garde"] [data-tech-corners],
-html:not([data-theme="classic"]) [data-tech-corners],
-html[data-theme="avant-garde"] [data-slot="popover-content"],
-html:not([data-theme="classic"]) [data-slot="popover-content"],
-html[data-theme="avant-garde"] [data-slot="dialog-content"],
-html:not([data-theme="classic"]) [data-slot="dialog-content"],
-html[data-theme="avant-garde"] [data-slot="context-menu-content"],
-html:not([data-theme="classic"]) [data-slot="context-menu-content"],
-html[data-theme="avant-garde"] [data-slot="context-menu-sub-content"],
-html:not([data-theme="classic"]) [data-slot="context-menu-sub-content"] {
+html:not([data-theme="classic"]) [data-tech-corners] {
   position: relative;
 }
 
