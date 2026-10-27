@@ -17,6 +17,7 @@
 		PaintBucket,
 	} from "lucide-svelte";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import * as Popover from "$lib/components/ui/popover/index.js";
 	import type { TableData } from "$lib/types";
 	import { getSegmentLabel, isSegmentTrimmed } from "$lib/utils/table-geometry";
 	import { uiTheme } from "$lib/stores/ui-theme.svelte.js";
@@ -33,8 +34,8 @@
 		onAlignChange?: (align: "left" | "center" | "right") => void;
 		onToggleBold?: () => void;
 		onToggleItalic?: () => void;
-		onTextColorChange?: (color: string) => void;
-		onBackgroundColorChange?: (color: string) => void;
+		onTextColorChange?: (color: string | undefined) => void;
+		onBackgroundColorChange?: (color: string | undefined) => void;
 		onMergeCells?: () => void;
 		onUnmergeCells?: () => void;
 		onInsertFormula?: () => void;
@@ -89,6 +90,30 @@
 
 	let textColorInput = $state<HTMLInputElement>();
 	let bgColorInput = $state<HTMLInputElement>();
+	let textColorPopoverOpen = $state(false);
+	let bgColorPopoverOpen = $state(false);
+
+	const TEXT_COLOR_PRESETS = [
+		"#000000",
+		"#4b5563",
+		"#b91c1c",
+		"#0202f1",
+		"#15803d",
+		"#b45309",
+		"#6d28d9",
+		"#0f766e",
+	];
+
+	const BG_COLOR_PRESETS = [
+		"#f3f4f6",
+		"#e5e7eb",
+		"#dbeafe",
+		"#dcfce7",
+		"#fef3c7",
+		"#fee2e2",
+		"#ede9fe",
+		"#cffafe",
+	];
 
 	function openTextColorPicker() {
 		if (!hasSelection || !textColorInput) return;
@@ -255,78 +280,185 @@
 
 			<!-- Bay 3: Color Bay [ A | 🪣 ] -->
 			<div
-				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)] overflow-hidden'}"
+				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none relative {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)] overflow-hidden'}"
 				unselectable="on"
 			>
-				<AppTooltip
-					text={t('edit.textColor')}
-					aria-label={t('edit.textColor')}
-					disabled={!hasSelection}
-					onclick={openTextColorPicker}
-				>
-					{#snippet children({ props })}
-						<div class="relative h-full inline-flex items-center">
-							<button
-								type="button"
-								class="w-7 h-full inline-flex flex-col items-center justify-center border-r border-border cursor-pointer transition-colors disabled:opacity-30 disabled:pointer-events-none select-none {getButtonActiveClasses(false)}"
-								disabled={!hasSelection}
-								onclick={openTextColorPicker}
+				<Popover.Root bind:open={textColorPopoverOpen}>
+					<Popover.Trigger disabled={!hasSelection}>
+						{#snippet child({ props: popoverProps })}
+							<AppTooltip
+								text={t('edit.textColor')}
 								aria-label={t('edit.textColor')}
-								{...props}
+								disabled={!hasSelection}
+								childProps={popoverProps}
 							>
-								<Baseline class="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
-								<span
-									class="w-3.5 h-[2px] mt-0.5 rounded-[0.5px]"
-									style:background-color={hasSelection && activeTextColor ? activeTextColor : 'currentColor'}
-								></span>
-							</button>
-							<input
-								bind:this={textColorInput}
-								type="color"
-								value={activeTextColor || "#000000"}
-								class="absolute inset-0 opacity-0 pointer-events-none w-full h-full"
-								onchange={handleTextColorChange}
-								oninput={handleTextColorChange}
-								tabindex={-1}
-							/>
-						</div>
-					{/snippet}
-				</AppTooltip>
-
-				<AppTooltip
-					text={t('edit.backgroundColor')}
-					aria-label={t('edit.backgroundColor')}
-					disabled={!hasSelection}
-					onclick={openBgColorPicker}
-				>
-					{#snippet children({ props })}
-						<div class="relative h-full inline-flex items-center">
+								{#snippet children({ props })}
+									<button
+										{...props}
+										type="button"
+										class="w-7 h-full inline-flex flex-col items-center justify-center border-r border-border cursor-pointer transition-colors disabled:opacity-30 disabled:pointer-events-none select-none {getButtonActiveClasses(textColorPopoverOpen)}"
+										disabled={!hasSelection}
+										aria-label={t('edit.textColor')}
+									>
+										<Baseline class="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
+										<span
+											class="w-3.5 h-[2px] mt-0.5 rounded-[0.5px]"
+											style:background-color={hasSelection && activeTextColor ? activeTextColor : 'currentColor'}
+										></span>
+									</button>
+								{/snippet}
+							</AppTooltip>
+						{/snippet}
+					</Popover.Trigger>
+					<Popover.Content
+						align="start"
+						sideOffset={6}
+						class="w-44 p-2 select-none {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : 'font-sans text-xs'}"
+					>
+						<div class="flex flex-col gap-1.5">
 							<button
 								type="button"
-								class="w-7 h-full inline-flex flex-col items-center justify-center last:border-r-0 cursor-pointer transition-colors disabled:opacity-30 disabled:pointer-events-none select-none {getButtonActiveClasses(false)}"
-								disabled={!hasSelection}
-								onclick={openBgColorPicker}
-								aria-label={t('edit.backgroundColor')}
-								{...props}
+								class="w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left cursor-pointer transition-colors"
+								onclick={() => {
+									onTextColorChange?.(undefined);
+									textColorPopoverOpen = false;
+								}}
 							>
-								<PaintBucket class="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
-								<span
-									class="w-3.5 h-[2px] mt-0.5 rounded-[0.5px] {activeBackgroundColor ? 'border border-border/50' : ''}"
-									style:background-color={hasSelection && activeBackgroundColor ? activeBackgroundColor : 'transparent'}
-								></span>
+								<span class="size-4 rounded-[2px] border border-border bg-foreground inline-flex items-center justify-center shrink-0">
+									<span class="text-[9px] font-bold text-background leading-none">A</span>
+								</span>
+								<span class="text-[11px] font-medium truncate">{t('edit.defaultTextColor')}</span>
 							</button>
-							<input
-								bind:this={bgColorInput}
-								type="color"
-								value={activeBackgroundColor || "#ffffff"}
-								class="absolute inset-0 opacity-0 pointer-events-none w-full h-full"
-								onchange={handleBgColorChange}
-								oninput={handleBgColorChange}
-								tabindex={-1}
-							/>
+							<div class="grid grid-cols-4 gap-1.5 px-1 py-1">
+								{#each TEXT_COLOR_PRESETS as preset (preset)}
+									<button
+										type="button"
+										class="size-6 rounded-[2px] border border-border/80 cursor-pointer transition-transform hover:scale-110 focus:outline-none {activeTextColor?.toLowerCase() === preset ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : ''}"
+										style:background-color={preset}
+										onclick={() => {
+											onTextColorChange?.(preset);
+											textColorPopoverOpen = false;
+										}}
+										aria-label={preset}
+									></button>
+								{/each}
+							</div>
+							<div class="h-px bg-border/60"></div>
+							<button
+								type="button"
+								class="w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left cursor-pointer transition-colors"
+								onclick={() => {
+									textColorPopoverOpen = false;
+									openTextColorPicker();
+								}}
+							>
+								<span
+									class="size-3.5 rounded-full border border-border shrink-0"
+									style="background: conic-gradient(#ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ef4444);"
+								></span>
+								<span class="text-[11px] font-medium truncate">{t('edit.customColor')}</span>
+							</button>
 						</div>
-					{/snippet}
-				</AppTooltip>
+					</Popover.Content>
+				</Popover.Root>
+
+				<Popover.Root bind:open={bgColorPopoverOpen}>
+					<Popover.Trigger disabled={!hasSelection}>
+						{#snippet child({ props: popoverProps })}
+							<AppTooltip
+								text={t('edit.backgroundColor')}
+								aria-label={t('edit.backgroundColor')}
+								disabled={!hasSelection}
+								childProps={popoverProps}
+							>
+								{#snippet children({ props })}
+									<button
+										{...props}
+										type="button"
+										class="w-7 h-full inline-flex flex-col items-center justify-center last:border-r-0 cursor-pointer transition-colors disabled:opacity-30 disabled:pointer-events-none select-none {getButtonActiveClasses(bgColorPopoverOpen)}"
+										disabled={!hasSelection}
+										aria-label={t('edit.backgroundColor')}
+									>
+										<PaintBucket class="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
+										<span
+											class="w-3.5 h-[2px] mt-0.5 rounded-[0.5px] {activeBackgroundColor ? 'border border-border/50' : ''}"
+											style:background-color={hasSelection && activeBackgroundColor ? activeBackgroundColor : 'transparent'}
+										></span>
+									</button>
+								{/snippet}
+							</AppTooltip>
+						{/snippet}
+					</Popover.Trigger>
+					<Popover.Content
+						align="start"
+						sideOffset={6}
+						class="w-44 p-2 select-none {uiTheme.theme === 'avant-garde' ? 'font-terminal text-xs' : 'font-sans text-xs'}"
+					>
+						<div class="flex flex-col gap-1.5">
+							<button
+								type="button"
+								class="w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left cursor-pointer transition-colors"
+								onclick={() => {
+									onBackgroundColorChange?.(undefined);
+									bgColorPopoverOpen = false;
+								}}
+							>
+								<span class="size-4 rounded-[2px] border border-border bg-background relative overflow-hidden shrink-0">
+									<span class="absolute inset-0 bg-[linear-gradient(135deg,transparent_44%,#ef4444_45%,#ef4444_55%,transparent_56%)]"></span>
+								</span>
+								<span class="text-[11px] font-medium truncate">{t('edit.noFill')}</span>
+							</button>
+							<div class="grid grid-cols-4 gap-1.5 px-1 py-1">
+								{#each BG_COLOR_PRESETS as preset (preset)}
+									<button
+										type="button"
+										class="size-6 rounded-[2px] border border-border/80 cursor-pointer transition-transform hover:scale-110 focus:outline-none {activeBackgroundColor?.toLowerCase() === preset ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' : ''}"
+										style:background-color={preset}
+										onclick={() => {
+											onBackgroundColorChange?.(preset);
+											bgColorPopoverOpen = false;
+										}}
+										aria-label={preset}
+									></button>
+								{/each}
+							</div>
+							<div class="h-px bg-border/60"></div>
+							<button
+								type="button"
+								class="w-full flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius)] hover:bg-accent hover:text-accent-foreground text-left cursor-pointer transition-colors"
+								onclick={() => {
+									bgColorPopoverOpen = false;
+									openBgColorPicker();
+								}}
+							>
+								<span
+									class="size-3.5 rounded-full border border-border shrink-0"
+									style="background: conic-gradient(#ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ef4444);"
+								></span>
+								<span class="text-[11px] font-medium truncate">{t('edit.customColor')}</span>
+							</button>
+						</div>
+					</Popover.Content>
+				</Popover.Root>
+
+				<input
+					bind:this={textColorInput}
+					type="color"
+					value={activeTextColor || "#000000"}
+					class="absolute left-0 top-0 opacity-0 pointer-events-none w-7 h-7"
+					onchange={handleTextColorChange}
+					oninput={handleTextColorChange}
+					tabindex={-1}
+				/>
+				<input
+					bind:this={bgColorInput}
+					type="color"
+					value={activeBackgroundColor || "#ffffff"}
+					class="absolute right-0 top-0 opacity-0 pointer-events-none w-7 h-7"
+					onchange={handleBgColorChange}
+					oninput={handleBgColorChange}
+					tabindex={-1}
+				/>
 			</div>
 
 			<!-- Bay 4: Structure Bay [ ⧉ | ⧇ ] -->

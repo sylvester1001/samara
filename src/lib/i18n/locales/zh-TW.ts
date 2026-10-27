@@ -101,7 +101,10 @@ export const zhTW: TranslationSchema = {
 		lineAbove: '在此儲存格上方',
 		shorterThanCell: '短於儲存格',
 		removeLine: '刪除線條',
-		lineN: '線條 {n}'
+		lineN: '線條 {n}',
+		defaultTextColor: '預設顏色',
+		noFill: '無填滿',
+		customColor: '自訂顏色...'
 	},
 	table: {
 		size: '表格尺寸',

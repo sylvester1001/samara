@@ -305,11 +305,11 @@
 		tableStore.toggleSelectedCells("isItalic");
 	}
 
-	function handleTextColorChange(color: string) {
+	function handleTextColorChange(color: string | undefined) {
 		tableStore.applyToSelectedCells({ textColor: color });
 	}
 
-	function handleBackgroundColorChange(color: string) {
+	function handleBackgroundColorChange(color: string | undefined) {
 		tableStore.applyToSelectedCells({ backgroundColor: color });
 	}
 

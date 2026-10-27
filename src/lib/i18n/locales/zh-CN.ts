@@ -101,7 +101,10 @@ export const zhCN: TranslationSchema = {
 		lineAbove: '在此单元格上方',
 		shorterThanCell: '短于单元格',
 		removeLine: '删除线条',
-		lineN: '线条 {n}'
+		lineN: '线条 {n}',
+		defaultTextColor: '默认颜色',
+		noFill: '无填充',
+		customColor: '自定义颜色...'
 	},
 	table: {
 		size: '表格尺寸',

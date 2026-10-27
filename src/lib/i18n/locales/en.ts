@@ -99,7 +99,10 @@ export const en = {
 		lineAbove: 'Above this cell',
 		shorterThanCell: 'Shorter than cell',
 		removeLine: 'Remove line',
-		lineN: 'Line {n}'
+		lineN: 'Line {n}',
+		defaultTextColor: 'Default color',
+		noFill: 'No fill',
+		customColor: 'Custom color...'
 	},
 	table: {
 		size: 'Table Size',
