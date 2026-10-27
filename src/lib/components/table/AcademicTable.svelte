@@ -27,6 +27,7 @@
 		onCellUpdate?: (row: number, col: number, content: string) => void;
 		onColumnResize?: (colIndex: number, width: number) => void;
 		onRowResize?: (rowIndex: number, height: number) => void;
+		onResizeEnd?: () => void;
 		onCanvasResize?: (config: Partial<CanvasConfig>) => void;
 		canvasRef?: (el: HTMLElement | null) => void;
 		/** 预览缩放，用于把屏幕坐标折回布局坐标 */
@@ -46,6 +47,7 @@
 		onCellUpdate,
 		onColumnResize,
 		onRowResize,
+		onResizeEnd,
 		onCanvasResize,
 		canvasRef,
 		viewScale = 1,
@@ -524,11 +526,13 @@
 	$effect(() => {
 		const r = tableData.rows.length;
 		const c = tableData.columnWidths.length;
+		const rev = layoutRev;
 		untrack(() => {
 			heightCache = tableData.rowHeights.slice();
 		});
 		void r;
 		void c;
+		void rev;
 	});
 
 	$effect(() => {
@@ -645,6 +649,7 @@
 				viewScale={viewScale}
 				onColumnResize={handleColumnResize}
 				onRowResize={handleRowResize}
+				{onResizeEnd}
 			/>
 		{/if}
 	</div>

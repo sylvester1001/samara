@@ -66,10 +66,12 @@ export function cowCloneTable(
 		rows[r] = cloneRow(live.rows[r]);
 	}
 
+	const sameCols = prev.columnWidths.length === live.columnWidths.length && prev.columnWidths.every((w, i) => w === live.columnWidths[i]);
+	const sameRows = prev.rowHeights.length === live.rowHeights.length && prev.rowHeights.every((h, i) => h === live.rowHeights[i]);
 	return {
 		rows,
-		columnWidths: prev.columnWidths,
-		rowHeights: prev.rowHeights,
+		columnWidths: sameCols ? prev.columnWidths : live.columnWidths.slice(),
+		rowHeights: sameRows ? prev.rowHeights : live.rowHeights.slice(),
 		headerRows: live.headerRows,
 		segments: cloneSegments(live.segments)
 	};

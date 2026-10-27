@@ -889,6 +889,7 @@
 										onCellUpdate={handleCellChange}
 										onColumnResize={handleColumnResize}
 										onRowResize={handleRowResize}
+										onResizeEnd={() => tableStore.commitHistory()}
 										onCanvasResize={handleCanvasChange}
 										canvasRef={(el) => (tableElement = el)}
 										viewScale={previewZoom}

@@ -23,6 +23,7 @@
 		viewScale?: number;
 		onColumnResize?: (index: number, newWidth: number) => void;
 		onRowResize?: (index: number, newHeight: number) => void;
+		onResizeEnd?: () => void;
 	}
 
 	let {
@@ -39,7 +40,8 @@
 		isStageHovered = false,
 		viewScale = 1,
 		onColumnResize,
-		onRowResize
+		onRowResize,
+		onResizeEnd
 	}: Props = $props();
 
 	const HIT = 18;
@@ -67,6 +69,7 @@
 		layout0: number;
 		recenter: boolean;
 	} | null = null;
+	let didResize = false;
 
 	const active = $derived(drag ?? hover);
 	const isAvant = $derived(uiTheme.theme === 'avant-garde');
@@ -160,6 +163,7 @@
 		};
 		drag = next;
 		hover = next;
+		didResize = false;
 		document.documentElement.classList.add('axis-dragging');
 		document.addEventListener('mousemove', onDragMove);
 		document.addEventListener('mouseup', onDragUp);
@@ -172,6 +176,7 @@
 		const isLocked = drag.axis === 'col' ? lockColumns : lockRows;
 		const factor = !isLocked && dragMath.recenter ? 2 : 1;
 		const newSize = dragMath.size0 + factor * (layoutAlong - dragMath.layout0);
+		didResize = true;
 		if (drag.axis === 'col') onColumnResize?.(drag.index, newSize);
 		else onRowResize?.(drag.index, newSize);
 		const point = layoutPointFromEvent(e);
@@ -182,11 +187,14 @@
 	}
 
 	function onDragUp() {
+		const shouldCommit = didResize;
+		didResize = false;
 		drag = null;
 		dragMath = null;
 		document.documentElement.classList.remove('axis-dragging');
 		document.removeEventListener('mousemove', onDragMove);
 		document.removeEventListener('mouseup', onDragUp);
+		if (shouldCommit) onResizeEnd?.();
 	}
 
 	function liveSeamPos(axis: Axis, index: number, fallback: number) {

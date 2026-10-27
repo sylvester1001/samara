@@ -147,23 +147,31 @@
 	let tableElement: HTMLTableElement | null = $state(null);
 	let lastHoverRow: number | null = null;
 	let lastHoverCol: number | null = null;
-	const inputPaddingXRem = 1.25;
+	const MIN_EDITOR_COL_PX = 56;
+	const EDITOR_CELL_PAD_PX = 22;
 	let contextCell = $state<{ row: number; col: number } | null>(null);
+	let gridWrapWidth = $state(0);
 
-	function getDisplayLength(value: string) {
-		let length = 0;
-		for (let i = 0; i < value.length; i++) {
-			length += value.charCodeAt(i) > 255 ? 2 : 1;
+	function getCellContentWidthPx(value: string) {
+		if (!value) return MIN_EDITOR_COL_PX;
+		const lines = value.split(/\r?\n/);
+		let maxLinePx = 0;
+		for (const line of lines) {
+			let px = 0;
+			for (let i = 0; i < line.length; i++) {
+				px += line.charCodeAt(i) > 255 ? 12.2 : 6.6;
+			}
+			if (px > maxLinePx) maxLinePx = px;
 		}
-		return length;
+		return Math.max(MIN_EDITOR_COL_PX, Math.ceil(maxLinePx + EDITOR_CELL_PAD_PX));
 	}
 
-	const columnCharWidths = $derived.by(() => {
+	const columnContentWidthsPx = $derived.by(() => {
 		void contentRev;
 		void layoutRev;
 		return untrack(() => {
 			const columns = rows[0]?.length || 0;
-			const widths = Array(columns).fill(1);
+			const widths = Array<number>(columns).fill(MIN_EDITOR_COL_PX);
 			const scanLimit = Math.min(rows.length, 250);
 			for (let r = 0; r < scanLimit; r++) {
 				const row = rows[r] ?? [];
@@ -171,9 +179,9 @@
 					const cell = row[c];
 					if (!cell || cell.isMerged) continue;
 					const content = cell.content ?? '';
-					const length = Math.max(1, getDisplayLength(content));
+					const widthPx = getCellContentWidthPx(content);
 					const colspan = Math.max(1, cell.colspan ?? 1);
-					const perColumn = Math.ceil(length / colspan);
+					const perColumn = Math.ceil(widthPx / colspan);
 					for (let span = 0; span < colspan && c + span < columns; span++) {
 						if (perColumn > widths[c + span]) {
 							widths[c + span] = perColumn;
@@ -183,6 +191,28 @@
 			}
 			return widths;
 		});
+	});
+
+	const rowGutterWidthPx = $derived.by(() => {
+		const digits = Math.max(String(Math.max(rowCount, 1)).length, 2);
+		return digits * 8 + 16;
+	});
+	const rowGutterWidth = $derived(`${rowGutterWidthPx}px`);
+
+	const columnPixelWidths = $derived.by(() => {
+		const base = columnContentWidthsPx;
+		if (base.length === 0) return [] as number[];
+		const contentSum = base.reduce((acc, w) => acc + w, 0);
+		const availDataW = Math.max(0, gridWrapWidth - rowGutterWidthPx);
+		if (availDataW > contentSum && contentSum > 0) {
+			return base.map((w) => Math.max(MIN_EDITOR_COL_PX, Math.floor((w / contentSum) * availDataW)));
+		}
+		return base;
+	});
+
+	const totalTableWidthPx = $derived.by(() => {
+		const dataSum = columnPixelWidths.reduce((acc, w) => acc + w, 0);
+		return rowGutterWidthPx + dataSum;
 	});
 
 	const virtualizeRows = $derived(shouldWindowRows(rowCount) && !headerAdjustMode);
@@ -215,14 +245,7 @@
 		return expandWindowForSpans(raw, rowCount, editorRowOffsets, rowSpanOrigins);
 	});
 
-	const colPixelOffsets = $derived.by(() => {
-		if (!virtualizeCols) return [] as number[];
-		const gutterGuess = 40;
-		const viewportW = editorViewport?.clientWidth ?? 800;
-		const tableW = tableElement?.offsetWidth ?? Math.max(viewportW, colCount * 48 + gutterGuess);
-		const dataW = Math.max(colCount, tableW - gutterGuess);
-		return prefixSums(Array.from({ length: colCount }, () => dataW / colCount));
-	});
+	const colPixelOffsets = $derived(prefixSums(columnPixelWidths));
 
 	const colWindow = $derived.by(() => {
 		if (!virtualizeCols) return fullWindow(colCount);
@@ -234,32 +257,20 @@
 	const visibleColIndices = $derived(rangeIndices(colWindow.start, colWindow.end));
 	const showColPadStart = $derived(virtualizeCols && colWindow.start > 0);
 	const showColPadEnd = $derived(virtualizeCols && colWindow.end < colCount);
-	const colPadStartChars = $derived.by(() => {
+	const colPadStartPx = $derived.by(() => {
 		if (!showColPadStart) return 0;
 		let sum = 0;
-		for (let c = 0; c < colWindow.start; c++) sum += columnCharWidths[c] ?? 1;
+		for (let c = 0; c < colWindow.start; c++) sum += columnPixelWidths[c] ?? MIN_EDITOR_COL_PX;
 		return sum;
 	});
-	const colPadEndChars = $derived.by(() => {
+	const colPadEndPx = $derived.by(() => {
 		if (!showColPadEnd) return 0;
 		let sum = 0;
-		for (let c = colWindow.end; c < colCount; c++) sum += columnCharWidths[c] ?? 1;
+		for (let c = colWindow.end; c < colCount; c++) sum += columnPixelWidths[c] ?? MIN_EDITOR_COL_PX;
 		return sum;
 	});
 	const editorSpacerColspan = $derived(
 		1 + visibleColIndices.length + (showColPadStart ? 1 : 0) + (showColPadEnd ? 1 : 0)
-	);
-
-	function getColumnWidthStyle(chars: number) {
-		return `calc(${chars}ch + ${inputPaddingXRem}rem)`;
-	}
-
-	const rowGutterWidth = $derived.by(() => {
-		const digits = Math.max(String(Math.max(rowCount, 1)).length, 2);
-		return `calc(${digits}ch + 1rem)`;
-	});
-	const dataColWidth = $derived(
-		colCount > 0 ? `calc((100% - ${rowGutterWidth}) / ${colCount})` : 'auto'
 	);
 
 	const contextTarget = $derived.by(() => {
@@ -386,10 +397,9 @@
 
 		const tableRect = tableElement.getBoundingClientRect();
 		const gutterEl = tableElement.tHead?.rows[0]?.cells[0];
-		const gutterW = gutterEl?.getBoundingClientRect().width ?? 0;
-		const dataW = Math.max(1, tableRect.width - gutterW);
+		const gutterW = gutterEl?.getBoundingClientRect().width ?? rowGutterWidthPx;
 		const x = clientX - tableRect.left - gutterW;
-		const col = Math.max(0, Math.min(colCount - 1, Math.floor((x / dataW) * colCount)));
+		const col = Math.max(0, Math.min(colCount - 1, findIndex(colPixelOffsets, x)));
 		return { row, col };
 	}
 
@@ -936,18 +946,18 @@
 		<div class="p-4 w-full">
 			<ContextMenu.Root>
 				<ContextMenu.Trigger class="block w-full select-none" oncontextmenu={handleContextMenu}>
-					<div class="relative w-full select-none" bind:this={gridWrap}>
-					<table bind:this={tableElement} class="w-full border-collapse table-fixed select-none">
+					<div class="relative w-full select-none" bind:this={gridWrap} bind:clientWidth={gridWrapWidth}>
+					<table bind:this={tableElement} class="border-collapse table-fixed select-none" style="width: {totalTableWidthPx}px;">
 						<colgroup>
-							<col style="width: {rowGutterWidth};" />
+							<col style="width: {rowGutterWidthPx}px;" />
 							{#if showColPadStart}
-								<col style="width: calc((100% - {rowGutterWidth}) * {colWindow.start} / {colCount}); min-width: {getColumnWidthStyle(colPadStartChars)};" />
+								<col style="width: {colPadStartPx}px;" />
 							{/if}
 							{#each visibleColIndices as colIndex (colIndex)}
-								<col style="width: {dataColWidth}; min-width: {getColumnWidthStyle(columnCharWidths[colIndex] ?? 1)};" />
+								<col style="width: {columnPixelWidths[colIndex] ?? MIN_EDITOR_COL_PX}px;" />
 							{/each}
 							{#if showColPadEnd}
-								<col style="width: calc((100% - {rowGutterWidth}) * {colCount - colWindow.end} / {colCount}); min-width: {getColumnWidthStyle(colPadEndChars)};" />
+								<col style="width: {colPadEndPx}px;" />
 							{/if}
 						</colgroup>
 						<thead>

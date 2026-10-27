@@ -222,6 +222,18 @@ class TableStore {
 	}
 
 	commitHistory() {
+		const prev = this.snapshots[this.historyIndex];
+		if (
+			prev &&
+			this.dirtyRows.size === 0 &&
+			prev.headerRows === this.tableData.headerRows &&
+			prev.columnWidths.length === this.tableData.columnWidths.length &&
+			prev.columnWidths.every((w, i) => w === this.tableData.columnWidths[i]) &&
+			prev.rowHeights.length === this.tableData.rowHeights.length &&
+			prev.rowHeights.every((h, i) => h === this.tableData.rowHeights[i])
+		) {
+			return;
+		}
 		this.saveHistory(false);
 	}
 
@@ -634,22 +646,26 @@ class TableStore {
 	}
 
 	setColumnWidth(index: number, width: number) {
-		if (this.tableData.columnWidths[index] !== undefined) {
-			if (this.lockColumnResize) {
-				this.tableData.columnWidths = this.tableData.columnWidths.map(() => width);
-			} else {
-				this.tableData.columnWidths[index] = width;
-			}
+		if (this.tableData.columnWidths[index] === undefined) return;
+		this.commitPending();
+		if (this.lockColumnResize) {
+			if (this.tableData.columnWidths.every((w) => w === width)) return;
+			this.tableData.columnWidths = this.tableData.columnWidths.map(() => width);
+		} else {
+			if (this.tableData.columnWidths[index] === width) return;
+			this.tableData.columnWidths[index] = width;
 		}
 	}
 
 	setRowHeight(index: number, height: number) {
-		if (this.tableData.rowHeights[index] !== undefined) {
-			if (this.lockRowResize) {
-				this.tableData.rowHeights = this.tableData.rowHeights.map(() => height);
-			} else {
-				this.tableData.rowHeights[index] = height;
-			}
+		if (this.tableData.rowHeights[index] === undefined) return;
+		this.commitPending();
+		if (this.lockRowResize) {
+			if (this.tableData.rowHeights.every((h) => h === height)) return;
+			this.tableData.rowHeights = this.tableData.rowHeights.map(() => height);
+		} else {
+			if (this.tableData.rowHeights[index] === height) return;
+			this.tableData.rowHeights[index] = height;
 		}
 	}
 
