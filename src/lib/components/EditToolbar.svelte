@@ -165,7 +165,7 @@
 
 <div class="flex flex-col gap-1.5 select-none" unselectable="on">
 	<!-- Row 1: Cell Formatting Keypad Bays (Never wraps, dedicated to cell-level tools) -->
-	<div class="flex items-center gap-1.5 h-7 flex-nowrap overflow-x-hidden">
+	<div class="flex items-center gap-1.5 h-7 flex-nowrap overflow-hidden">
 			<!-- Bay 1: Alignment Bay [ ⇥ | ↔ | ⇤ ] -->
 			<div
 				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)] overflow-hidden'}"
@@ -280,7 +280,7 @@
 
 			<!-- Bay 3: Color Bay [ A | 🪣 ] -->
 			<div
-				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none relative {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)] overflow-hidden'}"
+				class="h-7 inline-flex items-center border border-border bg-background shrink-0 select-none relative overflow-hidden {uiTheme.theme === 'avant-garde' ? '' : 'rounded-[var(--radius)]'}"
 				unselectable="on"
 			>
 				<Popover.Root bind:open={textColorPopoverOpen}>
@@ -445,7 +445,7 @@
 					bind:this={textColorInput}
 					type="color"
 					value={activeTextColor || "#000000"}
-					class="absolute left-0 top-0 opacity-0 pointer-events-none w-7 h-7"
+					class="sr-only"
 					onchange={handleTextColorChange}
 					oninput={handleTextColorChange}
 					tabindex={-1}
@@ -454,7 +454,7 @@
 					bind:this={bgColorInput}
 					type="color"
 					value={activeBackgroundColor || "#ffffff"}
-					class="absolute right-0 top-0 opacity-0 pointer-events-none w-7 h-7"
+					class="sr-only"
 					onchange={handleBgColorChange}
 					oninput={handleBgColorChange}
 					tabindex={-1}
