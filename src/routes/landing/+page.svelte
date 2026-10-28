@@ -67,7 +67,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
-		href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+		href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 		rel="stylesheet"
 	/>
 </svelte:head>
@@ -418,7 +418,7 @@
 </div>
 
 <style>
-	@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 	/* 强制恢复全局滚动 */
 	:global(html),
@@ -632,7 +632,7 @@
 		box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 	}
 
-	/* 典雅现代书卷衬线 (Cormorant Garamond) - 放大且全程平滑流式缩放 */
+	/* 典雅现代书卷衬线 (Cormorant Garamond Light 300) - 超细发丝、空灵书卷 */
 	.hero-title {
 		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
 		font-size: clamp(4.2rem, 3.2rem + 2.5vw, 6.4rem);
@@ -640,13 +640,15 @@
 		letter-spacing: -0.015em;
 		color: #ffffff;
 		margin: 0 0 2.2rem 0;
-		font-weight: 400;
+		font-weight: 300;
 		font-feature-settings: "liga" 1, "dlig" 1;
 	}
 
 	.title-italic {
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
 		font-style: italic;
-		opacity: 0.92;
+		font-weight: 300;
+		opacity: 0.95;
 	}
 
 	.actions-group {
