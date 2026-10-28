@@ -667,16 +667,19 @@
 	}
 
 	.actions-group {
-		display: flex;
+		display: inline-flex;
 		flex-direction: column;
+		align-self: flex-start;
 		gap: 1.8rem;
+		max-width: 100%;
 	}
 
 	.btn-row {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		align-items: center;
 		gap: 1rem;
+		width: 100%;
 	}
 
 	.primary-download-btn {
@@ -730,7 +733,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.4rem;
-		max-width: 460px;
 		width: 100%;
 	}
 
@@ -1261,6 +1263,14 @@
 		.hero-left,
 		.hero-right {
 			width: 100%;
+		}
+
+		.actions-group {
+			width: 100%;
+		}
+
+		.btn-row {
+			flex-wrap: wrap;
 		}
 
 		.hero-title {
