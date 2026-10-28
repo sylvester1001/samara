@@ -64,6 +64,12 @@
 		name="description"
 		content="A precision typesetting station engineered for native LaTeX booktabs and publication-grade academic tables."
 	/>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+		rel="stylesheet"
+	/>
 </svelte:head>
 
 <div class="landing-root">
@@ -71,30 +77,46 @@
 	<!-- NAVBAR                                                                              -->
 	<!-- =================================================================================== -->
 	<header class="landing-nav">
-		<a href="/" class="brand-badge">
-			<span class="brand-square"></span>
-			<span class="brand-name">SAMARA</span>
-			<span class="brand-version">// v1.2.0</span>
-		</a>
-
-		<nav class="nav-links">
-			<a href="#hero" class="nav-item">§ 01 Station</a>
-			<a href="#features" class="nav-item">§ 02 Specification</a>
-			<a href="#platforms" class="nav-item">§ 03 Platforms</a>
-			<a href="https://github.com/sylvester1001/samara" target="_blank" rel="noreferrer" class="nav-item nav-ext">
-				<span>GitHub</span>
-				<ExternalLink class="size-3 opacity-60" />
+		<div class="nav-inner">
+			<a href="/" class="brand-badge">
+				<span class="brand-square"></span>
+				<span class="brand-name">SAMARA</span>
+				<span class="brand-version">// v1.2.0</span>
 			</a>
-		</nav>
 
-		<a href="/" class="nav-cta-btn">
-			<span>Web 在线版</span>
-			<ArrowRight class="size-3.5" />
-		</a>
+			<nav class="nav-links">
+				<a href="#hero" class="nav-item">§ 01 Station</a>
+				<a href="#features" class="nav-item">§ 02 Specification</a>
+				<a href="#platforms" class="nav-item">§ 03 Platforms</a>
+				<a
+					href="https://github.com/sylvester1001/samara"
+					target="_blank"
+					rel="noreferrer"
+					class="nav-item nav-ext"
+				>
+					<span>GitHub</span>
+					<ExternalLink class="size-3 opacity-60" />
+				</a>
+			</nav>
+
+			<div class="nav-right-actions">
+				<!-- 语言指示器 -->
+				<div class="lang-pill">
+					<span class="lang-active">EN</span>
+					<span class="lang-sep">/</span>
+					<span class="lang-inactive">中</span>
+				</div>
+
+				<a href="/" class="nav-cta-btn">
+					<span>Launch Web App</span>
+					<ArrowRight class="size-3.5" />
+				</a>
+			</div>
+		</div>
 	</header>
 
 	<!-- =================================================================================== -->
-	<!-- HERO (方案 B: 42% 左侧排印与下载 / 58% 右侧真实高清 UI 战术展台)                    -->
+	<!-- HERO (方案 B: 40% 左侧排印与下载中枢 / 60% 右侧真实高清 UI 战术展台)                 -->
 	<!-- =================================================================================== -->
 	<section id="hero" class="hero-wrapper">
 		<div class="hero-meta-bar">
@@ -103,7 +125,7 @@
 		</div>
 
 		<div class="hero-columns">
-			<!-- 左栏：大标题与下载通道 -->
+			<!-- 左栏：修长先锋大标题与下载通道 -->
 			<div class="hero-left">
 				<div class="hero-pill">
 					<span class="pulse-dot"></span>
@@ -112,13 +134,13 @@
 
 				<h1 class="hero-title">
 					The Rigor<br />
-					Of Academics.<br />
+					of&nbsp;Academics.<br />
 					<span class="title-italic">The Precision</span><br />
-					Of Machinery.
+					of&nbsp;Machinery.
 				</h1>
 
 				<div class="actions-group">
-					<!-- 主下载按钮 -->
+					<!-- 主下载按钮组 -->
 					<div class="btn-row">
 						<a
 							href="https://github.com/sylvester1001/samara/releases"
@@ -139,7 +161,7 @@
 						</a>
 
 						<a href="/" class="secondary-web-btn">
-							<span>启动在线终端</span>
+							<span>Launch Web Terminal</span>
 							<ArrowRight class="size-3.5 opacity-80" />
 						</a>
 					</div>
@@ -184,7 +206,7 @@
 									type="button"
 									class="copy-btn"
 									onclick={handleCopyCommand}
-									title="复制命令"
+									title="Copy Command"
 									aria-label="Copy Command"
 								>
 									{#if copied}
@@ -207,13 +229,13 @@
 			<!-- 右栏：真实软件高清截图战术展台 -->
 			<div class="hero-right">
 				<div class="tactical-stage">
-					<!-- 四角取景器标定 (明日方舟 Crop Marks) -->
+					<!-- 四角取景器切角标定 (明日方舟 Crop Marks) -->
 					<div class="corner-mark top-left"></div>
 					<div class="corner-mark top-right"></div>
 					<div class="corner-mark bottom-left"></div>
 					<div class="corner-mark bottom-right"></div>
 
-					<!-- 顶部像素标尺 -->
+					<!-- 顶部标尺 -->
 					<div class="stage-scale-top">
 						<span>⌜ 000 // TACTICAL VIEWPORT</span>
 						<span class="scale-title">SAMARA ACADEMIC ENGINE</span>
@@ -263,7 +285,7 @@
 						<div class="card-badge">#1 SPECIFICATION</div>
 						<h3 class="card-heading">The Three Rules</h3>
 						<p class="card-desc">
-							严守学术界“永不使用竖线”的纯正排印传统。精确标定 1.0pt 顶线与底线、0.5pt 表头分隔线，让数据层次分明。
+							Strict adherence to standard Booktabs format. Zero vertical lines. Precisely calibrated 1.0pt top and bottom rules with 0.5pt mid-rules for clean data hierarchy.
 						</p>
 					</div>
 					<div class="blueprint-box">
@@ -291,7 +313,7 @@
 						<div class="card-badge">#2 COMPILER</div>
 						<h3 class="card-heading">LaTeX Synthesis</h3>
 						<p class="card-desc">
-							光标级精准公式注入与跨列合并。一键导出干净、零冗余包的 \begin&#123;booktabs&#125; 源码，直接粘入 Overleaf。
+							Surgical formula injection with full selection preservation. One-click export to clean, dependency-free \begin&#123;booktabs&#125; code ready for Overleaf.
 						</p>
 					</div>
 					<div class="blueprint-box">
@@ -310,7 +332,7 @@
 						<div class="card-badge">#3 SOVEREIGNTY</div>
 						<h3 class="card-heading">Zero Leakage</h3>
 						<p class="card-desc">
-							未发表的核心学术实验成果与商业机密，数据 100% 留存在本地设备。无任何云端上传，零遥测，绝对安全。
+							Unpublished experimental data and intellectual assets remain 100% offline. Zero cloud transmission, zero telemetry, air-gapped confidential security.
 						</p>
 					</div>
 					<div class="blueprint-box">
@@ -386,7 +408,7 @@
 	<!-- FOOTER                                                                              -->
 	<!-- =================================================================================== -->
 	<footer class="landing-footer">
-		<div>TYPESET IN CMU SERIF & JETBRAINS MONO. (C) 2026 SAMARA ENGINE.</div>
+		<div>TYPESET IN CORMORANT GARAMOND & JETBRAINS MONO. (C) 2026 SAMARA ENGINE.</div>
 		<div class="footer-links">
 			<a href="https://github.com/sylvester1001/samara" target="_blank" rel="noreferrer">GitHub</a>
 			<a href="https://github.com/sylvester1001/samara/releases" target="_blank" rel="noreferrer">Releases</a>
@@ -396,6 +418,8 @@
 </div>
 
 <style>
+	@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 	/* 强制恢复全局滚动 */
 	:global(html),
 	:global(body) {
@@ -413,7 +437,7 @@
 		min-height: 100vh;
 		background-color: #0202f1;
 		color: #ffffff;
-		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+		font-family: 'JetBrains Mono', 'Inter', 'Source Han Sans SC', 'PingFang SC', system-ui, sans-serif;
 		overflow-x: hidden;
 		box-sizing: border-box;
 	}
@@ -423,16 +447,23 @@
 		width: 100%;
 		height: 64px;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0 3.5rem;
 		position: sticky;
 		top: 0;
 		z-index: 50;
 		background: rgba(2, 2, 241, 0.95);
 		backdrop-filter: blur(12px);
 		box-sizing: border-box;
+		padding: 0 clamp(2.8rem, 5vw, 5.5rem);
+	}
+
+	.nav-inner {
+		max-width: 1600px;
+		width: 100%;
+		height: 100%;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 	}
 
 	.brand-badge {
@@ -486,12 +517,43 @@
 		gap: 0.25rem;
 	}
 
+	.nav-right-actions {
+		display: flex;
+		align-items: center;
+		gap: 1.2rem;
+	}
+
+	.lang-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.7rem;
+		padding: 0.2rem 0.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		color: #ffffff;
+		letter-spacing: 0.05em;
+	}
+
+	.lang-active {
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.lang-sep {
+		opacity: 0.4;
+	}
+
+	.lang-inactive {
+		opacity: 0.5;
+	}
+
 	.nav-cta-btn {
 		height: 36px;
 		padding: 0 1.1rem;
 		background: #ffffff;
 		color: #0202f1;
-		font-family: 'JetBrains Mono', monospace;
+		font-family: 'JetBrains Mono', 'Inter', 'Source Han Sans SC', sans-serif;
 		font-size: 0.72rem;
 		font-weight: 700;
 		text-transform: uppercase;
@@ -501,7 +563,7 @@
 		align-items: center;
 		gap: 0.4rem;
 		border-radius: 0;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 		transition: background 0.15s, transform 0.1s;
 	}
 
@@ -511,9 +573,10 @@
 
 	/* HERO */
 	.hero-wrapper {
-		max-width: 1680px;
+		max-width: 1600px;
 		margin: 0 auto;
-		padding: 2.5rem 3.5rem 5rem;
+		width: 100%;
+		padding: clamp(2rem, 3vh, 3.5rem) clamp(2.8rem, 5vw, 5.5rem) clamp(3rem, 5vh, 5rem);
 		min-height: calc(100vh - 64px);
 		display: flex;
 		flex-direction: column;
@@ -535,17 +598,16 @@
 	}
 
 	.hero-columns {
-		display: flex;
-		flex-direction: row;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
 		align-items: center;
-		justify-content: space-between;
-		gap: 3.5rem;
+		gap: clamp(1.2rem, 1.8vw, 2rem);
 		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.hero-left {
-		flex: 0 0 42%;
-		max-width: 42%;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
 	}
@@ -570,21 +632,21 @@
 		box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 	}
 
+	/* 典雅现代书卷衬线 (Cormorant Garamond) - 放大且全程平滑流式缩放 */
 	.hero-title {
-		font-family: 'CMU Serif', 'Computer Modern Serif', 'Times New Roman', Georgia, serif;
-		font-size: 4.8rem;
-		line-height: 0.94;
-		letter-spacing: -0.03em;
-		text-transform: uppercase;
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
+		font-size: clamp(4.2rem, 3.2rem + 2.5vw, 6.4rem);
+		line-height: 1.08;
+		letter-spacing: -0.015em;
 		color: #ffffff;
-		margin: 0 0 2.8rem 0;
-		font-weight: 700;
+		margin: 0 0 2.2rem 0;
+		font-weight: 400;
+		font-feature-settings: "liga" 1, "dlig" 1;
 	}
 
 	.title-italic {
-		font-weight: 400;
 		font-style: italic;
-		opacity: 0.9;
+		opacity: 0.92;
 	}
 
 	.actions-group {
@@ -605,7 +667,7 @@
 		padding: 0 1.8rem;
 		background: #ffffff;
 		color: #0202f1;
-		font-family: 'JetBrains Mono', monospace;
+		font-family: 'JetBrains Mono', 'Inter', 'Source Han Sans SC', sans-serif;
 		font-size: 0.78rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
@@ -630,7 +692,7 @@
 		border: 1px solid rgba(255, 255, 255, 0.45);
 		background: rgba(255, 255, 255, 0.08);
 		color: #ffffff;
-		font-family: 'JetBrains Mono', monospace;
+		font-family: 'JetBrains Mono', 'Inter', 'Source Han Sans SC', sans-serif;
 		font-size: 0.78rem;
 		font-weight: 600;
 		letter-spacing: 0.08em;
@@ -740,9 +802,9 @@
 
 	/* HERO RIGHT (战术展台与真实截图) */
 	.hero-right {
-		flex: 0 0 55%;
-		max-width: 55%;
+		min-width: 0;
 		position: relative;
+		width: 100%;
 	}
 
 	.tactical-stage {
@@ -837,14 +899,15 @@
 	.features-wrapper {
 		background: #ffffff;
 		color: #111113;
-		padding: 7rem 3.5rem;
+		padding: 7rem clamp(2.8rem, 5vw, 5.5rem);
 		border-top: 1px solid rgba(0, 0, 0, 0.12);
 		box-sizing: border-box;
 	}
 
 	.section-container {
-		max-width: 1680px;
+		max-width: 1600px;
 		margin: 0 auto;
+		width: 100%;
 	}
 
 	.features-header {
@@ -863,18 +926,18 @@
 	}
 
 	.features-title {
-		font-family: 'CMU Serif', Georgia, serif;
-		font-size: 4.5rem;
-		line-height: 1;
-		font-weight: 700;
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
+		font-size: 5rem;
+		line-height: 0.95;
+		font-weight: 400;
 		text-transform: uppercase;
-		letter-spacing: -0.02em;
+		letter-spacing: 0.01em;
 		margin: 0;
 		color: #000000;
 	}
 
 	.eye-symbol {
-		font-size: 2.4rem;
+		font-size: 2.6rem;
 		color: #0202f1;
 	}
 
@@ -895,7 +958,7 @@
 	.feature-card {
 		border: 1px solid rgba(0, 0, 0, 0.15);
 		background: #ffffff;
-		padding: 2rem;
+		padding: 2.2rem;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
@@ -918,16 +981,17 @@
 	}
 
 	.card-heading {
-		font-family: 'CMU Serif', Georgia, serif;
-		font-size: 1.85rem;
-		text-transform: uppercase;
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
+		font-size: 2.4rem;
 		margin: 0 0 1rem 0;
 		color: #000000;
-		font-weight: 700;
+		font-weight: 500;
 		letter-spacing: -0.01em;
+		line-height: 1.05;
 	}
 
 	.card-desc {
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 		font-size: 0.85rem;
 		line-height: 1.6;
 		color: rgba(0, 0, 0, 0.7);
@@ -1028,7 +1092,7 @@
 	.platforms-wrapper {
 		background: #0202f1;
 		color: #ffffff;
-		padding: 7rem 3.5rem;
+		padding: 7rem clamp(2.8rem, 5vw, 5.5rem);
 		border-top: 1px solid rgba(255, 255, 255, 0.2);
 		box-sizing: border-box;
 	}
@@ -1053,11 +1117,12 @@
 	}
 
 	.platforms-title {
-		font-family: 'CMU Serif', Georgia, serif;
-		font-size: 3.2rem;
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
+		font-size: 3.8rem;
 		text-transform: uppercase;
 		margin: 0;
-		letter-spacing: -0.01em;
+		letter-spacing: 0.01em;
+		font-weight: 400;
 	}
 
 	.platforms-grid {
@@ -1094,10 +1159,11 @@
 	}
 
 	.platform-name {
-		font-family: 'CMU Serif', Georgia, serif;
-		font-size: 2.2rem;
-		text-transform: uppercase;
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
+		font-size: 2.6rem;
 		margin: 0 0 2rem 0;
+		font-weight: 400;
+		letter-spacing: 0.01em;
 	}
 
 	.platform-download-btn {
@@ -1105,7 +1171,7 @@
 		height: 44px;
 		background: #ffffff;
 		color: #0202f1;
-		font-family: 'JetBrains Mono', monospace;
+		font-family: 'JetBrains Mono', 'Inter', 'Source Han Sans SC', sans-serif;
 		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
@@ -1126,7 +1192,7 @@
 	/* FOOTER */
 	.landing-footer {
 		border-top: 1px solid rgba(255, 255, 255, 0.2);
-		padding: 2.5rem 3.5rem;
+		padding: 2.5rem clamp(2.8rem, 5vw, 5.5rem);
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.65rem;
 		letter-spacing: 0.15em;
@@ -1135,7 +1201,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		max-width: 1680px;
+		max-width: 1600px;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
@@ -1161,36 +1227,35 @@
 		font-weight: 700;
 	}
 
-	/* RESPONSIVE */
-	@media (max-width: 1100px) {
+	/* RESPONSIVE (仅在小屏单栏堆叠时触发，其余全程平滑线性缩放) */
+	@media (max-width: 999px) {
 		.landing-nav {
-			padding: 0 1.5rem;
+			padding: 0 2rem;
 		}
 
 		.hero-wrapper {
-			padding: 2rem 1.5rem 4rem;
+			padding: 2.5rem 2rem 4rem;
 		}
 
 		.hero-columns {
-			flex-direction: column;
-			gap: 3rem;
+			grid-template-columns: 1fr;
+			gap: 2.5rem;
 		}
 
 		.hero-left,
 		.hero-right {
-			flex: 0 0 100%;
-			max-width: 100%;
+			width: 100%;
 		}
 
 		.hero-title {
-			font-size: 3.5rem;
+			font-size: 3.6rem;
 		}
 
 		.features-wrapper,
 		.platforms-wrapper,
 		.landing-footer {
-			padding-left: 1.5rem;
-			padding-right: 1.5rem;
+			padding-left: 2rem;
+			padding-right: 2rem;
 		}
 
 		.features-grid,
