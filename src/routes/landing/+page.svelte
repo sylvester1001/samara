@@ -614,7 +614,7 @@
 
 	.hero-columns {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
 		align-items: center;
 		gap: clamp(1.2rem, 1.8vw, 2rem);
 		width: 100%;
