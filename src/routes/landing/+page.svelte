@@ -279,84 +279,242 @@
 	</section>
 
 	<!-- =================================================================================== -->
-	<!-- FEATURES (冷白底先锋三列网格)                                                       -->
+	<!-- SPECIFICATION & CAPABILITIES (无边框开放式工业解剖长卷)                              -->
 	<!-- =================================================================================== -->
 	<section id="features" class="features-wrapper">
 		<div class="section-container">
 			<div class="features-header">
 				<div class="features-title-row">
-					<h2 class="features-title">Features</h2>
-					<span class="eye-symbol">👁</span>
+					<h2 class="features-title">Specification</h2>
+					<span class="features-sub-tag">§ 02</span>
 				</div>
 				<div class="features-meta">
-					// 01 ARCHIVE SPECIFICATION & ENGINE STANDARDS
+					// ARCHITECTURAL CAPABILITIES & ENGINE FIDELITY
 				</div>
 			</div>
 
-			<div class="features-grid">
-				<!-- 卡片 1 -->
-				<div class="feature-card">
-					<div class="card-text-block">
-						<div class="card-badge">#1 SPECIFICATION</div>
-						<h3 class="card-heading">The Three Rules</h3>
-						<p class="card-desc">
-							Strict adherence to standard Booktabs format. Zero vertical lines. Precisely calibrated 1.0pt top and bottom rules with 0.5pt mid-rules for clean data hierarchy.
+			<div class="specimen-tracks">
+				<!-- TRACK 01: 视觉塑形 (Visual Parametric Styling) -->
+				<div class="specimen-track">
+					<div class="track-info">
+						<div class="track-index">// 01 · PARAMETRIC STYLING</div>
+						<h3 class="track-heading">Visual Styling<br />Without Code</h3>
+						<p class="track-desc">
+							Directly orchestrate cell background tints, rule calipers, column dimensions, and inline math expressions. Publication-grade aesthetics with zero macro syntax required.
 						</p>
+						<div class="track-telemetry">
+							<span class="telemetry-pill">RULE: 0.08em</span>
+							<span class="telemetry-pill">TINT: RGBA</span>
+							<span class="telemetry-pill">MATH: INLINE</span>
+						</div>
 					</div>
-					<div class="blueprint-box">
-						<div class="blueprint-lines">
-							<div class="b-line b-thick">
-								<span>TOP RULE</span>
-								<span>1.0 pt</span>
+
+					<div class="track-stage">
+						<div class="stage-frame">
+							<!-- 悬浮参数操作条 -->
+							<div class="stage-toolbar">
+								<div class="toolbar-item active">
+									<span class="swatch-dot"></span>
+									<span>Cell Tint</span>
+								</div>
+								<div class="toolbar-sep">/</div>
+								<div class="toolbar-item">
+									<span class="rule-sample"></span>
+									<span>0.08em Rule</span>
+								</div>
+								<div class="toolbar-sep">/</div>
+								<div class="toolbar-item">
+									<span class="math-symbol">fx</span>
+									<span>Math Formula</span>
+								</div>
+								<div class="toolbar-status">PARAMETRIC READY</div>
 							</div>
-							<div class="b-line b-thin">
-								<span>MID RULE</span>
-								<span>0.5 pt</span>
-							</div>
-							<div class="b-line b-thick">
-								<span>BOTTOM RULE</span>
-								<span>1.0 pt</span>
+
+							<!-- 真实学术表格切片 -->
+							<div class="table-specimen">
+								<table class="academic-table">
+									<thead>
+										<tr class="rule-top">
+											<th class="text-left">Architecture</th>
+											<th class="text-right">Params</th>
+											<th class="text-right">Top-1 Acc</th>
+											<th class="text-right">Latency</th>
+										</tr>
+										<tr class="rule-mid"></tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td class="text-left font-mono text-xs">ResNet-50</td>
+											<td class="text-right font-mono text-xs">25.6M</td>
+											<td class="text-right font-mono text-xs">76.13%</td>
+											<td class="text-right font-mono text-xs">12.4 ms</td>
+										</tr>
+										<tr class="highlighted-row">
+											<td class="text-left font-mono text-xs font-semibold">Samara-Net (Ours)</td>
+											<td class="text-right font-mono text-xs">18.2M</td>
+											<td class="text-right font-mono text-xs font-semibold">82.45%</td>
+											<td class="text-right font-mono text-xs">8.1 ms</td>
+										</tr>
+										<tr>
+											<td class="text-left font-mono text-xs">ViT-Base</td>
+											<td class="text-right font-mono text-xs">86.0M</td>
+											<td class="text-right font-mono text-xs">81.80%</td>
+											<td class="text-right font-mono text-xs">24.6 ms</td>
+										</tr>
+									</tbody>
+									<tfoot>
+										<tr class="rule-bottom"></tr>
+									</tfoot>
+								</table>
+
+								<!-- 精确尺寸与引线标定 (CAD Callout Pins) -->
+								<div class="pin pin-top-rule">
+									<span class="pin-dot"></span>
+									<span class="pin-line"></span>
+									<span class="pin-tag">TOPRULE // 0.08em</span>
+								</div>
+								<div class="pin pin-highlight">
+									<span class="pin-dot"></span>
+									<span class="pin-line"></span>
+									<span class="pin-tag">FILL // #EDF2FF</span>
+								</div>
 							</div>
 						</div>
-						<div class="blueprint-stamp">BOOKTABS SPEC // ZERO VERTICAL LINES</div>
 					</div>
 				</div>
 
-				<!-- 卡片 2 -->
-				<div class="feature-card">
-					<div class="card-text-block">
-						<div class="card-badge">#2 COMPILER</div>
-						<h3 class="card-heading">LaTeX Synthesis</h3>
-						<p class="card-desc">
-							Surgical formula injection with full selection preservation. One-click export to clean, dependency-free \begin&#123;booktabs&#125; code ready for Overleaf.
+				<!-- TRACK 02: 1:1 双生镜像 (Identical Twin Parity) -->
+				<div class="specimen-track">
+					<div class="track-info">
+						<div class="track-index">// 02 · 1:1 TWIN PARITY</div>
+						<h3 class="track-heading">Identical Parity:<br />Image & LaTeX</h3>
+						<p class="track-desc">
+							Export high-resolution vector images for quick documentation, or compile pure native LaTeX for conference submission. The visual canvas and compiled PDF match with zero drift.
 						</p>
-					</div>
-					<div class="blueprint-box">
-						<div class="latex-preview-block">
-							<span class="latex-comment">% Pure Native Code</span><br />
-							\usepackage&#123;<span class="latex-keyword">booktabs</span>&#125;<br />
-							\begin&#123;tabular&#125;&#123;&gt;&#123;\centering\arraybackslash&#125;m&#123;2.4cm&#125;&#125;
+						<div class="track-telemetry">
+							<span class="telemetry-pill">DELTA: 0.00%</span>
+							<span class="telemetry-pill">ZERO DRIFT</span>
+							<span class="telemetry-pill">NATIVE CTEX</span>
 						</div>
-						<div class="blueprint-stamp">OVERLEAF COMPLIANT // UTF-8 CTEX</div>
+					</div>
+
+					<div class="track-stage">
+						<div class="stage-frame split-stage">
+							<!-- 左侧：图像交付预览 -->
+							<div class="split-col split-left">
+								<div class="split-header">
+									<span>VECTOR IMAGE OUTPUT</span>
+									<span class="split-tag">HIGH-DPI</span>
+								</div>
+								<div class="split-body table-mini">
+									<div class="mini-rule thick"></div>
+									<div class="mini-row head">
+										<span>Model</span>
+										<span>Score</span>
+									</div>
+									<div class="mini-rule thin"></div>
+									<div class="mini-row">
+										<span>Baseline</span>
+										<span>76.1%</span>
+									</div>
+									<div class="mini-row active">
+										<span>Ours</span>
+										<span class="font-bold">82.4%</span>
+									</div>
+									<div class="mini-rule thick"></div>
+								</div>
+							</div>
+
+							<!-- 中央对齐基准线 -->
+							<div class="split-datum">
+								<div class="datum-line"></div>
+								<div class="datum-badge">= 1:1 =</div>
+								<div class="datum-line"></div>
+							</div>
+
+							<!-- 右侧：纯净 LaTeX 代码 -->
+							<div class="split-col split-right">
+								<div class="split-header">
+									<span>NATIVE LATEX STREAM</span>
+									<span class="split-tag">SOURCE</span>
+								</div>
+								<div class="split-body code-body">
+									<pre><code><span class="code-macro">\toprule</span>
+\textbf&#123;Model&#125; & \textbf&#123;Score&#125; \\
+<span class="code-macro">\midrule</span>
+Baseline & 76.1\% \\
+<span class="code-highlight">\rowcolor&#123;blue!6&#125; Ours & 82.4\% \\</span>
+<span class="code-macro">\bottomrule</span></code></pre>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 
-				<!-- 卡片 3 -->
-				<div class="feature-card">
-					<div class="card-text-block">
-						<div class="card-badge">#3 SOVEREIGNTY</div>
-						<h3 class="card-heading">Zero Leakage</h3>
-						<p class="card-desc">
-							Unpublished experimental data and intellectual assets remain 100% offline. Zero cloud transmission, zero telemetry, air-gapped confidential security.
+				<!-- TRACK 03: 外部数据直通导入 (Universal Ingestion) -->
+				<div class="specimen-track">
+					<div class="track-info">
+						<div class="track-index">// 03 · DIRECT INGESTION</div>
+						<h3 class="track-heading">Universal Data<br />Ingestion</h3>
+						<p class="track-desc">
+							Directly ingest raw tabular data from external spreadsheets, publications, or raw files into the live canvas. Grid dimensions and formatting adapt automatically to publication standards.
 						</p>
-					</div>
-					<div class="blueprint-box">
-						<div class="security-stamp-pill">
-							<ShieldCheck class="size-4" />
-							<span>100% LOCAL COMPUTATION</span>
+						<div class="track-telemetry">
+							<span class="telemetry-pill">AUTO-DELIMIT</span>
+							<span class="telemetry-pill">GRID PRESERVED</span>
+							<span class="telemetry-pill">ZERO-CONFIG</span>
 						</div>
-						<div class="blueprint-sub">NO TELEMETRY // AIR-GAPPED READY</div>
-						<div class="blueprint-stamp">STANDALONE DESKTOP DECK</div>
+					</div>
+
+					<div class="track-stage">
+						<div class="stage-frame ingest-stage">
+							<!-- 左侧：原始数据流 -->
+							<div class="stream-inflow">
+								<div class="stream-header">
+									<span>RAW TABULAR BUFFER</span>
+									<span class="stream-badge">UNFORMATTED</span>
+								</div>
+								<div class="stream-code">
+									Method       Accuracy   Speed<br />
+									Baseline     76.13      12.4<br />
+									Samara-Net   82.45      8.1
+								</div>
+							</div>
+
+							<!-- 转换流水线指示 -->
+							<div class="stream-conduit">
+								<span class="conduit-label">AUTO-PARSE</span>
+								<div class="conduit-arrow">→</div>
+							</div>
+
+							<!-- 右侧：结构化规范排版 -->
+							<div class="stream-outflow">
+								<div class="stream-header">
+									<span>PUBLICATION TYPESET</span>
+									<span class="stream-badge text-blue">STANDARDIZED</span>
+								</div>
+								<div class="stream-table">
+									<div class="out-rule thick"></div>
+									<div class="out-row head">
+										<span>Method</span>
+										<span>Accuracy</span>
+										<span>Speed</span>
+									</div>
+									<div class="out-rule thin"></div>
+									<div class="out-row">
+										<span>Baseline</span>
+										<span>76.13%</span>
+										<span>12.4ms</span>
+									</div>
+									<div class="out-row highlight">
+										<span>Samara-Net</span>
+										<span>82.45%</span>
+										<span>8.1ms</span>
+									</div>
+									<div class="out-rule thick"></div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -914,7 +1072,7 @@
 		pointer-events: none;
 	}
 
-	/* FEATURES */
+	/* FEATURES & SPECIFICATION */
 	.features-wrapper {
 		background: #ffffff;
 		color: #111113;
@@ -935,176 +1093,493 @@
 		justify-content: space-between;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.18);
 		padding-bottom: 1.5rem;
-		margin-bottom: 3.5rem;
+		margin-bottom: 1rem;
 	}
 
 	.features-title-row {
 		display: flex;
 		align-items: baseline;
-		gap: 1rem;
+		gap: 1.2rem;
 	}
 
 	.features-title {
 		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
-		font-size: 5rem;
+		font-size: clamp(3.8rem, 2.8rem + 2vw, 5.2rem);
 		line-height: 0.95;
-		font-weight: 400;
+		font-weight: 300;
 		text-transform: uppercase;
 		letter-spacing: 0.01em;
 		margin: 0;
 		color: #000000;
 	}
 
-	.eye-symbol {
-		font-size: 2.6rem;
+	.features-sub-tag {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 1.2rem;
 		color: #0202f1;
+		font-weight: 600;
+		letter-spacing: 0.1em;
 	}
 
 	.features-meta {
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.7rem;
-		letter-spacing: 0.15em;
+		font-size: 0.68rem;
+		letter-spacing: 0.18em;
 		color: rgba(0, 0, 0, 0.5);
 		text-transform: uppercase;
 	}
 
-	.features-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 2.2rem;
-	}
-
-	.feature-card {
-		border: 1px solid rgba(0, 0, 0, 0.15);
-		background: #ffffff;
-		padding: 2.2rem;
+	/* SPECIMEN TRACKS (开放式大通栏) */
+	.specimen-tracks {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
+	}
+
+	.specimen-track {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+		gap: clamp(2.5rem, 5vw, 5.5rem);
+		padding: clamp(4rem, 6vw, 6rem) 0;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+		align-items: center;
 		box-sizing: border-box;
-		transition: border-color 0.15s;
 	}
 
-	.feature-card:hover {
-		border-color: #0202f1;
+	.specimen-track:last-child {
+		border-bottom: none;
 	}
 
-	.card-badge {
+	.track-info {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.track-index {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.68rem;
+		font-weight: 700;
 		letter-spacing: 0.18em;
 		color: #0202f1;
-		font-weight: 700;
 		text-transform: uppercase;
-		margin-bottom: 0.8rem;
+		margin-bottom: 1rem;
 	}
 
-	.card-heading {
+	.track-heading {
 		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
-		font-size: 2.4rem;
-		margin: 0 0 1rem 0;
-		color: #000000;
-		font-weight: 500;
-		letter-spacing: -0.01em;
+		font-size: clamp(2.6rem, 2rem + 1.2vw, 3.5rem);
+		font-weight: 300;
 		line-height: 1.05;
+		letter-spacing: -0.015em;
+		color: #000000;
+		margin: 0 0 1.4rem 0;
 	}
 
-	.card-desc {
+	.track-desc {
 		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-		font-size: 0.85rem;
-		line-height: 1.6;
-		color: rgba(0, 0, 0, 0.7);
-		margin: 0 0 2rem 0;
+		font-size: 0.92rem;
+		line-height: 1.7;
+		color: rgba(0, 0, 0, 0.72);
+		margin: 0 0 1.8rem 0;
+		max-width: 480px;
 	}
 
-	.blueprint-box {
-		width: 100%;
-		height: 180px;
-		background: #f4f4f6;
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		padding: 1.2rem;
-		position: relative;
+	.track-telemetry {
 		display: flex;
-		flex-direction: column;
-		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.telemetry-pill {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.62rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		padding: 0.3rem 0.65rem;
+		border: 1px solid rgba(0, 0, 0, 0.18);
+		background: #fbfbfa;
+		color: rgba(0, 0, 0, 0.75);
+		text-transform: uppercase;
+	}
+
+	/* TACTICAL STAGES */
+	.track-stage {
+		width: 100%;
+		display: flex;
+	}
+
+	.stage-frame {
+		width: 100%;
+		background: #fbfbfd;
+		border: 1px solid rgba(0, 0, 0, 0.14);
+		padding: 2.2rem;
+		position: relative;
 		box-sizing: border-box;
 	}
 
-	.blueprint-lines {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-		color: #0202f1;
-	}
-
-	.b-line {
+	/* STAGE 1: 视觉微操工具栏与解剖表格 */
+	.stage-toolbar {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		padding-bottom: 0.25rem;
-	}
-
-	.b-line.b-thick {
-		border-bottom: 2px solid #0202f1;
-		font-weight: 700;
-	}
-
-	.b-line.b-thin {
-		border-bottom: 1px solid rgba(2, 2, 241, 0.45);
-	}
-
-	.blueprint-stamp {
-		position: absolute;
-		bottom: 0.5rem;
-		right: 0.6rem;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.55rem;
-		letter-spacing: 0.15em;
-		color: rgba(2, 2, 241, 0.6);
-		text-transform: uppercase;
-	}
-
-	.latex-preview-block {
+		gap: 0.8rem;
+		padding: 0.5rem 0.9rem;
 		background: #ffffff;
-		border: 1px solid rgba(2, 2, 241, 0.3);
-		padding: 0.8rem;
+		border: 1px solid rgba(0, 0, 0, 0.12);
+		margin-bottom: 1.8rem;
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.68rem;
-		line-height: 1.5;
-		color: #0202f1;
+		letter-spacing: 0.05em;
 	}
 
-	.latex-comment {
-		color: rgba(0, 0, 0, 0.4);
-	}
-
-	.latex-keyword {
-		font-weight: 700;
-		color: #0202f1;
-	}
-
-	.security-stamp-pill {
+	.toolbar-item {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
-		border: 1px solid #0202f1;
-		padding: 0.4rem 0.8rem;
-		background: #ffffff;
-		color: #0202f1;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		align-self: flex-start;
+		color: rgba(0, 0, 0, 0.75);
 	}
 
-	.blueprint-sub {
+	.toolbar-item.active {
+		color: #0202f1;
+		font-weight: 600;
+	}
+
+	.swatch-dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 2px;
+		background: #edf2ff;
+		border: 1px solid #0202f1;
+		display: inline-block;
+	}
+
+	.rule-sample {
+		width: 20px;
+		height: 2px;
+		background: #0202f1;
+		display: inline-block;
+	}
+
+	.math-symbol {
+		font-weight: 700;
+		color: #0202f1;
+		font-style: italic;
+	}
+
+	.toolbar-sep {
+		color: rgba(0, 0, 0, 0.2);
+	}
+
+	.toolbar-status {
+		margin-left: auto;
+		font-size: 0.58rem;
+		letter-spacing: 0.15em;
+		color: #0202f1;
+		font-weight: 700;
+	}
+
+	.table-specimen {
+		position: relative;
+		width: 100%;
+		padding-bottom: 1.8rem;
+	}
+
+	.academic-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.8rem;
+	}
+
+	.academic-table th {
+		padding: 0.7rem 0.8rem;
+		font-weight: 600;
+		color: #000000;
+		letter-spacing: 0.04em;
+	}
+
+	.academic-table td {
+		padding: 0.65rem 0.8rem;
+		color: #222222;
+	}
+
+	.academic-table .rule-top th {
+		border-top: 2px solid #000000;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+	}
+
+	.academic-table tbody tr:last-child td {
+		border-bottom: 2px solid #000000;
+	}
+
+	.academic-table .highlighted-row td {
+		background: #edf2ff;
+		color: #0202f1;
+	}
+
+	.pin {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		letter-spacing: 0.12em;
+		color: #0202f1;
+		font-weight: 600;
+		pointer-events: none;
+	}
+
+	.pin-dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: #0202f1;
+	}
+
+	.pin-line {
+		width: 22px;
+		height: 1px;
+		background: #0202f1;
+	}
+
+	.pin-tag {
+		background: #ffffff;
+		border: 1px solid #0202f1;
+		padding: 0.15rem 0.4rem;
+	}
+
+	.pin-top-rule {
+		top: -0.2rem;
+		right: 0.5rem;
+	}
+
+	.pin-highlight {
+		bottom: 0.2rem;
+		right: 0.5rem;
+	}
+
+	/* STAGE 2: 1:1 双生镜像 (Split Stage) */
+	.split-stage {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		gap: 1.2rem;
+		align-items: stretch;
+	}
+
+	.split-col {
+		display: flex;
+		flex-direction: column;
+		background: #ffffff;
+		border: 1px solid rgba(0, 0, 0, 0.12);
+		padding: 1.2rem;
+	}
+
+	.split-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		letter-spacing: 0.15em;
+		color: rgba(0, 0, 0, 0.55);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		padding-bottom: 0.6rem;
+		margin-bottom: 1rem;
+	}
+
+	.split-tag {
+		color: #0202f1;
+		font-weight: 700;
+		font-size: 0.55rem;
+	}
+
+	.table-mini {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: 100%;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+	}
+
+	.mini-rule.thick {
+		height: 2px;
+		background: #000000;
+		margin: 0.4rem 0;
+	}
+
+	.mini-rule.thin {
+		height: 1px;
+		background: rgba(0, 0, 0, 0.35);
+		margin: 0.4rem 0;
+	}
+
+	.mini-row {
+		display: flex;
+		justify-content: space-between;
+		padding: 0.35rem 0.4rem;
+	}
+
+	.mini-row.active {
+		background: #edf2ff;
+		color: #0202f1;
+		font-weight: 600;
+	}
+
+	.split-datum {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.datum-line {
+		width: 1px;
+		flex: 1;
+		background: rgba(0, 0, 0, 0.18);
+	}
+
+	.datum-badge {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.62rem;
+		font-weight: 700;
+		color: #0202f1;
+		background: #ffffff;
+		border: 1px solid #0202f1;
+		padding: 0.25rem 0.5rem;
+		white-space: nowrap;
+	}
+
+	.code-body {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.68rem;
+		line-height: 1.55;
+		color: #111113;
+		overflow-x: auto;
+		background: #ffffff;
+	}
+
+	.code-body pre {
+		margin: 0;
+	}
+
+	.code-macro {
+		color: #0202f1;
+		font-weight: 600;
+	}
+
+	.code-highlight {
+		background: #edf2ff;
+		color: #0202f1;
+		font-weight: 600;
+		display: block;
+	}
+
+	/* STAGE 3: 数据直通 (Ingest Stage) */
+	.ingest-stage {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.25fr);
+		gap: 1.2rem;
+		align-items: stretch;
+	}
+
+	.stream-inflow,
+	.stream-outflow {
+		background: #ffffff;
+		border: 1px solid rgba(0, 0, 0, 0.12);
+		padding: 1.2rem;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.stream-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		letter-spacing: 0.15em;
+		color: rgba(0, 0, 0, 0.55);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		padding-bottom: 0.6rem;
+		margin-bottom: 0.8rem;
+	}
+
+	.stream-badge {
+		font-size: 0.55rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		color: rgba(0, 0, 0, 0.5);
+	}
+
+	.stream-badge.text-blue {
+		color: #0202f1;
+	}
+
+	.stream-code {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.68rem;
+		line-height: 1.9;
 		color: rgba(0, 0, 0, 0.45);
-		margin-top: 0.5rem;
+		white-space: pre;
+	}
+
+	.stream-conduit {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+	}
+
+	.conduit-label {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.55rem;
+		letter-spacing: 0.15em;
+		color: #0202f1;
+		font-weight: 700;
+	}
+
+	.conduit-arrow {
+		font-size: 1.2rem;
+		color: #0202f1;
+		font-weight: 700;
+	}
+
+	.stream-table {
+		display: flex;
+		flex-direction: column;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.68rem;
+	}
+
+	.out-rule.thick {
+		height: 2px;
+		background: #000000;
+		margin: 0.3rem 0;
+	}
+
+	.out-rule.thin {
+		height: 1px;
+		background: rgba(0, 0, 0, 0.35);
+		margin: 0.3rem 0;
+	}
+
+	.out-row {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr 1fr;
+		padding: 0.25rem 0.3rem;
+	}
+
+	.out-row.head {
+		font-weight: 700;
+		color: #000000;
+	}
+
+	.out-row.highlight {
+		background: #edf2ff;
+		color: #0202f1;
+		font-weight: 600;
 	}
 
 	/* PLATFORMS */
@@ -1284,7 +1759,28 @@
 			padding-right: 2rem;
 		}
 
-		.features-grid,
+		.specimen-track {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+			padding: 3rem 0;
+		}
+
+		.split-stage,
+		.ingest-stage {
+			grid-template-columns: 1fr;
+		}
+
+		.split-datum,
+		.stream-conduit {
+			flex-direction: row;
+			margin: 0.5rem 0;
+		}
+
+		.datum-line {
+			width: 100%;
+			height: 1px;
+		}
+
 		.platforms-grid {
 			grid-template-columns: 1fr;
 		}
