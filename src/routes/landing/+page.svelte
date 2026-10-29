@@ -279,7 +279,7 @@
 	</section>
 
 	<!-- =================================================================================== -->
-	<!-- SPECIFICATION & CAPABILITIES (无边框开放式工业解剖长卷)                              -->
+	<!-- SPECIFICATION & CAPABILITIES (高能机能工控长卷 · TACTICAL BLUEPRINT SPECIMEN)           -->
 	<!-- =================================================================================== -->
 	<section id="features" class="features-wrapper">
 		<div class="section-container">
@@ -289,7 +289,7 @@
 					<span class="features-sub-tag">§ 02</span>
 				</div>
 				<div class="features-meta">
-					// ARCHITECTURAL CAPABILITIES & ENGINE FIDELITY
+					// ARCHITECTURAL CAPABILITIES & ENGINE FIDELITY // CTEX REV.2026
 				</div>
 			</div>
 
@@ -304,66 +304,104 @@
 						</p>
 						<div class="track-telemetry">
 							<span class="telemetry-pill">RULE: 0.08em</span>
+							<span class="telemetry-pill">CMIDRULE(LR)</span>
 							<span class="telemetry-pill">TINT: RGBA</span>
-							<span class="telemetry-pill">MATH: INLINE</span>
+							<span class="telemetry-pill">KATEX MATH</span>
 						</div>
 					</div>
 
 					<div class="track-stage">
 						<div class="stage-frame">
+							<!-- 四角机能切角十字标 (HUD Crosshairs) -->
+							<div class="hud-crosshair top-l">+</div>
+							<div class="hud-crosshair top-r">+</div>
+							<div class="hud-crosshair btm-l">+</div>
+							<div class="hud-crosshair btm-r">+</div>
+
 							<!-- 悬浮参数操作条 -->
 							<div class="stage-toolbar">
 								<div class="toolbar-item active">
 									<span class="swatch-dot"></span>
-									<span>Cell Tint</span>
+									<span>Cell Tint: #162038</span>
 								</div>
 								<div class="toolbar-sep">/</div>
 								<div class="toolbar-item">
 									<span class="rule-sample"></span>
-									<span>0.08em Rule</span>
+									<span>1.0pt Toprule</span>
+								</div>
+								<div class="toolbar-sep">/</div>
+								<div class="toolbar-item">
+									<span class="cmidrule-sample">╌</span>
+									<span>\cmidrule(lr)</span>
 								</div>
 								<div class="toolbar-sep">/</div>
 								<div class="toolbar-item">
 									<span class="math-symbol">fx</span>
-									<span>Math Formula</span>
+									<span>$\mathcal&#123;L&#125;_\text&#123;val&#125;$</span>
 								</div>
-								<div class="toolbar-status">PARAMETRIC READY</div>
+								<div class="toolbar-status">CALIBRATED // 96DPI</div>
 							</div>
 
-							<!-- 真实学术表格切片 -->
+							<!-- 列宽刻度标尺 (CAD Caliper Ruler) -->
+							<div class="caliper-ruler">
+								<div class="ruler-segment col-1">
+									<span class="ruler-line"></span>
+									<span class="ruler-val">140pt</span>
+								</div>
+								<div class="ruler-segment col-2">
+									<span class="ruler-line"></span>
+									<span class="ruler-val">80pt</span>
+								</div>
+								<div class="ruler-segment col-3">
+									<span class="ruler-line"></span>
+									<span class="ruler-val">80pt</span>
+								</div>
+								<div class="ruler-segment col-4">
+									<span class="ruler-line"></span>
+									<span class="ruler-val">80pt</span>
+								</div>
+							</div>
+
+							<!-- 真实学术表格切片 (多层复合表头 + 截断线 + 行染色 + 公式) -->
 							<div class="table-specimen">
 								<table class="academic-table">
 									<thead>
-										<tr class="rule-top">
-											<th class="text-left">Architecture</th>
-											<th class="text-right">Params</th>
-											<th class="text-right">Top-1 Acc</th>
-											<th class="text-right">Latency</th>
+										<tr class="rule-top-border">
+											<th rowspan="2" class="text-left col-1">Architecture</th>
+											<th colspan="3" class="text-center col-group">
+												Validation Performance (ImageNet-1K)
+											</th>
 										</tr>
-										<tr class="rule-mid"></tr>
+										<tr class="rule-cmid-row">
+											<th class="text-right col-2">Top-1 Acc</th>
+											<th class="text-right col-3">Top-5 Acc</th>
+											<th class="text-right col-4 math-header">$\mathcal&#123;L&#125;_\text&#123;val&#125;$</th>
+										</tr>
 									</thead>
 									<tbody>
 										<tr>
-											<td class="text-left font-mono text-xs">ResNet-50</td>
-											<td class="text-right font-mono text-xs">25.6M</td>
-											<td class="text-right font-mono text-xs">76.13%</td>
-											<td class="text-right font-mono text-xs">12.4 ms</td>
+											<td class="text-left font-mono">ResNet-50</td>
+											<td class="text-right font-mono">76.13%</td>
+											<td class="text-right font-mono">92.86%</td>
+											<td class="text-right font-mono math-cell">0.82 ± 0.02</td>
 										</tr>
 										<tr class="highlighted-row">
-											<td class="text-left font-mono text-xs font-semibold">Samara-Net (Ours)</td>
-											<td class="text-right font-mono text-xs">18.2M</td>
-											<td class="text-right font-mono text-xs font-semibold">82.45%</td>
-											<td class="text-right font-mono text-xs">8.1 ms</td>
+											<td class="text-left font-mono font-semibold">Samara-Net (Ours)</td>
+											<td class="text-right font-mono font-semibold">82.45%</td>
+											<td class="text-right font-mono font-semibold">96.12%</td>
+											<td class="text-right font-mono font-semibold math-cell">0.41 ± 0.01</td>
 										</tr>
 										<tr>
-											<td class="text-left font-mono text-xs">ViT-Base</td>
-											<td class="text-right font-mono text-xs">86.0M</td>
-											<td class="text-right font-mono text-xs">81.80%</td>
-											<td class="text-right font-mono text-xs">24.6 ms</td>
+											<td class="text-left font-mono">ViT-Base/16</td>
+											<td class="text-right font-mono">81.80%</td>
+											<td class="text-right font-mono">95.60%</td>
+											<td class="text-right font-mono math-cell">0.48 ± 0.03</td>
 										</tr>
 									</tbody>
 									<tfoot>
-										<tr class="rule-bottom"></tr>
+										<tr class="rule-bottom-border">
+											<td colspan="4"></td>
+										</tr>
 									</tfoot>
 								</table>
 
@@ -371,12 +409,17 @@
 								<div class="pin pin-top-rule">
 									<span class="pin-dot"></span>
 									<span class="pin-line"></span>
-									<span class="pin-tag">TOPRULE // 0.08em</span>
+									<span class="pin-tag">TOPRULE // 1.0pt</span>
+								</div>
+								<div class="pin pin-cmid">
+									<span class="pin-dot"></span>
+									<span class="pin-line"></span>
+									<span class="pin-tag">\cmidrule(lr) // 0.5pt TRIM</span>
 								</div>
 								<div class="pin pin-highlight">
 									<span class="pin-dot"></span>
 									<span class="pin-line"></span>
-									<span class="pin-tag">FILL // #EDF2FF</span>
+									<span class="pin-tag">FILL // #162038</span>
 								</div>
 							</div>
 						</div>
@@ -392,34 +435,48 @@
 							Export high-resolution vector images for quick documentation, or compile pure native LaTeX for conference submission. The visual canvas and compiled PDF match with zero drift.
 						</p>
 						<div class="track-telemetry">
-							<span class="telemetry-pill">DELTA: 0.00%</span>
-							<span class="telemetry-pill">ZERO DRIFT</span>
-							<span class="telemetry-pill">NATIVE CTEX</span>
+							<span class="telemetry-pill">DELTA: 0.00pt</span>
+							<span class="telemetry-pill">WIDTH PARITY: 100%</span>
+							<span class="telemetry-pill">ARRAYBACKSLASH</span>
 						</div>
 					</div>
 
 					<div class="track-stage">
 						<div class="stage-frame split-stage">
+							<div class="hud-crosshair top-l">+</div>
+							<div class="hud-crosshair top-r">+</div>
+							<div class="hud-crosshair btm-l">+</div>
+							<div class="hud-crosshair btm-r">+</div>
+
 							<!-- 左侧：图像交付预览 -->
 							<div class="split-col split-left">
 								<div class="split-header">
-									<span>VECTOR IMAGE OUTPUT</span>
+									<span>VECTOR IMAGE CANVAS</span>
 									<span class="split-tag">HIGH-DPI</span>
+								</div>
+								<!-- 列宽卡尺对齐标注 -->
+								<div class="split-ruler-bar">
+									<span class="ruler-col-tag w-130">130pt</span>
+									<span class="ruler-col-tag w-70">70pt</span>
+									<span class="ruler-col-tag w-65">65pt</span>
 								</div>
 								<div class="split-body table-mini">
 									<div class="mini-rule thick"></div>
 									<div class="mini-row head">
-										<span>Model</span>
-										<span>Score</span>
+										<span class="w-130">Architecture</span>
+										<span class="w-70 text-center">Top-1 Acc</span>
+										<span class="w-65 text-right">Latency</span>
 									</div>
 									<div class="mini-rule thin"></div>
 									<div class="mini-row">
-										<span>Baseline</span>
-										<span>76.1%</span>
+										<span class="w-130">Baseline ResNet</span>
+										<span class="w-70 text-center">76.13%</span>
+										<span class="w-65 text-right">12.4 ms</span>
 									</div>
 									<div class="mini-row active">
-										<span>Ours</span>
-										<span class="font-bold">82.4%</span>
+										<span class="w-130 font-semibold">Samara-Net</span>
+										<span class="w-70 text-center font-semibold">82.45%</span>
+										<span class="w-65 text-right font-semibold">8.1 ms</span>
 									</div>
 									<div class="mini-rule thick"></div>
 								</div>
@@ -428,23 +485,33 @@
 							<!-- 中央对齐基准线 -->
 							<div class="split-datum">
 								<div class="datum-line"></div>
-								<div class="datum-badge">= 1:1 =</div>
+								<div class="datum-badge">
+									<span>= 1:1 =</span>
+									<span class="sub-datum">PARITY</span>
+								</div>
 								<div class="datum-line"></div>
 							</div>
 
-							<!-- 右侧：纯净 LaTeX 代码 -->
+							<!-- 右侧：真实、完整的纯净 LaTeX 代码 (含列宽、自动换行与行颜色) -->
 							<div class="split-col split-right">
 								<div class="split-header">
 									<span>NATIVE LATEX STREAM</span>
-									<span class="split-tag">SOURCE</span>
+									<span class="split-tag">COMPILER READY</span>
 								</div>
 								<div class="split-body code-body">
-									<pre><code><span class="code-macro">\toprule</span>
-\textbf&#123;Model&#125; & \textbf&#123;Score&#125; \\
-<span class="code-macro">\midrule</span>
-Baseline & 76.1\% \\
-<span class="code-highlight">\rowcolor&#123;blue!6&#125; Ours & 82.4\% \\</span>
-<span class="code-macro">\bottomrule</span></code></pre>
+									<pre><code><span class="code-comment">% Dimensions precisely mapped</span>
+\begin&#123;tabular&#125;&#123;
+  <span class="code-macro">&gt;&#123;\raggedright\arraybackslash&#125;m&#123;130pt&#125;</span>
+  <span class="code-macro">&gt;&#123;\centering\arraybackslash&#125;m&#123;70pt&#125;</span>
+  <span class="code-macro">&gt;&#123;\raggedleft\arraybackslash&#125;m&#123;65pt&#125;</span>
+&#125;
+  <span class="code-macro">\toprule</span>
+  \textbf&#123;Architecture&#125; & \textbf&#123;Top-1 Acc&#125; & \textbf&#123;Latency&#125; \\
+  <span class="code-macro">\midrule</span>
+  Baseline ResNet & 76.13\% & 12.4 ms \\
+  <span class="code-highlight">\rowcolor&#123;blue!12&#125; \textbf&#123;Samara-Net&#125; & \textbf&#123;82.45\%&#125; & \textbf&#123;8.1 ms&#125; \\</span>
+  <span class="code-macro">\bottomrule</span>
+\end&#123;tabular&#125;</code></pre>
 								</div>
 							</div>
 						</div>
@@ -461,21 +528,26 @@ Baseline & 76.1\% \\
 						</p>
 						<div class="track-telemetry">
 							<span class="telemetry-pill">AUTO-DELIMIT</span>
-							<span class="telemetry-pill">GRID PRESERVED</span>
-							<span class="telemetry-pill">ZERO-CONFIG</span>
+							<span class="telemetry-pill">STRUCTURE-PRESERVED</span>
+							<span class="telemetry-pill">STREAM BUS</span>
 						</div>
 					</div>
 
 					<div class="track-stage">
 						<div class="stage-frame ingest-stage">
+							<div class="hud-crosshair top-l">+</div>
+							<div class="hud-crosshair top-r">+</div>
+							<div class="hud-crosshair btm-l">+</div>
+							<div class="hud-crosshair btm-r">+</div>
+
 							<!-- 左侧：原始数据流 -->
 							<div class="stream-inflow">
 								<div class="stream-header">
 									<span>RAW TABULAR BUFFER</span>
-									<span class="stream-badge">UNFORMATTED</span>
+									<span class="stream-badge">UNFORMATTED TSV</span>
 								</div>
 								<div class="stream-code">
-									Method       Accuracy   Speed<br />
+									Method       Accuracy   Latency<br />
 									Baseline     76.13      12.4<br />
 									Samara-Net   82.45      8.1
 								</div>
@@ -485,31 +557,32 @@ Baseline & 76.1\% \\
 							<div class="stream-conduit">
 								<span class="conduit-label">AUTO-PARSE</span>
 								<div class="conduit-arrow">→</div>
+								<span class="conduit-sub">ZERO-CONFIG</span>
 							</div>
 
 							<!-- 右侧：结构化规范排版 -->
 							<div class="stream-outflow">
 								<div class="stream-header">
 									<span>PUBLICATION TYPESET</span>
-									<span class="stream-badge text-blue">STANDARDIZED</span>
+									<span class="stream-badge text-cyan">STANDARDIZED</span>
 								</div>
 								<div class="stream-table">
 									<div class="out-rule thick"></div>
 									<div class="out-row head">
 										<span>Method</span>
-										<span>Accuracy</span>
-										<span>Speed</span>
+										<span class="text-center">Accuracy</span>
+										<span class="text-right">Latency</span>
 									</div>
 									<div class="out-rule thin"></div>
 									<div class="out-row">
 										<span>Baseline</span>
-										<span>76.13%</span>
-										<span>12.4ms</span>
+										<span class="text-center">76.13%</span>
+										<span class="text-right">12.4ms</span>
 									</div>
 									<div class="out-row highlight">
-										<span>Samara-Net</span>
-										<span>82.45%</span>
-										<span>8.1ms</span>
+										<span class="font-semibold">Samara-Net</span>
+										<span class="text-center font-semibold">82.45%</span>
+										<span class="text-right font-semibold">8.1ms</span>
 									</div>
 									<div class="out-rule thick"></div>
 								</div>
@@ -1072,13 +1145,16 @@ Baseline & 76.1\% \\
 		pointer-events: none;
 	}
 
-	/* FEATURES & SPECIFICATION */
+	/* FEATURES & SPECIFICATION (TACTICAL BLUEPRINT SLATE) */
 	.features-wrapper {
-		background: #ffffff;
-		color: #111113;
+		background-color: #07080d;
+		background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+		background-size: 24px 24px;
+		color: #ffffff;
 		padding: 7rem clamp(2.8rem, 5vw, 5.5rem);
-		border-top: 1px solid rgba(0, 0, 0, 0.12);
+		border-top: 1px solid rgba(255, 255, 255, 0.15);
 		box-sizing: border-box;
+		position: relative;
 	}
 
 	.section-container {
@@ -1091,7 +1167,7 @@ Baseline & 76.1\% \\
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 		padding-bottom: 1.5rem;
 		margin-bottom: 1rem;
 	}
@@ -1110,13 +1186,13 @@ Baseline & 76.1\% \\
 		text-transform: uppercase;
 		letter-spacing: 0.01em;
 		margin: 0;
-		color: #000000;
+		color: #ffffff;
 	}
 
 	.features-sub-tag {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 1.2rem;
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 600;
 		letter-spacing: 0.1em;
 	}
@@ -1125,7 +1201,7 @@ Baseline & 76.1\% \\
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.68rem;
 		letter-spacing: 0.18em;
-		color: rgba(0, 0, 0, 0.5);
+		color: rgba(255, 255, 255, 0.5);
 		text-transform: uppercase;
 	}
 
@@ -1140,7 +1216,7 @@ Baseline & 76.1\% \\
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
 		gap: clamp(2.5rem, 5vw, 5.5rem);
 		padding: clamp(4rem, 6vw, 6rem) 0;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		align-items: center;
 		box-sizing: border-box;
 	}
@@ -1159,7 +1235,7 @@ Baseline & 76.1\% \\
 		font-size: 0.68rem;
 		font-weight: 700;
 		letter-spacing: 0.18em;
-		color: #0202f1;
+		color: #38bdf8;
 		text-transform: uppercase;
 		margin-bottom: 1rem;
 	}
@@ -1170,7 +1246,7 @@ Baseline & 76.1\% \\
 		font-weight: 300;
 		line-height: 1.05;
 		letter-spacing: -0.015em;
-		color: #000000;
+		color: #ffffff;
 		margin: 0 0 1.4rem 0;
 	}
 
@@ -1178,7 +1254,7 @@ Baseline & 76.1\% \\
 		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 		font-size: 0.92rem;
 		line-height: 1.7;
-		color: rgba(0, 0, 0, 0.72);
+		color: rgba(255, 255, 255, 0.7);
 		margin: 0 0 1.8rem 0;
 		max-width: 480px;
 	}
@@ -1195,9 +1271,9 @@ Baseline & 76.1\% \\
 		font-weight: 600;
 		letter-spacing: 0.12em;
 		padding: 0.3rem 0.65rem;
-		border: 1px solid rgba(0, 0, 0, 0.18);
-		background: #fbfbfa;
-		color: rgba(0, 0, 0, 0.75);
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		background: rgba(255, 255, 255, 0.05);
+		color: #cbd5e1;
 		text-transform: uppercase;
 	}
 
@@ -1209,12 +1285,29 @@ Baseline & 76.1\% \\
 
 	.stage-frame {
 		width: 100%;
-		background: #fbfbfd;
-		border: 1px solid rgba(0, 0, 0, 0.14);
+		background: #0d0f18;
+		border: 1px solid rgba(255, 255, 255, 0.18);
 		padding: 2.2rem;
 		position: relative;
 		box-sizing: border-box;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
 	}
+
+	/* 四角机能切角十字标 (HUD Crosshairs) */
+	.hud-crosshair {
+		position: absolute;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.75rem;
+		color: #38bdf8;
+		pointer-events: none;
+		line-height: 1;
+		opacity: 0.8;
+	}
+
+	.hud-crosshair.top-l { top: 6px; left: 8px; }
+	.hud-crosshair.top-r { top: 6px; right: 8px; }
+	.hud-crosshair.btm-l { bottom: 6px; left: 8px; }
+	.hud-crosshair.btm-r { bottom: 6px; right: 8px; }
 
 	/* STAGE 1: 视觉微操工具栏与解剖表格 */
 	.stage-toolbar {
@@ -1222,23 +1315,23 @@ Baseline & 76.1\% \\
 		align-items: center;
 		gap: 0.8rem;
 		padding: 0.5rem 0.9rem;
-		background: #ffffff;
-		border: 1px solid rgba(0, 0, 0, 0.12);
-		margin-bottom: 1.8rem;
+		background: #131724;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		margin-bottom: 1rem;
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.68rem;
 		letter-spacing: 0.05em;
+		color: #cbd5e1;
 	}
 
 	.toolbar-item {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
-		color: rgba(0, 0, 0, 0.75);
 	}
 
 	.toolbar-item.active {
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 600;
 	}
 
@@ -1246,73 +1339,115 @@ Baseline & 76.1\% \\
 		width: 10px;
 		height: 10px;
 		border-radius: 2px;
-		background: #edf2ff;
-		border: 1px solid #0202f1;
+		background: #162038;
+		border: 1px solid #38bdf8;
 		display: inline-block;
 	}
 
 	.rule-sample {
 		width: 20px;
 		height: 2px;
-		background: #0202f1;
+		background: #38bdf8;
 		display: inline-block;
+	}
+
+	.cmidrule-sample {
+		color: #38bdf8;
+		font-weight: 700;
 	}
 
 	.math-symbol {
 		font-weight: 700;
-		color: #0202f1;
+		color: #38bdf8;
 		font-style: italic;
 	}
 
 	.toolbar-sep {
-		color: rgba(0, 0, 0, 0.2);
+		color: rgba(255, 255, 255, 0.2);
 	}
 
 	.toolbar-status {
 		margin-left: auto;
 		font-size: 0.58rem;
 		letter-spacing: 0.15em;
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 700;
+	}
+
+	/* 列宽刻度标尺 */
+	.caliper-ruler {
+		display: grid;
+		grid-template-columns: 140px 80px 80px 80px;
+		gap: 0;
+		border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+		margin-bottom: 0.8rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		color: #38bdf8;
+		background: rgba(56, 189, 248, 0.04);
+	}
+
+	.ruler-segment {
+		border-left: 1px solid rgba(56, 189, 248, 0.4);
+		padding: 3px 6px;
+	}
+
+	.ruler-segment:last-child {
+		border-right: 1px solid rgba(56, 189, 248, 0.4);
 	}
 
 	.table-specimen {
 		position: relative;
 		width: 100%;
-		padding-bottom: 1.8rem;
+		padding-bottom: 2.2rem;
 	}
 
 	.academic-table {
 		width: 100%;
 		border-collapse: collapse;
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.8rem;
+		font-size: 0.78rem;
+		color: #e2e8f0;
 	}
 
 	.academic-table th {
-		padding: 0.7rem 0.8rem;
+		padding: 0.65rem 0.8rem;
 		font-weight: 600;
-		color: #000000;
+		color: #ffffff;
 		letter-spacing: 0.04em;
 	}
 
 	.academic-table td {
 		padding: 0.65rem 0.8rem;
-		color: #222222;
+		color: #cbd5e1;
 	}
 
-	.academic-table .rule-top th {
-		border-top: 2px solid #000000;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+	.rule-top-border th {
+		border-top: 2px solid #ffffff;
 	}
 
-	.academic-table tbody tr:last-child td {
-		border-bottom: 2px solid #000000;
+	.col-group {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+	}
+
+	.rule-cmid-row th {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+	}
+
+	.rule-bottom-border td {
+		border-bottom: 2px solid #ffffff;
+		padding: 0;
+		height: 2px;
 	}
 
 	.academic-table .highlighted-row td {
-		background: #edf2ff;
-		color: #0202f1;
+		background: rgba(37, 99, 235, 0.22);
+		color: #93c5fd;
+	}
+
+	.math-header,
+	.math-cell {
+		color: #38bdf8;
 	}
 
 	.pin {
@@ -1323,7 +1458,7 @@ Baseline & 76.1\% \\
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.58rem;
 		letter-spacing: 0.12em;
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 600;
 		pointer-events: none;
 	}
@@ -1332,23 +1467,28 @@ Baseline & 76.1\% \\
 		width: 5px;
 		height: 5px;
 		border-radius: 50%;
-		background: #0202f1;
+		background: #38bdf8;
 	}
 
 	.pin-line {
 		width: 22px;
 		height: 1px;
-		background: #0202f1;
+		background: #38bdf8;
 	}
 
 	.pin-tag {
-		background: #ffffff;
-		border: 1px solid #0202f1;
+		background: #0f172a;
+		border: 1px solid #38bdf8;
 		padding: 0.15rem 0.4rem;
 	}
 
 	.pin-top-rule {
 		top: -0.2rem;
+		right: 0.5rem;
+	}
+
+	.pin-cmid {
+		top: 2rem;
 		right: 0.5rem;
 	}
 
@@ -1360,7 +1500,7 @@ Baseline & 76.1\% \\
 	/* STAGE 2: 1:1 双生镜像 (Split Stage) */
 	.split-stage {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.35fr);
 		gap: 1.2rem;
 		align-items: stretch;
 	}
@@ -1368,8 +1508,8 @@ Baseline & 76.1\% \\
 	.split-col {
 		display: flex;
 		flex-direction: column;
-		background: #ffffff;
-		border: 1px solid rgba(0, 0, 0, 0.12);
+		background: #111420;
+		border: 1px solid rgba(255, 255, 255, 0.15);
 		padding: 1.2rem;
 	}
 
@@ -1380,16 +1520,47 @@ Baseline & 76.1\% \\
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.6rem;
 		letter-spacing: 0.15em;
-		color: rgba(0, 0, 0, 0.55);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		color: rgba(255, 255, 255, 0.65);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 0.6rem;
-		margin-bottom: 1rem;
+		margin-bottom: 0.8rem;
 	}
 
 	.split-tag {
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 700;
 		font-size: 0.55rem;
+	}
+
+	.split-ruler-bar {
+		display: flex;
+		gap: 0;
+		border-bottom: 1px dashed rgba(56, 189, 248, 0.35);
+		padding-bottom: 2px;
+		margin-bottom: 8px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.55rem;
+		color: #38bdf8;
+	}
+
+	.ruler-col-tag.w-130 {
+		width: 130px;
+		border-left: 1px solid rgba(56, 189, 248, 0.4);
+		padding-left: 3px;
+	}
+
+	.ruler-col-tag.w-70 {
+		width: 70px;
+		text-align: center;
+		border-left: 1px solid rgba(56, 189, 248, 0.4);
+	}
+
+	.ruler-col-tag.w-65 {
+		width: 65px;
+		text-align: right;
+		border-left: 1px solid rgba(56, 189, 248, 0.4);
+		border-right: 1px solid rgba(56, 189, 248, 0.4);
+		padding-right: 3px;
 	}
 
 	.table-mini {
@@ -1403,26 +1574,29 @@ Baseline & 76.1\% \\
 
 	.mini-rule.thick {
 		height: 2px;
-		background: #000000;
+		background: #ffffff;
 		margin: 0.4rem 0;
 	}
 
 	.mini-rule.thin {
 		height: 1px;
-		background: rgba(0, 0, 0, 0.35);
+		background: rgba(255, 255, 255, 0.45);
 		margin: 0.4rem 0;
 	}
 
 	.mini-row {
 		display: flex;
-		justify-content: space-between;
 		padding: 0.35rem 0.4rem;
+		color: #cbd5e1;
 	}
 
+	.mini-row .w-130 { width: 130px; }
+	.mini-row .w-70 { width: 70px; }
+	.mini-row .w-65 { width: 65px; }
+
 	.mini-row.active {
-		background: #edf2ff;
-		color: #0202f1;
-		font-weight: 600;
+		background: rgba(37, 99, 235, 0.25);
+		color: #93c5fd;
 	}
 
 	.split-datum {
@@ -1436,43 +1610,59 @@ Baseline & 76.1\% \\
 	.datum-line {
 		width: 1px;
 		flex: 1;
-		background: rgba(0, 0, 0, 0.18);
+		background: rgba(56, 189, 248, 0.35);
 	}
 
 	.datum-badge {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.62rem;
 		font-weight: 700;
-		color: #0202f1;
-		background: #ffffff;
-		border: 1px solid #0202f1;
-		padding: 0.25rem 0.5rem;
+		color: #38bdf8;
+		background: #111420;
+		border: 1px solid #38bdf8;
+		padding: 0.3rem 0.6rem;
+		text-align: center;
 		white-space: nowrap;
+	}
+
+	.sub-datum {
+		font-size: 0.45rem;
+		letter-spacing: 0.18em;
+		opacity: 0.8;
+		display: block;
 	}
 
 	.code-body {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.68rem;
 		line-height: 1.55;
-		color: #111113;
+		color: #cbd5e1;
 		overflow-x: auto;
-		background: #ffffff;
+		background: #090b12;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		padding: 0.8rem;
 	}
 
 	.code-body pre {
 		margin: 0;
 	}
 
+	.code-comment {
+		color: #64748b;
+		font-style: italic;
+	}
+
 	.code-macro {
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 600;
 	}
 
 	.code-highlight {
-		background: #edf2ff;
-		color: #0202f1;
+		background: rgba(37, 99, 235, 0.25);
+		color: #93c5fd;
 		font-weight: 600;
 		display: block;
+		padding: 0.1rem 0;
 	}
 
 	/* STAGE 3: 数据直通 (Ingest Stage) */
@@ -1485,8 +1675,8 @@ Baseline & 76.1\% \\
 
 	.stream-inflow,
 	.stream-outflow {
-		background: #ffffff;
-		border: 1px solid rgba(0, 0, 0, 0.12);
+		background: #111420;
+		border: 1px solid rgba(255, 255, 255, 0.15);
 		padding: 1.2rem;
 		display: flex;
 		flex-direction: column;
@@ -1499,8 +1689,8 @@ Baseline & 76.1\% \\
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.6rem;
 		letter-spacing: 0.15em;
-		color: rgba(0, 0, 0, 0.55);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+		color: rgba(255, 255, 255, 0.65);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 0.6rem;
 		margin-bottom: 0.8rem;
 	}
@@ -1509,18 +1699,18 @@ Baseline & 76.1\% \\
 		font-size: 0.55rem;
 		font-weight: 700;
 		letter-spacing: 0.12em;
-		color: rgba(0, 0, 0, 0.5);
+		color: rgba(255, 255, 255, 0.5);
 	}
 
-	.stream-badge.text-blue {
-		color: #0202f1;
+	.stream-badge.text-cyan {
+		color: #38bdf8;
 	}
 
 	.stream-code {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.68rem;
 		line-height: 1.9;
-		color: rgba(0, 0, 0, 0.45);
+		color: #94a3b8;
 		white-space: pre;
 	}
 
@@ -1529,21 +1719,28 @@ Baseline & 76.1\% \\
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 0.4rem;
+		gap: 0.3rem;
 	}
 
 	.conduit-label {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.55rem;
 		letter-spacing: 0.15em;
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 700;
 	}
 
 	.conduit-arrow {
 		font-size: 1.2rem;
-		color: #0202f1;
+		color: #38bdf8;
 		font-weight: 700;
+	}
+
+	.conduit-sub {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.5rem;
+		letter-spacing: 0.15em;
+		color: rgba(255, 255, 255, 0.4);
 	}
 
 	.stream-table {
@@ -1555,13 +1752,13 @@ Baseline & 76.1\% \\
 
 	.out-rule.thick {
 		height: 2px;
-		background: #000000;
+		background: #ffffff;
 		margin: 0.3rem 0;
 	}
 
 	.out-rule.thin {
 		height: 1px;
-		background: rgba(0, 0, 0, 0.35);
+		background: rgba(255, 255, 255, 0.45);
 		margin: 0.3rem 0;
 	}
 
@@ -1569,16 +1766,17 @@ Baseline & 76.1\% \\
 		display: grid;
 		grid-template-columns: 1.4fr 1fr 1fr;
 		padding: 0.25rem 0.3rem;
+		color: #cbd5e1;
 	}
 
 	.out-row.head {
 		font-weight: 700;
-		color: #000000;
+		color: #ffffff;
 	}
 
 	.out-row.highlight {
-		background: #edf2ff;
-		color: #0202f1;
+		background: rgba(37, 99, 235, 0.25);
+		color: #93c5fd;
 		font-weight: 600;
 	}
 
