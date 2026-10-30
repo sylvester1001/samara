@@ -424,8 +424,8 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 								<span class="bp-metric-lbl">VECTOR &amp; RASTER EXPORT</span>
 							</div>
 							<div class="bp-metric-cell">
-								<span class="bp-metric-val">AST</span>
-								<span class="bp-metric-lbl">BI-DIRECTIONAL PARSER</span>
+								<span class="bp-metric-val">XLSX</span>
+								<span class="bp-metric-lbl">MERGE-AWARE IMPORT</span>
 							</div>
 						</div>
 					</div>
@@ -674,7 +674,7 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 									<span class="exp-pill"><b>.SVG</b> VECTOR</span>
 									<span class="exp-pill"><b>.PNG</b> 600 DPI</span>
 									<span class="exp-pill"><b>.JPG</b> PRINT</span>
-									<span class="exp-pill accent"><b>CTRL+C</b> CLIPBOARD</span>
+									<span class="exp-pill accent"><b>CLIPBOARD</b> COPY</span>
 								</div>
 							</div>
 
@@ -815,17 +815,17 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 				</article>
 
 				<!-- =========================================================================== -->
-				<!-- MODULE 03: UNIVERSAL INGESTION & AST REVERSE-PARSER (万物皆可导入与粘贴)       -->
+				<!-- MODULE 03: SMART DATA INGESTION & MATRIX NORMALIZER (真实文件导入与富剪贴板直粘) -->
 				<!-- =========================================================================== -->
 				<article class="bp-module bp-module-last">
 					<!-- 左侧机能竖排导轨 -->
 					<div class="bp-spine">
 						<span class="spine-code">02.03</span>
 						<span class="spine-line"></span>
-						<span class="spine-text">UNIVERSAL DATA INGESTION</span>
+						<span class="spine-text">SMART DATA INGESTION</span>
 					</div>
 
-					<!-- 中栏：人文阐述与三通道导入能力 -->
+					<!-- 中栏：人文阐述与四项真实导入规格 (与 02.01 / 02.02 保持 100% 统一节奏) -->
 					<div class="bp-narrative">
 						<div class="module-kicker">
 							<span class="kicker-index">MODULE // 03</span>
@@ -833,132 +833,152 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 						</div>
 
 						<h3 class="module-title">
-							Paste From Anywhere.<br />
-							Reverse-Parse Old Code.<br />
+							Drop Excel &amp; CSV.<br />
+							Paste Any Range.<br />
 							<span class="module-title-italic">Edit Instantly.</span>
 						</h3>
 
 						<p class="module-lead">
-							Never build a table from scratch or count ampersands in legacy code again. Drop spreadsheet files, paste raw cell ranges from Excel, or feed existing LaTeX tables directly into Samara to reconstruct an editable visual grid in milliseconds.
+							Import spreadsheets or paste cell ranges—merged spans and grid bounds are reconstructed automatically.
 						</p>
 
 						<div class="spec-ledger">
 							<div class="ledger-row">
-								<span class="ledger-key">PORT 01 // SPREADSHEETS</span>
-								<span class="ledger-val">Direct <code>Ctrl+V</code> from Excel, Numbers, WPS or <code>.xlsx</code> / <code>.csv</code> drop</span>
+								<span class="ledger-key">01 // .XLSX &amp; .CSV FILES</span>
+								<span class="ledger-val">Import Excel workbooks or CSV files directly onto the canvas.</span>
 							</div>
 							<div class="ledger-row">
-								<span class="ledger-key">PORT 02 // LATEX AST PARSER</span>
-								<span class="ledger-val">Reverse-engineers complex <code>\multicolumn</code> &amp; <code>\multirow</code> code into live cells</span>
+								<span class="ledger-key">02 // CLIPBOARD PASTE</span>
+								<span class="ledger-val">Paste cell ranges directly from Excel, WPS, Numbers, or web tables.</span>
 							</div>
 							<div class="ledger-row">
-								<span class="ledger-key">PORT 03 // MARKDOWN &amp; LOGS</span>
-								<span class="ledger-val">Ingests LLM Markdown tables, Pandas dataframes &amp; raw TSV streams</span>
+								<span class="ledger-key">03 // MERGED CELLS PRESERVED</span>
+								<span class="ledger-val">Multi-row and multi-column headers stay merged automatically.</span>
+							</div>
+							<div class="ledger-row">
+								<span class="ledger-key">04 // AUTO-CLEANED GRID</span>
+								<span class="ledger-val">Empty border rows and columns are trimmed on import.</span>
 							</div>
 						</div>
 					</div>
 
-					<!-- 右栏：三通道战术解码器架构图 (Tri-Channel Ingestion Matrix) -->
+					<!-- 右栏：直观的「上方 Excel 选区 ➔ 下方三线表」上下一体式对比舱 -->
 					<div class="bp-stage">
-						<div class="ingest-architecture">
-							<!-- 顶部三路输入源端口 -->
-							<div class="ingest-ports-grid">
-								<!-- PORT 01: EXCEL / CSV -->
-								<div class="ingest-port-card">
-									<div class="port-head">
-										<span class="port-num">IN_01</span>
-										<span class="port-type">XLSX / CSV / CLIPBOARD</span>
-									</div>
-									<div class="port-title">Excel &amp; Spreadsheets</div>
-									<div class="port-sample-box">
-										<div class="excel-mock">
-											<div class="ex-row ex-head">
-												<span>A</span><span>B</span><span>C</span>
-											</div>
-											<div class="ex-row">
-												<span>Model</span><span>Acc</span><span> F1 </span>
-											</div>
-											<div class="ex-row ex-sel">
-												<span>Ours</span><span>86.4</span><span>91.2</span>
-											</div>
+						<div class="tactical-chamber">
+							<!-- 四角工业准星 -->
+							<span class="chamber-corner tl"></span>
+							<span class="chamber-corner tr"></span>
+							<span class="chamber-corner bl"></span>
+							<span class="chamber-corner br"></span>
+
+							<!-- 顶栏状态 -->
+							<div class="chamber-topbar">
+								<div class="chamber-status">
+									<span class="signal-dot"></span>
+									<span>SPREADSHEET TO BOOKTABS // 1-STEP IMPORT</span>
+								</div>
+								<div class="export-pill-bar">
+									<span class="exp-pill"><b>.XLSX</b></span>
+									<span class="exp-pill"><b>.CSV</b></span>
+									<span class="exp-pill accent"><b>CLIPBOARD</b></span>
+								</div>
+							</div>
+
+							<div class="unified-dual-viewport">
+								<!-- 上层：干净直观的 Excel 表格选区 (带合并表头与复制蚂蚁线) -->
+								<div class="sheet-source-well">
+									<div class="sheet-grid-full">
+										<!-- 列标 A B C D -->
+										<div class="sg-row sg-col-letters">
+											<span class="sg-idx"></span>
+											<span>A</span>
+											<span>B</span>
+											<span>C</span>
+											<span>D</span>
+										</div>
+
+										<!-- 复制选区 (Row 1 - Row 4, 真实跨行跨列合并) -->
+										<div class="sg-selection-box">
+											<!-- Row 1 -->
+											<span class="sg-idx">1</span>
+											<span class="sg-cell sg-bold sg-rowspan-2">Method</span>
+											<span class="sg-cell sg-span-2 sg-bold">Zero-Shot Evaluation (%)</span>
+											<span class="sg-cell sg-bold sg-rowspan-2 sg-right">Val Loss</span>
+
+											<!-- Row 2 -->
+											<span class="sg-idx">2</span>
+											<span class="sg-cell sg-bold sg-center">ImageNet-1K</span>
+											<span class="sg-cell sg-bold sg-center">MS-COCO</span>
+
+											<!-- Row 3 -->
+											<span class="sg-idx">3</span>
+											<span class="sg-cell">ResNet-101 (Baseline)</span>
+											<span class="sg-cell sg-center">77.37</span>
+											<span class="sg-cell sg-center">58.40</span>
+											<span class="sg-cell sg-right">0.842 ± 0.015</span>
+
+											<!-- Row 4 -->
+											<span class="sg-idx">4</span>
+											<span class="sg-cell sg-bold">Samara-Former (Ours)</span>
+											<span class="sg-cell sg-bold sg-center">86.45</span>
+											<span class="sg-cell sg-bold sg-center">71.84</span>
+											<span class="sg-cell sg-bold sg-right">0.364 ± 0.004</span>
 										</div>
 									</div>
-									<div class="port-foot">DIRECT CTRL+V OR DRAG &amp; DROP</div>
 								</div>
 
-								<!-- PORT 02: LEGACY LATEX REVERSE PARSER -->
-								<div class="ingest-port-card port-featured">
-									<div class="port-head">
-										<span class="port-num">IN_02</span>
-										<span class="port-type">REVERSE AST PARSER</span>
+								<!-- 中间转换指示条 -->
+								<div class="code-drawer-bar">
+									<div class="drawer-title-group">
+										<span class="bay-id">IMPORT / PASTE</span>
+										<span class="drawer-title">RECONSTRUCTED ON SAMARA CANVAS ↓</span>
 									</div>
-									<div class="port-title">Existing LaTeX Code</div>
-									<div class="port-sample-box code-sample">
-										<code>\multicolumn&#123;2&#125;&#123;c&#125;&#123;Score&#125; \\</code>
-										<code>\cmidrule(lr)&#123;2-3&#125;</code>
-										<code>Ours &amp; \textbf&#123;86.4&#125; &amp; 91.2 \\</code>
-									</div>
-									<div class="port-foot">RECONSTRUCTS SPANS &amp; STYLES</div>
+									<span class="ingest-preserve-tag">✓ MERGED HEADERS PRESERVED</span>
 								</div>
 
-								<!-- PORT 03: MARKDOWN / TSV -->
-								<div class="ingest-port-card">
-									<div class="port-head">
-										<span class="port-num">IN_03</span>
-										<span class="port-type">MD / TSV / PYTHON</span>
+								<!-- 下层：瞬间还原出的标准 Computer Modern 学术三线表 -->
+								<div class="graphics-specimen-well unified-well ingest-bottom-well">
+									<div
+										class="rendered-image-card ingest-paper-card"
+										style="--row-tint: {palettes[activePalette].rowTint}; --cell-peak: {palettes[activePalette].cellPeak}; --cell-sub: {palettes[activePalette].cellSub};"
+									>
+										<table class="monograph-table">
+											<thead>
+												<tr class="m-toprule">
+													<th rowspan="2" class="m-left m-vmiddle">Method</th>
+													<th colspan="2" class="m-center m-span-head">Zero-Shot Evaluation (%)</th>
+													<th rowspan="2" class="m-right m-vmiddle">
+														{@html renderLatex('Val Loss ($\\mathcal{L}_{\\text{val}} \\downarrow$)')}
+													</th>
+												</tr>
+												<tr class="m-subhead-row">
+													<th class="m-center">{@html renderLatex('ImageNet-1K ($\\uparrow$)')}</th>
+													<th class="m-center">{@html renderLatex('MS-COCO ($\\uparrow$)')}</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="m-first-body-row">
+													<td class="m-left">ResNet-101 (Baseline)</td>
+													<td class="m-center">77.37</td>
+													<td class="m-center">58.40</td>
+													<td class="m-right">{@html renderLatex('$0.842 \\pm 0.015$')}</td>
+												</tr>
+												<tr class="m-row-tinted">
+													<td class="m-left m-bold">Samara-Former (Ours)</td>
+													<td class="m-center m-bold cell-peak-shaded">86.45</td>
+													<td class="m-center m-bold cell-peak-shaded">71.84</td>
+													<td class="m-right m-bold">{@html renderLatex('$\\mathbf{0.364 \\pm 0.004}$')}</td>
+												</tr>
+											</tbody>
+										</table>
 									</div>
-									<div class="port-title">Markdown &amp; Raw Logs</div>
-									<div class="port-sample-box code-sample">
-										<code>| Model | Acc  | F1   |</code>
-										<code>|-------|------|------|</code>
-										<code>| Ours  | 86.4 | 91.2 |</code>
-									</div>
-									<div class="port-foot">AUTO-DELIMITS &amp; CLEANS SYNTAX</div>
 								</div>
 							</div>
 
-							<!-- 中央总线解码器汇流层 -->
-							<div class="ingest-bus-bar">
-								<div class="bus-line"></div>
-								<div class="bus-processor">
-									<span class="proc-dot"></span>
-									<span>SAMARA AST DECODER // AUTO-SPAN &amp; STRUCTURE NORMALIZATION</span>
-									<span class="proc-arrow">↓</span>
-								</div>
-								<div class="bus-line"></div>
-							</div>
-
-							<!-- 底部还原后的可视化工作台画布 -->
-							<div class="ingest-output-deck">
-								<div class="deck-meta">
-									<span>OUTPUT // RECONSTRUCTED INTERACTIVE CANVAS</span>
-									<span class="deck-ready">READY FOR VISUAL STYLING &amp; EXPORT</span>
-								</div>
-
-								<div class="reconstructed-grid-preview">
-									<div class="rg-cell rg-head">Model Architecture</div>
-									<div class="rg-cell rg-head text-center">
-										{@html renderLatex('Accuracy ($\\uparrow$ %)')}
-									</div>
-									<div class="rg-cell rg-head text-center">
-										{@html renderLatex('$F_1$-Score ($\\uparrow$ %)')}
-									</div>
-									<div class="rg-cell rg-head text-right">Action</div>
-
-									<div class="rg-cell rg-active">
-										<span class="rg-handle">⋮⋮</span>
-										<strong>Samara-Former (Ours)</strong>
-									</div>
-									<div class="rg-cell rg-active text-center">
-										<span class="rg-val-highlight">86.45</span>
-									</div>
-									<div class="rg-cell rg-active text-center">
-										<span class="rg-val-highlight">91.20</span>
-									</div>
-									<div class="rg-cell rg-active text-right">
-										<span class="rg-tag">RESIZE / COLOR / EXPORT</span>
-									</div>
-								</div>
+							<!-- 底部状态栏 -->
+							<div class="chamber-Bottombar">
+								<span>SUPPORTS: EXCEL (.XLSX / .XLS) · CSV · TSV · CLIPBOARD</span>
+								<span class="status-ok">● ZERO MANUAL RE-TYPING</span>
 							</div>
 						</div>
 					</div>
@@ -1895,7 +1915,7 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 		padding: clamp(2rem, 3vw, 3.2rem);
 		background: rgba(4, 5, 10, 0.65);
 		display: flex;
-		align-items: flex-start;
+		align-items: center;
 		justify-content: center;
 		min-width: 0;
 	}
@@ -2422,253 +2442,120 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 	}
 
 	/* ----------------------------------------------------------------------------------- */
-	/* STAGE 03: UNIVERSAL INGESTION & AST REVERSE-PARSER                                  */
+	/* STAGE 03: SPREADSHEET TO BOOKTABS (直观的 Excel 选区 ➔ 学术三线表 一键转换)           */
 	/* ----------------------------------------------------------------------------------- */
-	.ingest-architecture {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.ingest-ports-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.85rem;
-	}
-
-	.ingest-port-card {
-		border: 1px solid rgba(255, 255, 255, 0.18);
-		background: #0b0d15;
-		padding: 1rem;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-	}
-
-	.ingest-port-card.port-featured {
-		border-color: rgba(56, 189, 248, 0.5);
-		background: linear-gradient(180deg, rgba(2, 2, 241, 0.16) 0%, #0b0d15 100%);
-	}
-
-	.port-head {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 0.55rem;
-	}
-
-	.port-num {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.58rem;
-		font-weight: 700;
-		padding: 0.12rem 0.4rem;
-		background: rgba(255, 255, 255, 0.12);
-		color: #ffffff;
-		letter-spacing: 0.1em;
-	}
-
-	.port-featured .port-num {
-		background: #ff4d00;
-	}
-
-	.port-type {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.52rem;
-		letter-spacing: 0.12em;
-		color: rgba(255, 255, 255, 0.5);
-	}
-
-	.port-title {
-		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: 1.35rem;
-		font-weight: 500;
-		color: #ffffff;
-		margin-bottom: 0.7rem;
-	}
-
-	.port-sample-box {
+	.sheet-source-well {
+		padding: 0.9rem 1.05rem;
 		background: #06080e;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 0.65rem;
-		margin-bottom: 0.75rem;
-		min-height: 76px;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 	}
 
-	.code-sample {
+	.sheet-grid-full {
+		border: 1px solid rgba(255, 255, 255, 0.16);
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.6rem;
-		line-height: 1.55;
-		color: #94a3b8;
-		overflow-x: auto;
+		font-size: 0.68rem;
+		background: #0a0d14;
 	}
 
-	.code-sample code {
-		display: block;
-		white-space: nowrap;
-	}
-
-	.excel-mock {
-		display: flex;
-		flex-direction: column;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.6rem;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-	}
-
-	.ex-row {
+	.sg-row {
 		display: grid;
-		grid-template-columns: 1.2fr 1fr 1fr;
+		grid-template-columns: 32px 1.4fr 1fr 1fr 1.1fr;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
-	.ex-row:last-child {
+	.sg-row:last-child {
 		border-bottom: none;
 	}
 
-	.ex-row span {
-		padding: 0.15rem 0.35rem;
-		border-right: 1px solid rgba(255, 255, 255, 0.08);
-		color: #cbd5e1;
-	}
-
-	.ex-row.ex-head {
-		background: rgba(255, 255, 255, 0.06);
+	.sg-col-letters {
+		background: rgba(255, 255, 255, 0.05);
 		color: rgba(255, 255, 255, 0.45);
-		font-size: 0.52rem;
+		font-size: 0.58rem;
+		font-weight: 700;
 		text-align: center;
 	}
 
-	.ex-row.ex-sel {
-		background: rgba(16, 185, 129, 0.18);
-		outline: 1px dashed #34d399;
+	.sg-col-letters span {
+		padding: 0.28rem 0.5rem;
+		border-right: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
-	.port-foot {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.52rem;
-		letter-spacing: 0.12em;
-		color: rgba(255, 255, 255, 0.48);
+	.sg-col-letters span:last-child {
+		border-right: none;
 	}
 
-	/* 中央总线解码条 */
-	.ingest-bus-bar {
+	.sg-idx {
+		background: rgba(255, 255, 255, 0.04);
+		color: rgba(255, 255, 255, 0.4);
+		font-size: 0.58rem;
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		justify-content: center;
+		border-right: 1px solid rgba(255, 255, 255, 0.1);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		user-select: none;
 	}
 
-	.bus-line {
-		flex: 1;
-		height: 1px;
-		background: rgba(255, 255, 255, 0.2);
-	}
-
-	.bus-processor {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.55rem;
-		padding: 0.4rem 0.9rem;
-		background: #0202f1;
-		border: 1px solid rgba(255, 255, 255, 0.4);
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.58rem;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		color: #ffffff;
-	}
-
-	.proc-dot {
-		width: 6px;
-		height: 6px;
-		background: #ffffff;
-		border-radius: 50%;
-	}
-
-	.proc-arrow {
-		font-size: 0.8rem;
-	}
-
-	/* 底部还原工作台 */
-	.ingest-output-deck {
-		border: 1px solid rgba(255, 255, 255, 0.22);
-		background: #0b0d15;
-		padding: 1.1rem;
-	}
-
-	.deck-meta {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.58rem;
-		letter-spacing: 0.14em;
-		color: rgba(255, 255, 255, 0.55);
-		margin-bottom: 0.75rem;
-	}
-
-	.deck-ready {
-		color: #34d399;
-		font-weight: 700;
-	}
-
-	.reconstructed-grid-preview {
+	.sg-selection-box {
 		display: grid;
-		grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		background: #faf8f3;
-		color: #111318;
-		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
-		font-size: 0.85rem;
+		grid-template-columns: 32px 1.4fr 1fr 1fr 1.1fr;
+		outline: 1.5px dashed #34d399;
+		outline-offset: -1.5px;
+		background: rgba(16, 185, 129, 0.05);
 	}
 
-	.rg-cell {
-		padding: 0.55rem 0.75rem;
-		border-right: 1px solid #d5cfc0;
+	.sg-cell {
+		padding: 0.36rem 0.65rem;
+		border-right: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		color: #cbd5e1;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
-		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
 	}
 
-	.rg-cell.text-center { justify-content: center; }
-	.rg-cell.text-right { justify-content: flex-end; border-right: none; }
-
-	.rg-head {
-		background: #efece3;
-		border-bottom: 1.5px solid #111318;
-		font-weight: 700;
-		font-size: 0.8rem;
-		color: #1e2430;
+	.sg-cell.sg-center {
+		justify-content: center;
 	}
 
-	.rg-active {
-		background: #e6ecff;
+	.sg-cell.sg-right {
+		justify-content: flex-end;
+		border-right: none;
 	}
 
-	.rg-handle {
-		color: #0202f1;
-		font-weight: 700;
+	.sg-cell.sg-bold {
+		color: #f8fafc;
+		font-weight: 600;
 	}
 
-	.rg-val-highlight {
-		background: #c7d6ff;
-		padding: 0.1rem 0.4rem;
-		font-weight: 700;
-		color: #0202f1;
+	.sg-cell.sg-rowspan-2 {
+		grid-row: span 2;
+		background: rgba(56, 189, 248, 0.08);
 	}
 
-	.rg-tag {
+	.sg-cell.sg-span-2 {
+		grid-column: span 2;
+		justify-content: center;
+		background: rgba(56, 189, 248, 0.12);
+		color: #93c5fd;
+	}
+
+	.ingest-preserve-tag {
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.54rem;
-		letter-spacing: 0.08em;
-		background: #0202f1;
-		color: #ffffff;
-		padding: 0.18rem 0.45rem;
+		font-size: 0.56rem;
 		font-weight: 700;
+		letter-spacing: 0.1em;
+		color: #34d399;
+	}
+
+	.graphics-specimen-well.ingest-bottom-well {
+		border-bottom: none;
+	}
+
+	.ingest-paper-card {
+		padding: 0.85rem 1.15rem;
 	}
 
 	/* =================================================================================== */
