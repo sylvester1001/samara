@@ -367,9 +367,9 @@
 					</div>
 
 					<div class="bp-header-right">
-						<div class="bp-abstract-label">// EDITORIAL ABSTRACT</div>
+						<div class="bp-abstract-label">// ARCHITECTURE OVERVIEW</div>
 						<p class="bp-abstract-copy">
-							Academic tables deserve the expressive depth of fine print editorial typography—without the friction of raw macro programming. Samara unites direct spreadsheet manipulation with full-spectrum chromatic styling, dual-stream code and graphics output, and universal data ingestion.
+							Visual table engineering with 1:1 code and image symmetry.
 						</p>
 						<div class="bp-header-metrics">
 							<div class="bp-metric-cell">
@@ -396,7 +396,7 @@
 					<div class="bp-spine">
 						<span class="spine-code">02.01</span>
 						<span class="spine-line"></span>
-						<span class="spine-text">PARAMETRIC STYLING &amp; COLORIMETRY</span>
+						<span class="spine-text">PARAMETRIC STYLING</span>
 					</div>
 
 					<!-- 中栏：人文阐述与机能规格列表 -->
@@ -413,26 +413,22 @@
 						</h3>
 
 						<p class="module-lead">
-							Shape multi-tier headers, row highlights, heatmap cell fills, rule weights, and inline mathematical expressions directly on an interactive grid. Every visual refinement translates into publication-grade typography—no manual macro syntax required.
+							Adjust colors, booktabs rules, and math directly on the grid—zero macro syntax required.
 						</p>
 
-						<!-- 硬核规格清单 -->
+						<!-- 规格清单 (与 02.02 统一风格，简明一句) -->
 						<div class="spec-ledger">
 							<div class="ledger-row">
-								<span class="ledger-key">01 / CHROMATIC FILL</span>
-								<span class="ledger-val">Full RGB/HEX row tints &amp; per-cell heatmap shading</span>
+								<span class="ledger-key">01 // CHROMATIC FILL</span>
+								<span class="ledger-val">Custom row tints &amp; per-cell heatmap shading.</span>
 							</div>
 							<div class="ledger-row">
-								<span class="ledger-key">02 / BOOKTABS RULES</span>
-								<span class="ledger-val">Calibrated top, mid, bottom &amp; trimmed <code>\cmidrule(lr)</code></span>
+								<span class="ledger-key">02 // BOOKTABS RULES</span>
+								<span class="ledger-val">Calibrated rules with trimmed <code>\cmidrule(lr)</code>.</span>
 							</div>
 							<div class="ledger-row">
-								<span class="ledger-key">03 / TYPOGRAPHIC HIERARCHY</span>
-								<span class="ledger-val">Bold/underline SOTA markers, alignment &amp; exact pt widths</span>
-							</div>
-							<div class="ledger-row">
-								<span class="ledger-key">04 / NATIVE MATH</span>
-								<span class="ledger-val">Live KaTeX rendering for inline symbols &amp; uncertainty bounds</span>
+								<span class="ledger-key">03 // RICH TYPOGRAPHY</span>
+								<span class="ledger-val">Multi-tier spans, bold/underline &amp; live KaTeX math.</span>
 							</div>
 						</div>
 					</div>
@@ -468,25 +464,6 @@
 								</div>
 							</div>
 
-							<!-- 精密游标卡尺刻度条 -->
-							<div class="cad-caliper-strip">
-								<div class="caliper-col w-arch">
-									<span>├ 145pt // LEFT-ALIGN</span>
-								</div>
-								<div class="caliper-col w-backbone">
-									<span>├ 76pt // CENTER</span>
-								</div>
-								<div class="caliper-col w-metric">
-									<span>├ 88pt // NUM-RIGHT</span>
-								</div>
-								<div class="caliper-col w-metric">
-									<span>├ 88pt // NUM-RIGHT</span>
-								</div>
-								<div class="caliper-col w-loss">
-									<span>├ 92pt // MATH ┤</span>
-								</div>
-							</div>
-
 							<!-- 暖白学术出版纸张画布 (Humanist Editorial Paper Sheet) -->
 							<div
 								class="paper-sheet"
@@ -495,8 +472,8 @@
 								<div class="paper-caption">
 									<span class="caption-bold">Table 1.</span>
 									<span class="caption-serif">
-										Quantitative comparison of vision-language foundation architectures on standard multi-modal benchmarks. Best results are highlighted in
-										<strong class="caption-highlight">tinted bold</strong>, second-best are <u>underlined</u>.
+										Multi-modal benchmark evaluation. Best results in
+										<strong class="caption-highlight">tinted bold</strong>, second-best <u>underlined</u>.
 									</span>
 								</div>
 
@@ -504,51 +481,51 @@
 									<table class="monograph-table">
 										<thead>
 											<tr class="m-toprule">
-												<th rowspan="2" class="m-left">Architecture</th>
-												<th rowspan="2" class="m-center">Params</th>
+												<th rowspan="2" class="m-left m-vbottom">Architecture</th>
+												<th rowspan="2" class="m-center m-vbottom">Params</th>
 												<th colspan="2" class="m-center m-span-head">
-													Zero-Shot Classification (%)
+													Zero-Shot Accuracy (%)
 												</th>
-												<th rowspan="2" class="m-right">
-													Validation Loss (<span class="m-math"><i>L</i><sub>val</sub></span>) ↓
+												<th rowspan="2" class="m-center m-vbottom">
+													Val Loss (<span class="m-math"><i>L</i><sub>val</sub></span>) ↓
 												</th>
 											</tr>
-											<tr class="m-cmidrule">
-												<th class="m-right">ImageNet-1K ↑</th>
-												<th class="m-right">COCO-Retrieval ↑</th>
+											<tr class="m-subhead-row">
+												<th class="m-center">ImageNet-1K ↑</th>
+												<th class="m-center">MS-COCO ↑</th>
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
+											<tr class="m-first-body-row">
 												<td class="m-left m-model">ResNet-101 (Baseline)</td>
 												<td class="m-center m-mono">44.5M</td>
-												<td class="m-right m-mono">77.37</td>
-												<td class="m-right m-mono">58.40</td>
-												<td class="m-right m-mono">0.842 ± 0.015</td>
+												<td class="m-center m-mono">77.37</td>
+												<td class="m-center m-mono">58.40</td>
+												<td class="m-center m-mono">0.842 ± 0.015</td>
 											</tr>
 											<tr>
 												<td class="m-left m-model">ViT-Large / 14</td>
 												<td class="m-center m-mono">304.3M</td>
-												<td class="m-right m-mono"><u>83.12</u></td>
-												<td class="m-right m-mono">64.95</td>
-												<td class="m-right m-mono">0.518 ± 0.009</td>
+												<td class="m-center m-mono"><u>83.12</u></td>
+												<td class="m-center m-mono">64.95</td>
+												<td class="m-center m-mono">0.518 ± 0.009</td>
 											</tr>
 											<tr>
 												<td class="m-left m-model">ConvNeXt-XL</td>
 												<td class="m-center m-mono">350.0M</td>
-												<td class="m-right m-mono">82.89</td>
-												<td class="m-right m-mono cell-sub-shaded"><u>66.18</u></td>
-												<td class="m-right m-mono"><u>0.491 ± 0.007</u></td>
+												<td class="m-center m-mono">82.89</td>
+												<td class="m-center m-mono cell-sub-shaded"><u>66.18</u></td>
+												<td class="m-center m-mono"><u>0.491 ± 0.007</u></td>
 											</tr>
 											<tr class="m-row-tinted">
 												<td class="m-left m-model m-bold">
-													Samara-Former (Ours)
+													<span>Samara-Former (Ours)</span>
 													<span class="sota-pill">SOTA</span>
 												</td>
 												<td class="m-center m-mono m-bold">118.2M</td>
-												<td class="m-right m-mono m-bold cell-peak-shaded">86.45</td>
-												<td class="m-right m-mono m-bold cell-peak-shaded">71.84</td>
-												<td class="m-right m-mono m-bold">0.364 ± 0.004</td>
+												<td class="m-center m-mono m-bold cell-peak-shaded">86.45</td>
+												<td class="m-center m-mono m-bold cell-peak-shaded">71.84</td>
+												<td class="m-center m-mono m-bold">0.364 ± 0.004</td>
 											</tr>
 										</tbody>
 									</table>
@@ -1653,16 +1630,16 @@
 		font-weight: 700;
 		letter-spacing: 0.18em;
 		color: #ff4d00;
-		margin-bottom: 1rem;
+		margin-bottom: 0.6rem;
 	}
 
 	.bp-abstract-copy {
 		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: clamp(1.25rem, 1.05rem + 0.5vw, 1.55rem);
-		line-height: 1.48;
+		font-size: clamp(1.45rem, 1.2rem + 0.6vw, 1.85rem);
+		line-height: 1.3;
 		font-weight: 400;
-		color: rgba(255, 255, 255, 0.88);
-		margin: 0 0 2rem 0;
+		color: rgba(255, 255, 255, 0.92);
+		margin: 0 0 1.6rem 0;
 	}
 
 	.bp-header-metrics {
@@ -1705,7 +1682,7 @@
 	/* ----------------------------------------------------------------------------------- */
 	.bp-module {
 		display: grid;
-		grid-template-columns: 52px minmax(310px, 0.82fr) minmax(0, 1.45fr);
+		grid-template-columns: 48px minmax(380px, 0.88fr) minmax(0, 1.45fr);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 	}
 
@@ -1753,7 +1730,7 @@
 
 	/* 中栏：人文叙述与规格账本 */
 	.bp-narrative {
-		padding: clamp(2.2rem, 3.5vw, 3.5rem);
+		padding: clamp(1.8rem, 2.2vw, 2.4rem);
 		border-right: 1px solid rgba(255, 255, 255, 0.15);
 		display: flex;
 		flex-direction: column;
@@ -1786,12 +1763,13 @@
 
 	.module-title {
 		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: clamp(2.4rem, 1.9rem + 1.1vw, 3.3rem);
+		font-size: clamp(2.5rem, 1.95rem + 1.15vw, 3.35rem);
 		font-weight: 300;
-		line-height: 1.04;
+		line-height: 1.06;
 		letter-spacing: -0.01em;
 		color: #ffffff;
 		margin: 0 0 1.25rem 0;
+		white-space: nowrap;
 	}
 
 	.module-title-italic {
@@ -1801,10 +1779,41 @@
 
 	.module-lead {
 		font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-		font-size: 0.9rem;
-		line-height: 1.68;
+		font-size: 0.88rem;
+		line-height: 1.6;
 		color: rgba(255, 255, 255, 0.68);
-		margin: 0 0 2rem 0;
+		margin: 0 0 1.5rem 0;
+	}
+
+	/* 极简机能规格标签组 (Module 01) */
+	.spec-tag-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.45rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.14);
+	}
+
+	.spec-tag-item {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		padding: 0.48rem 0.7rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.62rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	.tag-dot {
+		width: 5px;
+		height: 5px;
+		background: #0202f1;
+		border: 1px solid #38bdf8;
+		flex-shrink: 0;
 	}
 
 	.spec-ledger {
@@ -1887,7 +1896,7 @@
 		gap: 0.75rem;
 		padding-bottom: 0.85rem;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-		margin-bottom: 0.75rem;
+		margin-bottom: 0.85rem;
 	}
 
 	.chamber-status {
@@ -1955,32 +1964,14 @@
 		display: inline-block;
 	}
 
-	/* 游标卡尺条 */
-	.cad-caliper-strip {
-		display: grid;
-		grid-template-columns: 1.5fr 0.8fr 1fr 1fr 1.1fr;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.54rem;
-		letter-spacing: 0.08em;
-		color: rgba(255, 255, 255, 0.48);
-		padding: 0.25rem 0.4rem;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		margin-bottom: 0.75rem;
-	}
-
-	.caliper-col {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
 	/* 暖白学术出版纸张切面 (Scheme A 核心质感) */
 	.paper-sheet {
 		background: #faf8f3;
 		color: #111318;
-		padding: clamp(1.4rem, 2.2vw, 2.2rem);
+		padding: clamp(1.4rem, 2vw, 2rem);
 		border: 1px solid #d6d1c4;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-feature-settings: "lnum" 1, "tnum" 1;
 		box-shadow:
 			inset 0 0 0 1px rgba(255, 255, 255, 0.6),
 			0 10px 30px rgba(0, 0, 0, 0.35);
@@ -1988,10 +1979,12 @@
 
 	.paper-caption {
 		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: 0.98rem;
-		line-height: 1.45;
+		font-size: 1rem;
+		line-height: 1.4;
 		color: #1e2028;
-		margin-bottom: 1rem;
+		margin-bottom: 0.9rem;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-feature-settings: "lnum" 1, "tnum" 1;
 	}
 
 	.caption-bold {
@@ -2015,34 +2008,64 @@
 		width: 100%;
 		border-collapse: collapse;
 		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: 0.96rem;
+		font-size: 0.98rem;
 		color: #111318;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-feature-settings: "lnum" 1, "tnum" 1;
 	}
 
 	.monograph-table th {
 		font-weight: 600;
-		padding: 0.5rem 0.65rem;
+		padding: 0.48rem 0.7rem;
 		color: #0b0d13;
 		letter-spacing: 0.01em;
+		white-space: nowrap;
 	}
 
 	.monograph-table td {
-		padding: 0.52rem 0.65rem;
+		padding: 0.55rem 0.7rem;
 		color: #1e2430;
+		white-space: nowrap;
+		vertical-align: middle;
 	}
 
+	/* 顶部粗线 \toprule */
 	.m-toprule th {
 		border-top: 2px solid #0b0d13;
 	}
 
+	.m-vbottom {
+		vertical-align: bottom;
+		padding-bottom: 0.52rem !important;
+	}
+
+	/* 局部截断线 \cmidrule(lr){3-4} —— 左右留出 10px 内缩呼吸间隙 */
 	.m-span-head {
-		border-bottom: 1px solid #222630;
+		position: relative;
+		padding-bottom: 0.38rem !important;
 	}
 
-	.m-cmidrule th {
-		border-bottom: 1.2px solid #0b0d13;
+	.m-span-head::after {
+		content: '';
+		position: absolute;
+		left: 10px;
+		right: 10px;
+		bottom: 0;
+		height: 1px;
+		background: #0b0d13;
 	}
 
+	.m-subhead-row th {
+		padding-top: 0.38rem !important;
+		padding-bottom: 0.52rem !important;
+	}
+
+	/* 贯穿全表 5 列的 \midrule */
+	.m-first-body-row td {
+		border-top: 1.4px solid #0b0d13;
+	}
+
+	/* 底部粗线 \bottomrule */
 	.monograph-table tbody tr:last-child td {
 		border-bottom: 2px solid #0b0d13;
 	}
@@ -2053,12 +2076,14 @@
 
 	.m-model {
 		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: 1rem;
+		font-size: 1.02rem;
+		font-variant-numeric: lining-nums tabular-nums;
+		font-feature-settings: "lnum" 1, "tnum" 1;
 	}
 
 	.m-mono {
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.76rem;
+		font-size: 0.78rem;
 		letter-spacing: -0.01em;
 	}
 
@@ -2084,15 +2109,16 @@
 
 	.sota-pill {
 		display: inline-block;
-		margin-left: 0.4rem;
-		padding: 0.08rem 0.35rem;
+		margin-left: 0.45rem;
+		padding: 0.1rem 0.38rem;
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.55rem;
+		font-size: 0.54rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		background: var(--accent-ink);
 		color: #ffffff;
 		vertical-align: middle;
+		line-height: 1.2;
 	}
 
 	.paper-annotations {
