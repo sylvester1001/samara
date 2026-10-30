@@ -247,34 +247,36 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 			<line x1="740" y1="60" x2="740" y2="1020" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="2 6" />
 		</svg>
 
-		<!-- 视口边缘游标卡尺刻度轨 (Typographic Point Caliper Rail) -->
-		<div class="hero-caliper-rail" aria-hidden="true">
-			<div class="caliper-ticks">
-				<span class="c-tick major"><i>00 PT</i></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick mid"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick major"><i>12 PT</i></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick mid"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick major"><i>24 PT</i></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick mid"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick"></span>
-				<span class="c-tick major"><i>36 PT</i></span>
+		<!-- 视口右侧纤细书卷边注 (Slender Editorial Running Margin Note) -->
+		<div class="hero-side-tag" aria-hidden="true">
+			SAMARA <span class="sep">·</span> ACADEMIC TYPESETTING <span class="sep">·</span> MMXXVI
+		</div>
+
+		<!-- 视口底部书卷扉页底标尺 (Editorial Horizon Colophon) -->
+		<div class="hero-bottom-colophon">
+			<div class="colophon-inner">
+				<div class="colophon-specs">
+					<div class="colophon-item">
+						<span class="c-roman">i.</span>
+						<span class="c-label">BOOKTABS &amp; NICEMATRIX SYNTHESIS</span>
+					</div>
+					<span class="colophon-divider" aria-hidden="true">/</span>
+					<div class="colophon-item">
+						<span class="c-roman">ii.</span>
+						<span class="c-label">VECTOR .SVG &amp; 600 DPI RASTER</span>
+					</div>
+					<span class="colophon-divider" aria-hidden="true">/</span>
+					<div class="colophon-item">
+						<span class="c-roman">iii.</span>
+						<span class="c-label">EXCEL, CSV &amp; CLIPBOARD INGESTION</span>
+					</div>
+				</div>
+
+				<a href="#features" class="colophon-scroll-cue">
+					<span class="c-roman">§ 02</span>
+					<span>ARCHITECTURAL SPECIFICATION</span>
+					<span class="cue-arrow">↓</span>
+				</a>
 			</div>
 		</div>
 
@@ -1382,58 +1384,135 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 		user-select: none;
 	}
 
-	/* 4. 视口右侧排印字号游标刻度尺 (Typographic Point Caliper Rail) */
-	.hero-caliper-rail {
-		position: absolute;
-		top: 50%;
-		right: 1.4vw;
-		transform: translateY(-50%);
+	/* 4. 视口右侧纤细书卷边注 (Slender Editorial Running Margin Note) */
+	.hero-side-tag {
 		z-index: 1;
+		writing-mode: vertical-rl;
+		font-family: 'JetBrains Mono', monospace;
+		letter-spacing: 0.32em;
+		color: rgba(255, 255, 255, 0.52);
 		pointer-events: none;
 		user-select: none;
-		display: flex;
-		align-items: center;
-	}
-
-	.caliper-ticks {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		gap: 11px;
-		border-right: 1px solid rgba(255, 255, 255, 0.28);
-		padding: 8px 0;
-	}
-
-	.c-tick {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		position: relative;
-		width: 7px;
-		height: 1px;
-		background: rgba(255, 255, 255, 0.28);
-	}
-
-	.c-tick.mid {
-		width: 13px;
-		background: rgba(255, 255, 255, 0.45);
-	}
-
-	.c-tick.major {
-		width: 20px;
-		background: rgba(255, 255, 255, 0.75);
-	}
-
-	.c-tick.major i {
-		font-style: normal;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 9px;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		color: rgba(255, 255, 255, 0.58);
+		font-size: 11px;
+		font-weight: 500;
 		position: absolute;
-		right: 26px;
-		white-space: nowrap;
+		top: 50%;
+		right: 1.25vw;
+		transform: translateY(-50%);
+	}
+
+	.hero-side-tag .sep {
+		color: rgba(255, 255, 255, 0.85);
+		margin: 4px 0;
+	}
+
+	/* 5. 视口底部书卷扉页底标尺 (Editorial Horizon Colophon) */
+	.hero-bottom-colophon {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: clamp(1.1rem, 2.2vh, 1.85rem);
+		z-index: 2;
+		padding: 0 clamp(2.8rem, 5vw, 5.5rem);
+		box-sizing: border-box;
+	}
+
+	.colophon-inner {
+		max-width: 1600px;
+		margin: 0 auto;
+		padding-top: 0.85rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.18);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		position: relative;
+	}
+
+	/* 左右两端精密裁切刻度短竖线 */
+	.colophon-inner::before,
+	.colophon-inner::after {
+		content: '';
+		position: absolute;
+		top: -4px;
+		width: 1px;
+		height: 7px;
+		background: rgba(255, 255, 255, 0.65);
+	}
+
+	.colophon-inner::before {
+		left: 0;
+	}
+
+	.colophon-inner::after {
+		right: 0;
+	}
+
+	.colophon-specs {
+		display: flex;
+		align-items: baseline;
+		gap: 1.4rem;
+		flex-wrap: wrap;
+	}
+
+	.colophon-item {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.45rem;
+	}
+
+	.c-roman {
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
+		font-style: italic;
+		font-size: 0.95rem;
+		font-weight: 500;
+		color: rgba(255, 255, 255, 0.88);
+		letter-spacing: 0.02em;
+	}
+
+	.c-label {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		letter-spacing: 0.16em;
+		color: rgba(255, 255, 255, 0.52);
+		text-transform: uppercase;
+	}
+
+	.colophon-divider {
+		font-family: 'Cormorant Garamond', Garamond, serif;
+		font-style: italic;
+		font-size: 0.8rem;
+		color: rgba(255, 255, 255, 0.28);
+		user-select: none;
+	}
+
+	.colophon-scroll-cue {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.55rem;
+		text-decoration: none;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		letter-spacing: 0.18em;
+		color: rgba(255, 255, 255, 0.65);
+		transition: color 0.15s;
+	}
+
+	.colophon-scroll-cue:hover {
+		color: #ffffff;
+	}
+
+	.cue-arrow {
+		display: inline-block;
+		animation: 2.4s ease-in-out infinite gentleBob;
+	}
+
+	@keyframes gentleBob {
+		0%, 100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(3px);
+		}
 	}
 
 	.hero-wrapper {
@@ -3066,7 +3145,8 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 		}
 
 		.hide-mobile,
-		.hero-caliper-rail {
+		.hero-side-tag,
+		.hero-bottom-colophon {
 			display: none;
 		}
 	}
