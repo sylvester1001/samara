@@ -182,7 +182,7 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
-		href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+		href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 		rel="stylesheet"
 	/>
 </svelte:head>
@@ -233,145 +233,191 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 	<!-- =================================================================================== -->
 	<!-- HERO (方案 B: 40% 左侧排印与下载中枢 / 60% 右侧真实高清 UI 战术展台)                 -->
 	<!-- =================================================================================== -->
-	<section id="hero" class="hero-wrapper">
-		<div class="hero-meta-bar">
-			<span>LOC: 31°14'N // LNG: 121°28'E // ARCHIVE SPEC: 2026-LATEX</span>
-			<span class="hide-mobile">PRECISION WORKSTATION // 100% LOCAL COMPUTE</span>
+	<section id="hero" class="hero-section">
+		<!-- Samara 原创排印几何与游标刻度空间层 (pointer-events: none) -->
+		<div class="hero-watermark" aria-hidden="true">samara</div>
+		<div class="hero-grid" aria-hidden="true"></div>
+
+		<!-- 极细直角排印基准构造线 (Orthogonal Typographic Datum Lines) -->
+		<svg class="hero-datum-svg" viewBox="0 0 1920 1080" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+			<!-- 顶部与底部贯穿式极细排印基线 -->
+			<line x1="0" y1="112" x2="1920" y2="112" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="4 8" />
+			<line x1="0" y1="968" x2="1920" y2="968" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="4 8" />
+			<!-- 纵向直角分割基准虚线 -->
+			<line x1="740" y1="60" x2="740" y2="1020" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="2 6" />
+		</svg>
+
+		<!-- 视口边缘游标卡尺刻度轨 (Typographic Point Caliper Rail) -->
+		<div class="hero-caliper-rail" aria-hidden="true">
+			<div class="caliper-ticks">
+				<span class="c-tick major"><i>00 PT</i></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick mid"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick major"><i>12 PT</i></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick mid"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick major"><i>24 PT</i></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick mid"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick"></span>
+				<span class="c-tick major"><i>36 PT</i></span>
+			</div>
 		</div>
 
-		<div class="hero-columns">
-			<!-- 左栏：修长先锋大标题与下载通道 -->
-			<div class="hero-left">
-				<div class="hero-pill">
-					<span class="pulse-dot"></span>
-					<span>PRECISION ACADEMIC TYPESETTING</span>
-				</div>
-
-				<h1 class="hero-title">
-					The Rigor<br />
-					of&nbsp;Academics.<br />
-					<span class="title-italic">The Precision</span><br />
-					of&nbsp;Machinery.
-				</h1>
-
-				<div class="actions-group">
-					<!-- 主下载按钮组 -->
-					<div class="btn-row">
-						<a
-							href="https://github.com/sylvester1001/samara/releases"
-							target="_blank"
-							rel="noreferrer"
-							class="primary-download-btn"
-						>
-							{#if detectedOS === 'macos'}
-								{@render appleIcon('size-5')}
-								<span>Download for macOS</span>
-							{:else if detectedOS === 'linux'}
-								{@render linuxIcon('size-5')}
-								<span>Download for Linux</span>
-							{:else}
-								{@render windowsIcon('size-5')}
-								<span>Download for Windows</span>
-							{/if}
-						</a>
-
-						<a href="/" class="secondary-web-btn">
-							<span>Launch Web Terminal</span>
-							<ArrowRight class="size-3.5 opacity-80" />
-						</a>
-					</div>
-
-					<!-- 终端安装命令行盒 -->
-					<div class="terminal-deck">
-						<div class="terminal-header-meta">
-							<span>// INSTALL VIA TERMINAL</span>
-							<span>{osLabels[activeTerminalTab].ext}</span>
-						</div>
-
-						<div class="terminal-box">
-							<div class="terminal-tabs">
-								<button
-									type="button"
-									class="term-tab {activeTerminalTab === 'macos' ? 'active' : ''}"
-									onclick={() => (activeTerminalTab = 'macos')}
-								>
-									macOS
-								</button>
-								<button
-									type="button"
-									class="term-tab border-l {activeTerminalTab === 'linux' ? 'active' : ''}"
-									onclick={() => (activeTerminalTab = 'linux')}
-								>
-									Linux
-								</button>
-								<button
-									type="button"
-									class="term-tab border-l {activeTerminalTab === 'windows' ? 'active' : ''}"
-									onclick={() => (activeTerminalTab = 'windows')}
-								>
-									Windows
-								</button>
-							</div>
-
-							<div class="terminal-body">
-								<code class="terminal-code">
-									{terminalCommands[activeTerminalTab]}
-								</code>
-								<button
-									type="button"
-									class="copy-btn"
-									onclick={handleCopyCommand}
-									title="Copy Command"
-									aria-label="Copy Command"
-								>
-									{#if copied}
-										<Check class="size-3.5 stroke-[2.5]" />
-									{:else}
-										<Copy class="size-3.5 stroke-[2.2]" />
-									{/if}
-								</button>
-							</div>
-						</div>
-
-						<div class="terminal-footer-meta">
-							<ShieldCheck class="size-3 opacity-60" />
-							<span>SHA-256 VERIFIED // ZERO TELEMETRY // 100% LOCAL</span>
-						</div>
-					</div>
-				</div>
+		<div class="hero-wrapper">
+			<div class="hero-meta-bar">
+				<span>LOC: 31°14'N // LNG: 121°28'E // ARCHIVE SPEC: 2026-LATEX</span>
+				<span class="hide-mobile">PRECISION WORKSTATION // 100% LOCAL COMPUTE</span>
 			</div>
 
-			<!-- 右栏：真实软件高清截图战术展台 -->
-			<div class="hero-right">
-				<div class="tactical-stage">
-					<!-- 四角取景器切角标定 (明日方舟 Crop Marks) -->
-					<div class="corner-mark top-left"></div>
-					<div class="corner-mark top-right"></div>
-					<div class="corner-mark bottom-left"></div>
-					<div class="corner-mark bottom-right"></div>
-
-					<!-- 顶部标尺 -->
-					<div class="stage-scale-top">
-						<span>⌜ 000 // TACTICAL VIEWPORT</span>
-						<span class="scale-title">SAMARA ACADEMIC ENGINE</span>
-						<span>1024 ⌝</span>
+			<div class="hero-columns">
+				<!-- 左栏：修长先锋大标题与下载通道 -->
+				<div class="hero-left">
+					<div class="hero-pill">
+						<span class="pulse-dot"></span>
+						<span>PRECISION ACADEMIC TYPESETTING</span>
 					</div>
 
-					<!-- 真实产品截图 -->
-					<div class="screenshot-container">
-						<img
-							src="/samara-ui-preview.png"
-							alt="Samara Academic Table Editor Interface"
-							class="preview-img"
-							draggable="false"
-						/>
-					</div>
+					<h1 class="hero-title">
+						The Rigor<br />
+						of&nbsp;Academics.<br />
+						<span class="title-italic">The Precision</span><br />
+						of&nbsp;Machinery.
+					</h1>
 
-					<!-- 底部状态标定 -->
-					<div class="stage-scale-bottom">
-						<span>⌞ ARCHIVE: V1.2.0</span>
-						<span>● LIVE INTERFACE PREVIEW</span>
-						<span>STATUS: READY ⌟</span>
+					<div class="actions-group">
+						<!-- 主下载按钮组 -->
+						<div class="btn-row">
+							<a
+								href="https://github.com/sylvester1001/samara/releases"
+								target="_blank"
+								rel="noreferrer"
+								class="primary-download-btn"
+							>
+								{#if detectedOS === 'macos'}
+									{@render appleIcon('size-5')}
+									<span>Download for macOS</span>
+								{:else if detectedOS === 'linux'}
+									{@render linuxIcon('size-5')}
+									<span>Download for Linux</span>
+								{:else}
+									{@render windowsIcon('size-5')}
+									<span>Download for Windows</span>
+								{/if}
+							</a>
+
+							<a href="/" class="secondary-web-btn">
+								<span>Launch Web Terminal</span>
+								<ArrowRight class="size-3.5 opacity-80" />
+							</a>
+						</div>
+
+						<!-- 终端安装命令行盒 -->
+						<div class="terminal-deck">
+							<div class="terminal-header-meta">
+								<span>// INSTALL VIA TERMINAL</span>
+								<span>{osLabels[activeTerminalTab].ext}</span>
+							</div>
+
+							<div class="terminal-box">
+								<div class="terminal-tabs">
+									<button
+										type="button"
+										class="term-tab {activeTerminalTab === 'macos' ? 'active' : ''}"
+										onclick={() => (activeTerminalTab = 'macos')}
+									>
+										macOS
+									</button>
+									<button
+										type="button"
+										class="term-tab border-l {activeTerminalTab === 'linux' ? 'active' : ''}"
+										onclick={() => (activeTerminalTab = 'linux')}
+									>
+										Linux
+									</button>
+									<button
+										type="button"
+										class="term-tab border-l {activeTerminalTab === 'windows' ? 'active' : ''}"
+										onclick={() => (activeTerminalTab = 'windows')}
+									>
+										Windows
+									</button>
+								</div>
+
+								<div class="terminal-body">
+									<code class="terminal-code">
+										{terminalCommands[activeTerminalTab]}
+									</code>
+									<button
+										type="button"
+										class="copy-btn"
+										onclick={handleCopyCommand}
+										title="Copy Command"
+										aria-label="Copy Command"
+									>
+										{#if copied}
+											<Check class="size-3.5 stroke-[2.5]" />
+										{:else}
+											<Copy class="size-3.5 stroke-[2.2]" />
+										{/if}
+									</button>
+								</div>
+							</div>
+
+							<div class="terminal-footer-meta">
+								<ShieldCheck class="size-3 opacity-60" />
+								<span>SHA-256 VERIFIED // ZERO TELEMETRY // 100% LOCAL</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 右栏：真实软件高清截图战术展台 -->
+				<div class="hero-right">
+					<div class="tactical-stage">
+						<!-- 四角取景器切角标定 (明日方舟 Crop Marks) -->
+						<div class="corner-mark top-left"></div>
+						<div class="corner-mark top-right"></div>
+						<div class="corner-mark bottom-left"></div>
+						<div class="corner-mark bottom-right"></div>
+
+						<!-- 顶部标尺 -->
+						<div class="stage-scale-top">
+							<span>⌜ 000 // TACTICAL VIEWPORT</span>
+							<span class="scale-title">SAMARA ACADEMIC ENGINE</span>
+							<span>1024 ⌝</span>
+						</div>
+
+						<!-- 真实产品截图 -->
+						<div class="screenshot-container">
+							<img
+								src="/samara-ui-preview.png"
+								alt="Samara Academic Table Editor Interface"
+								class="preview-img"
+								draggable="false"
+							/>
+						</div>
+
+						<!-- 底部状态标定 -->
+						<div class="stage-scale-bottom">
+							<span>⌞ ARCHIVE: V1.2.0</span>
+							<span>● LIVE INTERFACE PREVIEW</span>
+							<span>STATUS: READY ⌟</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -1115,7 +1161,7 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 </div>
 
 <style>
-	@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 	/* 强制恢复全局滚动 */
 	:global(html),
@@ -1269,12 +1315,134 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 	}
 
 	/* HERO */
+	.hero-section {
+		position: relative;
+		width: 100%;
+		min-height: calc(100vh - 64px);
+		display: flex;
+		align-items: center;
+		overflow: hidden;
+		background: #0202f1;
+	}
+
+	/* 1. 巨型镂空衬线斜体描边背景水印 (Cormorant Garamond Lowercase Italic Hollow Watermark) */
+	.hero-watermark {
+		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
+		font-style: italic;
+		font-weight: 300;
+		letter-spacing: 0.01em;
+		color: #0202f1;
+		-webkit-text-stroke: 3px rgba(255, 255, 255, 0.13);
+		paint-order: stroke fill;
+		white-space: nowrap;
+		pointer-events: none;
+		user-select: none;
+		z-index: 0;
+		font-size: clamp(280px, 38vw, 680px);
+		line-height: 0.78;
+		position: absolute;
+		top: clamp(-110px, -5.8vw, -55px);
+		left: 50%;
+		animation: 30s ease-in-out infinite alternate wmDrift;
+		-webkit-mask-image: linear-gradient(90deg, #000 46%, transparent 86%);
+		mask-image: linear-gradient(90deg, #000 46%, transparent 86%);
+	}
+
+	@keyframes wmDrift {
+		0% {
+			transform: translate(calc(-50% - 2.2vw));
+		}
+		100% {
+			transform: translate(calc(-50% + 2.2vw));
+		}
+	}
+
+	/* 2. 带径向遮罩的中心坐标暗格 (cindy.app .hero-grid) */
+	.hero-grid {
+		pointer-events: none;
+		z-index: 0;
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+		background-size: 56px 56px;
+		position: absolute;
+		inset: 0;
+		-webkit-mask-image: radial-gradient(75% 62% at 50% 44%, #000 25%, transparent 74%);
+		mask-image: radial-gradient(75% 62% at 50% 44%, #000 25%, transparent 74%);
+	}
+
+	/* 3. 瑞士排印基准线与圆规构造几何层 (Swiss Typographic Datum & Compass SVG) */
+	.hero-datum-svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+		pointer-events: none;
+		user-select: none;
+	}
+
+	/* 4. 视口右侧排印字号游标刻度尺 (Typographic Point Caliper Rail) */
+	.hero-caliper-rail {
+		position: absolute;
+		top: 50%;
+		right: 1.4vw;
+		transform: translateY(-50%);
+		z-index: 1;
+		pointer-events: none;
+		user-select: none;
+		display: flex;
+		align-items: center;
+	}
+
+	.caliper-ticks {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 11px;
+		border-right: 1px solid rgba(255, 255, 255, 0.28);
+		padding: 8px 0;
+	}
+
+	.c-tick {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		position: relative;
+		width: 7px;
+		height: 1px;
+		background: rgba(255, 255, 255, 0.28);
+	}
+
+	.c-tick.mid {
+		width: 13px;
+		background: rgba(255, 255, 255, 0.45);
+	}
+
+	.c-tick.major {
+		width: 20px;
+		background: rgba(255, 255, 255, 0.75);
+	}
+
+	.c-tick.major i {
+		font-style: normal;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 9px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.58);
+		position: absolute;
+		right: 26px;
+		white-space: nowrap;
+	}
+
 	.hero-wrapper {
-		max-width: 1600px;
+		position: relative;
+		z-index: 2;
+		max-width: calc(1600px + 2 * clamp(2.8rem, 5vw, 5.5rem));
 		margin: 0 auto;
 		width: 100%;
 		padding: clamp(2rem, 3vh, 3.5rem) clamp(2.8rem, 5vw, 5.5rem) clamp(3rem, 5vh, 5rem);
-		min-height: calc(100vh - 64px);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -1296,9 +1464,9 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 
 	.hero-columns {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.48fr);
 		align-items: center;
-		gap: clamp(1.2rem, 1.8vw, 2rem);
+		gap: clamp(2rem, 3vw, 3.5rem);
 		width: 100%;
 		box-sizing: border-box;
 	}
@@ -1632,7 +1800,7 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 	}
 
 	.spec-container {
-		max-width: 1600px;
+		max-width: calc(1600px + 2 * clamp(2.8rem, 5vw, 5.5rem));
 		margin: 0 auto;
 		padding: 4.5rem clamp(2.8rem, 5vw, 5.5rem) 0;
 		box-sizing: border-box;
@@ -2771,7 +2939,7 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		max-width: 1600px;
+		max-width: calc(1600px + 2 * clamp(2.8rem, 5vw, 5.5rem));
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
@@ -2897,7 +3065,8 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 			grid-template-columns: 1fr 1fr;
 		}
 
-		.hide-mobile {
+		.hide-mobile,
+		.hero-caliper-rail {
 			display: none;
 		}
 	}
