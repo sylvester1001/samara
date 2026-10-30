@@ -424,11 +424,15 @@
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">02 // BOOKTABS RULES</span>
-								<span class="ledger-val">Calibrated rules with trimmed <code>\cmidrule(lr)</code>.</span>
+								<span class="ledger-val">Calibrated weights with trimmed <code>\cmidrule(lr)</code>.</span>
 							</div>
 							<div class="ledger-row">
-								<span class="ledger-key">03 // RICH TYPOGRAPHY</span>
-								<span class="ledger-val">Multi-tier spans, bold/underline &amp; live KaTeX math.</span>
+								<span class="ledger-key">03 // MULTI-TIER SPANS</span>
+								<span class="ledger-val">Merged headers, bold, italic &amp; underline formatting.</span>
+							</div>
+							<div class="ledger-row">
+								<span class="ledger-key">04 // NATIVE KATEX MATH</span>
+								<span class="ledger-val">Live inline formulas &amp; uncertainty bounds.</span>
 							</div>
 						</div>
 					</div>
@@ -518,10 +522,7 @@
 												<td class="m-center m-mono"><u>0.491 ± 0.007</u></td>
 											</tr>
 											<tr class="m-row-tinted">
-												<td class="m-left m-model m-bold">
-													<span>Samara-Former (Ours)</span>
-													<span class="sota-pill">SOTA</span>
-												</td>
+												<td class="m-left m-model m-bold">Samara-Former (Ours)</td>
 												<td class="m-center m-mono m-bold">118.2M</td>
 												<td class="m-center m-mono m-bold cell-peak-shaded">86.45</td>
 												<td class="m-center m-mono m-bold cell-peak-shaded">71.84</td>
@@ -1730,11 +1731,11 @@
 
 	/* 中栏：人文叙述与规格账本 */
 	.bp-narrative {
-		padding: clamp(1.8rem, 2.2vw, 2.4rem);
+		padding: clamp(2rem, 2.5vw, 2.8rem);
 		border-right: 1px solid rgba(255, 255, 255, 0.15);
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
+		justify-content: center;
 	}
 
 	.module-kicker {
@@ -1780,54 +1781,22 @@
 	.module-lead {
 		font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 		font-size: 0.88rem;
-		line-height: 1.6;
+		line-height: 1.62;
 		color: rgba(255, 255, 255, 0.68);
-		margin: 0 0 1.5rem 0;
-	}
-
-	/* 极简机能规格标签组 (Module 01) */
-	.spec-tag-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.45rem;
-		padding-top: 1.25rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.14);
-	}
-
-	.spec-tag-item {
-		display: flex;
-		align-items: center;
-		gap: 0.55rem;
-		padding: 0.48rem 0.7rem;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.62rem;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		color: rgba(255, 255, 255, 0.85);
-	}
-
-	.tag-dot {
-		width: 5px;
-		height: 5px;
-		background: #0202f1;
-		border: 1px solid #38bdf8;
-		flex-shrink: 0;
+		margin: 0 0 1.8rem 0;
 	}
 
 	.spec-ledger {
 		border-top: 1px solid rgba(255, 255, 255, 0.15);
 		display: flex;
 		flex-direction: column;
-		margin-top: auto;
 	}
 
 	.ledger-row {
 		display: flex;
 		flex-direction: column;
-		gap: 0.22rem;
-		padding: 0.75rem 0;
+		gap: 0.26rem;
+		padding: 0.9rem 0;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
