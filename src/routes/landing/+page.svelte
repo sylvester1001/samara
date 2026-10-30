@@ -7,6 +7,9 @@
 		ShieldCheck,
 		ArrowRight
 	} from 'lucide-svelte';
+	import { renderLatex } from '$lib/utils/katex';
+	import 'katex/dist/katex.min.css';
+	import '$lib/styles/computer-modern.css';
 
 	type OSType = 'windows' | 'macos' | 'linux';
 	let detectedOS = $state<OSType>('windows');
@@ -17,6 +20,9 @@
 	// Subtle, non-intrusive palette preset switcher for Specimen 01 & 02
 	type PaletteKey = 'klein' | 'sage' | 'ochre';
 	let activePalette = $state<PaletteKey>('klein');
+	let showFullTex = $state(false);
+	let copiedTex = $state(false);
+	let copyTexTimeout: ReturnType<typeof setTimeout>;
 
 	const palettes: Record<
 		PaletteKey,
@@ -107,6 +113,43 @@
 			clearTimeout(copyTimeout);
 			copyTimeout = setTimeout(() => {
 				copied = false;
+			}, 2000);
+		}
+	}
+
+	function handleCopyTexDemo() {
+		const p = palettes[activePalette];
+		const subHex = p.cellSub.replace('#', '');
+		const rowHex = p.rowTint.replace('#', '');
+		const peakHex = p.cellPeak.replace('#', '');
+		const tex = `% Required preamble: \\usepackage{booktabs, nicematrix, xcolor}
+\\begin{table}[h]
+\\centering
+\\renewcommand{\\arraystretch}{1.33}
+\\setlength{\\aboverulesep}{0pt} \\setlength{\\belowrulesep}{0pt}
+\\begin{NiceTabular}{>{\\raggedright\\arraybackslash}m{135pt}>{\\centering\\arraybackslash}m{95pt}>{\\centering\\arraybackslash}m{85pt}>{\\centering\\arraybackslash}m{85pt}>{\\raggedleft\\arraybackslash}m{85pt}}
+\\CodeBefore
+  \\cellcolor[HTML]{${subHex}}{4-4}
+  \\rowcolor[HTML]{${rowHex}}{5}
+  \\cellcolor[HTML]{${peakHex}}{5-3} \\cellcolor[HTML]{${peakHex}}{5-4}
+\\Body
+\\toprule
+\\multirow{2}{*}{\\textbf{Method}} & \\multirow{2}{*}{\\textbf{Complexity}} & \\multicolumn{2}{c}{\\textbf{Zero-Shot Evaluation}} & \\multirow{2}{*}{\\textbf{Loss ($\\mathcal{L}_{\\text{reg}} \\downarrow$)}} \\\\
+\\cmidrule(lr){3-4}
+ &  & \\textbf{ImageNet-1K ($\\uparrow$)} & \\textbf{MS-COCO ($\\uparrow$)} &  \\\\
+\\midrule
+ResNet-101 & $\\mathcal{O}(N^2)$ & 77.37\\% & 58.40\\% & $0.84 \\pm 0.02$ \\\\
+ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.52 \\pm 0.01$ \\\\
+\\textbf{Samara-Former} & \\textbf{$\\mathcal{O}(N)$} & \\textbf{86.45\\%} & \\textbf{71.84\\%} & \\textbf{$0.36 \\pm 0.01$} \\\\
+\\bottomrule
+\\end{NiceTabular}
+\\end{table}`;
+		if (navigator.clipboard) {
+			navigator.clipboard.writeText(tex);
+			copiedTex = true;
+			clearTimeout(copyTexTimeout);
+			copyTexTimeout = setTimeout(() => {
+				copiedTex = false;
 			}, 2000);
 		}
 	}
@@ -428,7 +471,7 @@
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">03 // MULTI-TIER SPANS</span>
-								<span class="ledger-val">Merged headers, bold, italic &amp; underline formatting.</span>
+								<span class="ledger-val">Merged headers, bold, italic &amp; text color formatting.</span>
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">04 // NATIVE KATEX MATH</span>
@@ -477,7 +520,7 @@
 									<span class="caption-bold">Table 1.</span>
 									<span class="caption-serif">
 										Multi-modal benchmark evaluation. Best results in
-										<strong class="caption-highlight">tinted bold</strong>, second-best <u>underlined</u>.
+										<strong class="caption-highlight">tinted bold</strong>, second-best in <i>italics</i>.
 									</span>
 								</div>
 
@@ -485,48 +528,48 @@
 									<table class="monograph-table">
 										<thead>
 											<tr class="m-toprule">
-												<th rowspan="2" class="m-left m-vbottom">Architecture</th>
-												<th rowspan="2" class="m-center m-vbottom">Params</th>
+												<th rowspan="2" class="m-left m-vmiddle">Architecture</th>
+												<th rowspan="2" class="m-center m-vmiddle">{@html renderLatex('Params ($\\theta$)')}</th>
 												<th colspan="2" class="m-center m-span-head">
 													Zero-Shot Accuracy (%)
 												</th>
-												<th rowspan="2" class="m-center m-vbottom">
-													Val Loss (<span class="m-math"><i>L</i><sub>val</sub></span>) ↓
+												<th rowspan="2" class="m-center m-vmiddle">
+													{@html renderLatex('Val Loss ($\\mathcal{L}_{\\text{val}} \\downarrow$)')}
 												</th>
 											</tr>
 											<tr class="m-subhead-row">
-												<th class="m-center">ImageNet-1K ↑</th>
-												<th class="m-center">MS-COCO ↑</th>
+												<th class="m-center">{@html renderLatex('ImageNet-1K ($\\uparrow$)')}</th>
+												<th class="m-center">{@html renderLatex('MS-COCO ($\\uparrow$)')}</th>
 											</tr>
 										</thead>
 										<tbody>
 											<tr class="m-first-body-row">
-												<td class="m-left m-model">ResNet-101 (Baseline)</td>
-												<td class="m-center m-mono">44.5M</td>
-												<td class="m-center m-mono">77.37</td>
-												<td class="m-center m-mono">58.40</td>
-												<td class="m-center m-mono">0.842 ± 0.015</td>
+												<td class="m-left">ResNet-101 (Baseline)</td>
+												<td class="m-center">{@html renderLatex('$44.5 \\times 10^6$')}</td>
+												<td class="m-center">77.37</td>
+												<td class="m-center">58.40</td>
+												<td class="m-center">{@html renderLatex('$0.842 \\pm 0.015$')}</td>
 											</tr>
 											<tr>
-												<td class="m-left m-model">ViT-Large / 14</td>
-												<td class="m-center m-mono">304.3M</td>
-												<td class="m-center m-mono"><u>83.12</u></td>
-												<td class="m-center m-mono">64.95</td>
-												<td class="m-center m-mono">0.518 ± 0.009</td>
+												<td class="m-left">ViT-Large / 14</td>
+												<td class="m-center">{@html renderLatex('$304.3 \\times 10^6$')}</td>
+												<td class="m-center"><i>83.12</i></td>
+												<td class="m-center">64.95</td>
+												<td class="m-center">{@html renderLatex('$0.518 \\pm 0.009$')}</td>
 											</tr>
 											<tr>
-												<td class="m-left m-model">ConvNeXt-XL</td>
-												<td class="m-center m-mono">350.0M</td>
-												<td class="m-center m-mono">82.89</td>
-												<td class="m-center m-mono cell-sub-shaded"><u>66.18</u></td>
-												<td class="m-center m-mono"><u>0.491 ± 0.007</u></td>
+												<td class="m-left">ConvNeXt-XL</td>
+												<td class="m-center">{@html renderLatex('$350.0 \\times 10^6$')}</td>
+												<td class="m-center">82.89</td>
+												<td class="m-center cell-sub-shaded"><i>66.18</i></td>
+												<td class="m-center"><i>{@html renderLatex('$0.491 \\pm 0.007$')}</i></td>
 											</tr>
 											<tr class="m-row-tinted">
-												<td class="m-left m-model m-bold">Samara-Former (Ours)</td>
-												<td class="m-center m-mono m-bold">118.2M</td>
-												<td class="m-center m-mono m-bold cell-peak-shaded">86.45</td>
-												<td class="m-center m-mono m-bold cell-peak-shaded">71.84</td>
-												<td class="m-center m-mono m-bold">0.364 ± 0.004</td>
+												<td class="m-left m-bold">Samara-Former (Ours)</td>
+												<td class="m-center m-bold">{@html renderLatex('$\\mathbf{118.2 \\times 10^6}$')}</td>
+												<td class="m-center m-bold cell-peak-shaded">86.45</td>
+												<td class="m-center m-bold cell-peak-shaded">71.84</td>
+												<td class="m-center m-bold">{@html renderLatex('$\\mathbf{0.364 \\pm 0.004}$')}</td>
 											</tr>
 										</tbody>
 									</table>
@@ -588,163 +631,214 @@
 						</h3>
 
 						<p class="module-lead">
-							Whether submitting source files to an academic journal or embedding crisp figures into slides, Word documents, or posters—Samara outputs both streams from the exact same visual state with zero metric or chromatic drift.
+							Export compiler-ready LaTeX source or high-resolution images from the exact same canvas—zero metric or chromatic drift.
 						</p>
 
 						<div class="spec-ledger">
 							<div class="ledger-row">
 								<span class="ledger-key">STREAM A // NATIVE .TEX</span>
-								<span class="ledger-val">Auto-synthesizes <code>\definecolor</code>, <code>\rowcolor</code>, <code>\cellcolor</code> &amp; <code>booktabs</code></span>
+								<span class="ledger-val">Synthesizes <code>NiceTabular</code>, <code>\CodeBefore</code> colors &amp; <code>booktabs</code>.</span>
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">STREAM B // VECTOR .SVG</span>
-								<span class="ledger-val">Resolution-independent Bézier curves for Illustrator, Figma &amp; Keynote</span>
+								<span class="ledger-val">Infinite-scale curves for Illustrator, Figma &amp; Keynote.</span>
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">STREAM C // RETINA .PNG / .JPG</span>
-								<span class="ledger-val">Up to 600 DPI raster export with transparent or paper-white canvas</span>
+								<span class="ledger-val">Up to 600 DPI export with transparent or paper-white canvas.</span>
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">STREAM D // CLIPBOARD BUS</span>
-								<span class="ledger-val">One-click instant copy directly into PowerPoint, Word, or Overleaf</span>
+								<span class="ledger-val">One-click instant copy straight into Word, PPT or Overleaf.</span>
 							</div>
+						</div>
+
+						<!-- 底部导言区宏包环境卡片（与右侧 BAY B 代码舱对应） -->
+						<div class="preamble-spec-box">
+							<div class="preamble-spec-head">
+								<span class="preamble-spec-label">REQUIRED PREAMBLE // .TEX HEADER</span>
+								<span class="preamble-spec-status">OVERLEAF · ARXIV · TEXLIVE</span>
+							</div>
+							<code class="preamble-spec-code">\usepackage&#123;booktabs, nicematrix, xcolor&#125;</code>
 						</div>
 					</div>
 
-					<!-- 右栏：双擎工业分流舱 (左：带颜色宏的完整 LaTeX 代码 / 右：多格式高清图片矩阵) -->
+					<!-- 右栏：上下叠放的双擎工业分流舱 (上：渲染表格图像与多格式矩阵 / 下：1:1 对应的真实 Samara LaTeX 代码) -->
 					<div class="bp-stage">
-						<div class="manifold-grid">
-							<!-- 引擎舱 A：全样式原生 LaTeX 代码流 -->
-							<div class="manifold-bay bay-code">
-								<div class="bay-header">
-									<div class="bay-title-group">
-										<span class="bay-id">BAY A</span>
-										<span class="bay-name">COMPILER-READY .TEX STREAM</span>
-									</div>
-									<span class="bay-badge">OVERLEAF &amp; ARXIV READY</span>
-								</div>
-
-								<div class="bay-code-viewport">
-									<pre><code><span class="c-dim">% Auto-generated chromatic &amp; booktabs definitions</span>
-<span class="c-kw">\usepackage</span>&#123;booktabs, multirow, colortbl, xcolor&#125;
-<span class="c-hl">{palettes[activePalette].texColorDef}</span>
-<span class="c-hl">\definecolor&#123;samaraPeak&#125;&#123;HTML&#125;&#123;{palettes[activePalette].cellPeak.replace('#', '')}&#125;</span>
-
-<span class="c-kw">\begin</span>&#123;tabular&#125;&#123;l c r r r&#125;
-  <span class="c-macro">\toprule</span>
-  <span class="c-kw">\multirow</span>&#123;2&#125;*&#123;\textbf&#123;Architecture&#125;&#125; &amp; \multirow&#123;2&#125;*&#123;\textbf&#123;Params&#125;&#125; &amp;
-  <span class="c-kw">\multicolumn</span>&#123;2&#125;&#123;c&#125;&#123;\textbf&#123;Zero-Shot (%)&#125;&#125; &amp; \textbf&#123;Loss&#125; \\
-  <span class="c-macro">\cmidrule(lr)&#123;3-4&#125;</span>
-   &amp; &amp; \textbf&#123;IN-1K&#125; &amp; \textbf&#123;COCO&#125; &amp; $\mathcal&#123;L&#125;_\text&#123;val&#125;$ \\
-  <span class="c-macro">\midrule</span>
-  ResNet-101 &amp; 44.5M &amp; 77.37 &amp; 58.40 &amp; 0.842 \\
-  ViT-Large/14 &amp; 304.3M &amp; \underline&#123;83.12&#125; &amp; 64.95 &amp; 0.518 \\
-  <span class="c-row-active">{palettes[activePalette].texRowMacro} \textbf&#123;Samara-Former&#125; &amp; \textbf&#123;118.2M&#125; &amp; {palettes[activePalette].texCellMacro}\textbf&#123;86.45&#125; &amp; {palettes[activePalette].texCellMacro}\textbf&#123;71.84&#125; &amp; \textbf&#123;0.364&#125; \\</span>
-  <span class="c-macro">\bottomrule</span>
-<span class="c-kw">\end</span>&#123;tabular&#125;</code></pre>
-								</div>
-
-								<div class="bay-footer">
-									<span>✓ ZERO HAND-WRITTEN MACROS</span>
-									<span>SYNCED WITH PALETTE: {palettes[activePalette].code}</span>
-								</div>
-							</div>
-
-							<!-- 中央等位连接母线 -->
-							<div class="manifold-conduit">
-								<div class="conduit-rail"></div>
-								<div class="conduit-node">
-									<span class="node-eq">1:1</span>
-									<span class="node-lbl">SYMMETRY</span>
-								</div>
-								<div class="conduit-rail"></div>
-							</div>
-
-							<!-- 引擎舱 B：多格式出版级图像导出矩阵 -->
+						<div class="manifold-stack">
+							<!-- 顶舱 BAY A：多格式出版级图像导出 + 完整可视化表格预览 -->
 							<div class="manifold-bay bay-graphics">
 								<div class="bay-header">
 									<div class="bay-title-group">
-										<span class="bay-id">BAY B</span>
-										<span class="bay-name">MULTI-FORMAT GRAPHICS BAY</span>
+										<span class="bay-id">BAY A</span>
+										<span class="bay-name">VISUAL GRAPHICS OUTPUT (.SVG / .PNG / .JPG / CLIPBOARD)</span>
 									</div>
-									<span class="bay-badge orange">NO LATEX REQUIRED</span>
+									<span class="bay-badge orange">600 DPI &amp; VECTOR READY</span>
 								</div>
 
-								<!-- 光学透明网格上的高定图像卡片预览 -->
+								<!-- 光学透明网格上的真实渲染表格图像 -->
 								<div class="graphics-specimen-well">
-									<div class="checkerboard-label">OPTICAL ALPHA &amp; VECTOR LAYER PREVIEW</div>
 									<div
 										class="rendered-image-card"
-										style="--row-tint: {palettes[activePalette].rowTint}; --cell-peak: {palettes[activePalette].cellPeak}; --accent-ink: {palettes[activePalette].accentHex};"
+										style="--row-tint: {palettes[activePalette].rowTint}; --cell-peak: {palettes[activePalette].cellPeak}; --cell-sub: {palettes[activePalette].cellSub};"
 									>
-										<!-- 矢量锚点装饰 -->
+										<!-- 四角矢量锚点装饰 -->
 										<span class="vec-node tl"></span>
 										<span class="vec-node tr"></span>
 										<span class="vec-node bl"></span>
 										<span class="vec-node br"></span>
 
-										<div class="img-mini-rule thick"></div>
-										<div class="img-mini-row head">
-											<span>Architecture</span>
-											<span class="text-right">IN-1K</span>
-											<span class="text-right">COCO</span>
-											<span class="text-right">Loss ↓</span>
-										</div>
-										<div class="img-mini-rule thin"></div>
-										<div class="img-mini-row">
-											<span>ViT-Large / 14</span>
-											<span class="text-right"><u>83.12</u></span>
-											<span class="text-right">64.95</span>
-											<span class="text-right">0.518</span>
-										</div>
-										<div class="img-mini-row tinted">
-											<span class="font-bold">Samara-Former</span>
-											<span class="text-right font-bold peak-box">86.45</span>
-											<span class="text-right font-bold peak-box">71.84</span>
-											<span class="text-right font-bold">0.364</span>
-										</div>
-										<div class="img-mini-rule thick"></div>
+										<table class="monograph-table">
+											<thead>
+												<tr class="m-toprule">
+													<th rowspan="2" class="m-left m-vmiddle">Method</th>
+													<th rowspan="2" class="m-center m-vmiddle">Complexity</th>
+													<th colspan="2" class="m-center m-span-head">Zero-Shot Evaluation</th>
+													<th rowspan="2" class="m-right m-vmiddle">
+														{@html renderLatex('Loss ($\\mathcal{L}_{\\text{reg}} \\downarrow$)')}
+													</th>
+												</tr>
+												<tr class="m-subhead-row">
+													<th class="m-center">{@html renderLatex('ImageNet-1K ($\\uparrow$)')}</th>
+													<th class="m-center">{@html renderLatex('MS-COCO ($\\uparrow$)')}</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr class="m-first-body-row">
+													<td class="m-left">ResNet-101</td>
+													<td class="m-center">{@html renderLatex('$\\mathcal{O}(N^2)$')}</td>
+													<td class="m-center">77.37%</td>
+													<td class="m-center">58.40%</td>
+													<td class="m-right">{@html renderLatex('$0.84 \\pm 0.02$')}</td>
+												</tr>
+												<tr>
+													<td class="m-left">ViT-Large / 14</td>
+													<td class="m-center">{@html renderLatex('$\\mathcal{O}(N\\log N)$')}</td>
+													<td class="m-center"><i>83.12%</i></td>
+													<td class="m-center cell-sub-shaded">64.95%</td>
+													<td class="m-right">{@html renderLatex('$0.52 \\pm 0.01$')}</td>
+												</tr>
+												<tr class="m-row-tinted">
+													<td class="m-left m-bold">Samara-Former</td>
+													<td class="m-center m-bold">{@html renderLatex('$\\mathcal{O}(N)$')}</td>
+													<td class="m-center m-bold cell-peak-shaded">86.45%</td>
+													<td class="m-center m-bold cell-peak-shaded">71.84%</td>
+													<td class="m-right m-bold">{@html renderLatex('$\\mathbf{0.36 \\pm 0.01}$')}</td>
+												</tr>
+											</tbody>
+										</table>
 									</div>
 								</div>
 
-								<!-- 四大导出格式硬核矩阵 -->
-								<div class="format-matrix">
-									<div class="format-slot">
-										<div class="slot-top">
-											<span class="slot-ext">.SVG</span>
-											<span class="slot-tag">VECTOR</span>
-										</div>
-										<div class="slot-desc">Infinite scale curves for Illustrator, Figma &amp; PDF figures.</div>
+								<!-- 四大导出格式横向矩阵条 -->
+								<div class="format-strip">
+									<div class="format-pill">
+										<span class="fp-ext">.SVG</span>
+										<span class="fp-tag">INFINITE VECTOR</span>
 									</div>
+									<div class="format-pill">
+										<span class="fp-ext">.PNG</span>
+										<span class="fp-tag">300 / 600 DPI ALPHA</span>
+									</div>
+									<div class="format-pill">
+										<span class="fp-ext">.JPG</span>
+										<span class="fp-tag">PRINT SPECIMEN</span>
+									</div>
+									<div class="format-pill">
+										<span class="fp-ext">CTRL+C</span>
+										<span class="fp-tag">DIRECT CLIPBOARD</span>
+									</div>
+								</div>
+							</div>
 
-									<div class="format-slot">
-										<div class="slot-top">
-											<span class="slot-ext">.PNG</span>
-											<span class="slot-tag">300 / 600 DPI</span>
-										</div>
-										<div class="slot-desc">Lossless retina bitmap with alpha transparency or paper fill.</div>
-									</div>
+							<!-- 中央横向等位连接母线 -->
+							<div class="manifold-conduit-hz">
+								<div class="conduit-line-hz"></div>
+								<div class="conduit-badge-hz">
+									<span class="node-eq">1:1 EXACT PARITY</span>
+									<span class="node-sep">//</span>
+									<span class="node-lbl">VISUAL FIGURE ⇄ NATIVE LATEX SOURCE</span>
+								</div>
+								<div class="conduit-line-hz"></div>
+							</div>
 
-									<div class="format-slot">
-										<div class="slot-top">
-											<span class="slot-ext">.JPG</span>
-											<span class="slot-tag">PUBLICATION</span>
-										</div>
-										<div class="slot-desc">High-density flattened print specimen for manuscripts &amp; web.</div>
+							<!-- 底舱 BAY B：与上方表格 100% 对应的真实 Samara LaTeX 导出代码 -->
+							<div class="manifold-bay bay-code">
+								<div class="bay-header">
+									<div class="bay-title-group">
+										<span class="bay-id">BAY B</span>
+										<span class="bay-name">CORRESPONDING NATIVE LATEX CODE (NICEMATRIX + BOOKTABS)</span>
 									</div>
+									<div class="bay-actions">
+										<button
+											type="button"
+											class="bay-action-btn"
+											class:copied={copiedTex}
+											onclick={handleCopyTexDemo}
+										>
+											{copiedTex ? '✓ COPIED .TEX' : 'COPY .TEX'}
+										</button>
+										<button
+											type="button"
+											class="bay-action-btn primary"
+											class:active={showFullTex}
+											onclick={() => (showFullTex = !showFullTex)}
+										>
+											{showFullTex ? '− CORE SNIPPET' : '+ FULL .TEX SOURCE'}
+										</button>
+									</div>
+								</div>
 
-									<div class="format-slot">
-										<div class="slot-top">
-											<span class="slot-ext">CTRL+C</span>
-											<span class="slot-tag">CLIPBOARD</span>
-										</div>
-										<div class="slot-desc">Instant visual paste straight into PowerPoint, Word &amp; Notion.</div>
-									</div>
+								<div class="bay-code-viewport">
+									{#if showFullTex}
+										<pre><code><span class="c-dim">% Required preamble: \usepackage&#123;booktabs, nicematrix, xcolor&#125;</span>
+<span class="c-kw">\begin</span>&#123;table&#125;[h]
+<span class="c-kw">\centering</span>
+<span class="c-macro">\renewcommand</span>&#123;\arraystretch&#125;&#123;1.33&#125;
+<span class="c-macro">\setlength</span>&#123;\aboverulesep&#125;&#123;0pt&#125; <span class="c-macro">\setlength</span>&#123;\belowrulesep&#125;&#123;0pt&#125;
+<span class="c-kw">\begin</span>&#123;NiceTabular&#125;&#123;&gt;&#123;\raggedright\arraybackslash&#125;m&#123;135pt&#125;&gt;&#123;\centering\arraybackslash&#125;m&#123;95pt&#125;&gt;&#123;\centering\arraybackslash&#125;m&#123;85pt&#125;&gt;&#123;\centering\arraybackslash&#125;m&#123;85pt&#125;&gt;&#123;\raggedleft\arraybackslash&#125;m&#123;85pt&#125;&#125;
+<span class="c-macro">\CodeBefore</span>
+  <span class="c-hl">\cellcolor[HTML]&#123;{palettes[activePalette].cellSub.replace('#', '')}&#125;&#123;4-4&#125;</span>
+  <span class="c-hl">\rowcolor[HTML]&#123;{palettes[activePalette].rowTint.replace('#', '')}&#125;&#123;5&#125;</span>
+  <span class="c-hl">\cellcolor[HTML]&#123;{palettes[activePalette].cellPeak.replace('#', '')}&#125;&#123;5-3&#125;</span> <span class="c-hl">\cellcolor[HTML]&#123;{palettes[activePalette].cellPeak.replace('#', '')}&#125;&#123;5-4&#125;</span>
+<span class="c-macro">\Body</span>
+<span class="c-macro">\toprule</span>
+<span class="c-kw">\multirow</span>&#123;2&#125;&#123;*&#125;&#123;\textbf&#123;Method&#125;&#125; &amp; <span class="c-kw">\multirow</span>&#123;2&#125;&#123;*&#125;&#123;\textbf&#123;Complexity&#125;&#125; &amp; <span class="c-kw">\multicolumn</span>&#123;2&#125;&#123;c&#125;&#123;\textbf&#123;Zero-Shot Evaluation&#125;&#125; &amp; <span class="c-kw">\multirow</span>&#123;2&#125;&#123;*&#125;&#123;\textbf&#123;Loss ($\mathcal&#123;L&#125;_&#123;\text&#123;reg&#125;&#125; \downarrow$)&#125;&#125; \\
+<span class="c-macro">\cmidrule(lr)&#123;3-4&#125;</span>
+ &amp;  &amp; \textbf&#123;ImageNet-1K ($\uparrow$)&#125; &amp; \textbf&#123;MS-COCO ($\uparrow$)&#125; &amp;  \\
+<span class="c-macro">\midrule</span>
+ResNet-101 &amp; $\mathcal&#123;O&#125;(N^2)$ &amp; 77.37\% &amp; 58.40\% &amp; $0.84 \pm 0.02$ \\
+ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%&#125; &amp; 64.95\% &amp; $0.52 \pm 0.01$ \\
+<span class="c-row-active">\textbf&#123;Samara-Former&#125; &amp; \textbf&#123;$\mathcal&#123;O&#125;(N)$&#125; &amp; \textbf&#123;86.45\%&#125; &amp; \textbf&#123;71.84\%&#125; &amp; \textbf&#123;$0.36 \pm 0.01$&#125; \\</span>
+<span class="c-macro">\bottomrule</span>
+<span class="c-kw">\end</span>&#123;NiceTabular&#125;
+<span class="c-kw">\end</span>&#123;table&#125;</code></pre>
+									{:else}
+										<pre><code><span class="c-kw">\begin</span>&#123;NiceTabular&#125;&#123;l c c c r&#125; <span class="c-dim">% &lt;-- click [+ FULL .TEX SOURCE] for exact m&#123;...pt&#125; widths &amp; table wrapper</span>
+<span class="c-macro">\CodeBefore</span>
+  <span class="c-hl">\cellcolor[HTML]&#123;{palettes[activePalette].cellSub.replace('#', '')}&#125;&#123;4-4&#125;</span>   <span class="c-hl">\rowcolor[HTML]&#123;{palettes[activePalette].rowTint.replace('#', '')}&#125;&#123;5&#125;</span>   <span class="c-hl">\cellcolor[HTML]&#123;{palettes[activePalette].cellPeak.replace('#', '')}&#125;&#123;5-3&#125;</span>   <span class="c-hl">\cellcolor[HTML]&#123;{palettes[activePalette].cellPeak.replace('#', '')}&#125;&#123;5-4&#125;</span>
+<span class="c-macro">\Body</span> <span class="c-macro">\toprule</span>
+<span class="c-kw">\multirow</span>&#123;2&#125;&#123;*&#125;&#123;\textbf&#123;Method&#125;&#125; &amp; <span class="c-kw">\multirow</span>&#123;2&#125;&#123;*&#125;&#123;\textbf&#123;Complexity&#125;&#125; &amp; <span class="c-kw">\multicolumn</span>&#123;2&#125;&#123;c&#125;&#123;\textbf&#123;Zero-Shot Evaluation&#125;&#125; &amp; <span class="c-kw">\multirow</span>&#123;2&#125;&#123;*&#125;&#123;\textbf&#123;Loss ($\mathcal&#123;L&#125;_&#123;\text&#123;reg&#125;&#125; \downarrow$)&#125;&#125; \\
+<span class="c-macro">\cmidrule(lr)&#123;3-4&#125;</span>
+ &amp;  &amp; \textbf&#123;ImageNet-1K ($\uparrow$)&#125; &amp; \textbf&#123;MS-COCO ($\uparrow$)&#125; &amp;  \\ <span class="c-macro">\midrule</span>
+ResNet-101 &amp; $\mathcal&#123;O&#125;(N^2)$ &amp; 77.37\% &amp; 58.40\% &amp; $0.84 \pm 0.02$ \\
+ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%&#125; &amp; 64.95\% &amp; $0.52 \pm 0.01$ \\
+<span class="c-row-active">\textbf&#123;Samara-Former&#125; &amp; \textbf&#123;$\mathcal&#123;O&#125;(N)$&#125; &amp; \textbf&#123;86.45\%&#125; &amp; \textbf&#123;71.84\%&#125; &amp; \textbf&#123;$0.36 \pm 0.01$&#125; \\</span> <span class="c-macro">\bottomrule</span>
+<span class="c-kw">\end</span>&#123;NiceTabular&#125;</code></pre>
+									{/if}
 								</div>
 
 								<div class="bay-footer">
-									<span>✓ PIXEL-EXACT TYPOGRAPHY</span>
-									<span>TRANSPARENT / PAPER BACKGROUND</span>
+									<span>✓ EXACT OUTPUT FROM SAMARA LATEX ENGINE</span>
+									<button
+										type="button"
+										class="bay-footer-toggle"
+										onclick={() => (showFullTex = !showFullTex)}
+									>
+										{showFullTex
+											? 'COLLAPSE TO CORE SNIPPET ↑'
+											: 'SHOW FULL 20-LINE COMPILABLE SOURCE ↓'}
+									</button>
 								</div>
 							</div>
 						</div>
@@ -874,8 +968,12 @@
 
 								<div class="reconstructed-grid-preview">
 									<div class="rg-cell rg-head">Model Architecture</div>
-									<div class="rg-cell rg-head text-center">Accuracy (%)</div>
-									<div class="rg-cell rg-head text-center">F1-Score (%)</div>
+									<div class="rg-cell rg-head text-center">
+										{@html renderLatex('Accuracy ($\\uparrow$ %)')}
+									</div>
+									<div class="rg-cell rg-head text-center">
+										{@html renderLatex('$F_1$-Score ($\\uparrow$ %)')}
+									</div>
 									<div class="rg-cell rg-head text-right">Action</div>
 
 									<div class="rg-cell rg-active">
@@ -1731,11 +1829,11 @@
 
 	/* 中栏：人文叙述与规格账本 */
 	.bp-narrative {
-		padding: clamp(2rem, 2.5vw, 2.8rem);
+		padding: clamp(2rem, 3vw, 3.2rem) clamp(2rem, 2.5vw, 2.8rem);
 		border-right: 1px solid rgba(255, 255, 255, 0.15);
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 	}
 
 	.module-kicker {
@@ -1823,12 +1921,52 @@
 		padding: 0.08rem 0.3rem;
 	}
 
+	/* 02.02 左下角导言区宏包环境卡片 */
+	.preamble-spec-box {
+		margin-top: 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		background: #0b0d15;
+		padding: 0.85rem 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.preamble-spec-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.54rem;
+		letter-spacing: 0.12em;
+	}
+
+	.preamble-spec-label {
+		color: #ff6a2b;
+		font-weight: 700;
+	}
+
+	.preamble-spec-status {
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.preamble-spec-code {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		color: #e2e8f0;
+		background: #06080e;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 0.45rem 0.65rem;
+		display: block;
+	}
+
 	/* 右栏舞台容器 */
 	.bp-stage {
 		padding: clamp(2rem, 3vw, 3.2rem);
 		background: rgba(4, 5, 10, 0.65);
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
 		min-width: 0;
 	}
@@ -1939,6 +2077,7 @@
 		color: #111318;
 		padding: clamp(1.4rem, 2vw, 2rem);
 		border: 1px solid #d6d1c4;
+		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
 		font-variant-numeric: lining-nums tabular-nums;
 		font-feature-settings: "lnum" 1, "tnum" 1;
 		box-shadow:
@@ -1947,9 +2086,9 @@
 	}
 
 	.paper-caption {
-		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: 1rem;
-		line-height: 1.4;
+		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
+		font-size: 0.92rem;
+		line-height: 1.45;
 		color: #1e2028;
 		margin-bottom: 0.9rem;
 		font-variant-numeric: lining-nums tabular-nums;
@@ -1958,7 +2097,7 @@
 
 	.caption-bold {
 		font-weight: 700;
-		letter-spacing: 0.02em;
+		letter-spacing: 0.01em;
 		margin-right: 0.3rem;
 	}
 
@@ -1976,24 +2115,29 @@
 	.monograph-table {
 		width: 100%;
 		border-collapse: collapse;
-		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: 0.98rem;
+		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
+		font-size: 0.92rem;
 		color: #111318;
 		font-variant-numeric: lining-nums tabular-nums;
 		font-feature-settings: "lnum" 1, "tnum" 1;
 	}
 
+	.monograph-table :global(.katex) {
+		font-size: 0.98em;
+	}
+
 	.monograph-table th {
-		font-weight: 600;
-		padding: 0.48rem 0.7rem;
+		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
+		font-weight: 700;
+		padding: 0.45rem 0.65rem;
 		color: #0b0d13;
-		letter-spacing: 0.01em;
 		white-space: nowrap;
 	}
 
 	.monograph-table td {
-		padding: 0.55rem 0.7rem;
-		color: #1e2430;
+		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
+		padding: 0.52rem 0.65rem;
+		color: #111318;
 		white-space: nowrap;
 		vertical-align: middle;
 	}
@@ -2003,9 +2147,8 @@
 		border-top: 2px solid #0b0d13;
 	}
 
-	.m-vbottom {
-		vertical-align: bottom;
-		padding-bottom: 0.52rem !important;
+	.m-vmiddle {
+		vertical-align: middle !important;
 	}
 
 	/* 局部截断线 \cmidrule(lr){3-4} —— 左右留出 10px 内缩呼吸间隙 */
@@ -2026,7 +2169,7 @@
 
 	.m-subhead-row th {
 		padding-top: 0.38rem !important;
-		padding-bottom: 0.52rem !important;
+		padding-bottom: 0.48rem !important;
 	}
 
 	/* 贯穿全表 5 列的 \midrule */
@@ -2042,19 +2185,6 @@
 	.m-left { text-align: left; }
 	.m-center { text-align: center; }
 	.m-right { text-align: right; }
-
-	.m-model {
-		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
-		font-size: 1.02rem;
-		font-variant-numeric: lining-nums tabular-nums;
-		font-feature-settings: "lnum" 1, "tnum" 1;
-	}
-
-	.m-mono {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.78rem;
-		letter-spacing: -0.01em;
-	}
 
 	.m-bold {
 		font-weight: 700 !important;
@@ -2152,23 +2282,22 @@
 	}
 
 	/* ----------------------------------------------------------------------------------- */
-	/* STAGE 02: DUAL-STREAM OUTPUT MANIFOLD                                               */
+	/* STAGE 02: DUAL-STREAM OUTPUT MANIFOLD (STACKED TOP-AND-BOTTOM)                      */
 	/* ----------------------------------------------------------------------------------- */
-	.manifold-grid {
+	.manifold-stack {
 		width: 100%;
-		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.1fr);
-		gap: 1rem;
-		align-items: stretch;
+		display: flex;
+		flex-direction: column;
+		gap: 0.85rem;
 	}
 
 	.manifold-bay {
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.22);
 		background: #0b0d15;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		padding: 1.15rem;
+		padding: 1.15rem 1.25rem;
 		min-width: 0;
 	}
 
@@ -2176,16 +2305,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		flex-wrap: wrap;
 		gap: 0.5rem;
-		padding-bottom: 0.75rem;
+		padding-bottom: 0.7rem;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-		margin-bottom: 0.9rem;
+		margin-bottom: 0.85rem;
 	}
 
 	.bay-title-group {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.55rem;
 	}
 
 	.bay-id {
@@ -2194,7 +2324,7 @@
 		font-weight: 700;
 		background: #0202f1;
 		color: #ffffff;
-		padding: 0.15rem 0.4rem;
+		padding: 0.16rem 0.45rem;
 		letter-spacing: 0.1em;
 	}
 
@@ -2211,7 +2341,7 @@
 		font-size: 0.54rem;
 		font-weight: 700;
 		letter-spacing: 0.12em;
-		padding: 0.18rem 0.45rem;
+		padding: 0.18rem 0.48rem;
 		border: 1px solid rgba(56, 189, 248, 0.45);
 		color: #38bdf8;
 	}
@@ -2221,21 +2351,173 @@
 		color: #ff6a2b;
 	}
 
-	.bay-code-viewport {
-		background: #06080e;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 0.95rem;
-		overflow-x: auto;
-		flex: 1;
+	.bay-actions {
 		display: flex;
 		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.bay-action-btn {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.54rem;
+		font-weight: 700;
+		letter-spacing: 0.11em;
+		padding: 0.24rem 0.6rem;
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		background: rgba(255, 255, 255, 0.04);
+		color: rgba(255, 255, 255, 0.85);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.bay-action-btn:hover {
+		border-color: rgba(255, 255, 255, 0.6);
+		color: #ffffff;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.bay-action-btn.copied {
+		border-color: #34d399;
+		color: #34d399;
+		background: rgba(16, 185, 129, 0.14);
+	}
+
+	.bay-action-btn.primary {
+		border-color: rgba(56, 189, 248, 0.55);
+		color: #38bdf8;
+		background: rgba(2, 2, 241, 0.22);
+	}
+
+	.bay-action-btn.primary:hover,
+	.bay-action-btn.primary.active {
+		background: #0202f1;
+		border-color: #38bdf8;
+		color: #ffffff;
+	}
+
+	/* 光学图层与多格式横向条 */
+	.graphics-specimen-well {
+		background-color: #080a10;
+		background-image:
+			linear-gradient(45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+			linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+			linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.04) 75%),
+			linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.04) 75%);
+		background-size: 16px 16px;
+		background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		padding: 1rem 1.15rem;
+		margin-bottom: 0.85rem;
+	}
+
+	.rendered-image-card {
+		background: #faf8f3;
+		color: #111318;
+		padding: 1rem 1.25rem;
+		position: relative;
+		border: 1px solid #38bdf8;
+		box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+		font-variant-numeric: lining-nums tabular-nums;
+		font-feature-settings: "lnum" 1, "tnum" 1;
+	}
+
+	.vec-node {
+		position: absolute;
+		width: 6px;
+		height: 6px;
+		background: #ffffff;
+		border: 1.5px solid #0202f1;
+	}
+	.vec-node.tl { top: -4px; left: -4px; }
+	.vec-node.tr { top: -4px; right: -4px; }
+	.vec-node.bl { bottom: -4px; left: -4px; }
+	.vec-node.br { bottom: -4px; right: -4px; }
+
+	.format-strip {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 0.55rem;
+	}
+
+	.format-pill {
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		background: rgba(255, 255, 255, 0.03);
+		padding: 0.48rem 0.65rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.4rem;
+	}
+
+	.fp-ext {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.fp-tag {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.52rem;
+		letter-spacing: 0.1em;
+		color: #38bdf8;
+		font-weight: 600;
+	}
+
+	/* 中央横向等位连接母线 */
+	.manifold-conduit-hz {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.conduit-line-hz {
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.08));
+	}
+
+	.conduit-badge-hz {
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		background: #0202f1;
+		padding: 0.3rem 0.85rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: 'JetBrains Mono', monospace;
+	}
+
+	.node-eq {
+		font-size: 0.6rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		color: #ffffff;
+	}
+
+	.node-sep {
+		font-size: 0.55rem;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.node-lbl {
+		font-size: 0.55rem;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.88);
+	}
+
+	/* 底部代码视口 */
+	.bay-code-viewport {
+		background: #06080e;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		padding: 0.95rem 1.1rem;
+		overflow-x: auto;
 	}
 
 	.bay-code-viewport pre {
 		margin: 0;
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.66rem;
-		line-height: 1.62;
+		font-size: 0.68rem;
+		line-height: 1.58;
 		color: #cbd5e1;
 	}
 
@@ -2255,165 +2537,9 @@
 		padding-left: 0.35rem;
 	}
 
-	.manifold-conduit {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-	}
-
-	.conduit-rail {
-		width: 1px;
-		flex: 1;
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.1));
-	}
-
-	.conduit-node {
-		border: 1px solid rgba(255, 255, 255, 0.35);
-		background: #0202f1;
-		padding: 0.45rem 0.5rem;
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		gap: 0.1rem;
-	}
-
-	.node-eq {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.72rem;
-		font-weight: 700;
-		color: #ffffff;
-	}
-
-	.node-lbl {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.46rem;
-		letter-spacing: 0.16em;
-		color: rgba(255, 255, 255, 0.8);
-	}
-
-	/* 光学图层与多格式矩阵 */
-	.graphics-specimen-well {
-		background-color: #080a10;
-		background-image:
-			linear-gradient(45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
-			linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
-			linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.04) 75%),
-			linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.04) 75%);
-		background-size: 16px 16px;
-		background-position: 0 0, 0 8px, 8px -8px, -8px 0;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		padding: 0.85rem;
-		margin-bottom: 0.85rem;
-	}
-
-	.checkerboard-label {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.52rem;
-		letter-spacing: 0.15em;
-		color: rgba(255, 255, 255, 0.45);
-		margin-bottom: 0.55rem;
-	}
-
-	.rendered-image-card {
-		background: #faf8f3;
-		color: #111318;
-		padding: 0.7rem 0.85rem;
-		position: relative;
-		border: 1px solid #38bdf8;
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.65rem;
-	}
-
-	.vec-node {
-		position: absolute;
-		width: 6px;
-		height: 6px;
-		background: #ffffff;
-		border: 1.5px solid #0202f1;
-	}
-	.vec-node.tl { top: -4px; left: -4px; }
-	.vec-node.tr { top: -4px; right: -4px; }
-	.vec-node.bl { bottom: -4px; left: -4px; }
-	.vec-node.br { bottom: -4px; right: -4px; }
-
-	.img-mini-rule.thick { height: 1.5px; background: #111318; margin: 0.2rem 0; }
-	.img-mini-rule.thin { height: 1px; background: #4b5563; margin: 0.2rem 0; }
-
-	.img-mini-row {
-		display: grid;
-		grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr;
-		padding: 0.22rem 0.25rem;
-		align-items: center;
-	}
-
-	.img-mini-row.head {
-		font-weight: 700;
-		font-family: 'Cormorant Garamond', Georgia, serif;
-		font-size: 0.78rem;
-	}
-
-	.img-mini-row.tinted {
-		background: var(--row-tint);
-	}
-
-	.peak-box {
-		background: var(--cell-peak);
-		padding: 0.05rem 0.2rem;
-	}
-
-	.format-matrix {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 0.55rem;
-	}
-
-	.format-slot {
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		background: rgba(255, 255, 255, 0.025);
-		padding: 0.65rem 0.75rem;
-		transition: border-color 0.15s, background 0.15s;
-	}
-
-	.format-slot:hover {
-		border-color: rgba(255, 255, 255, 0.45);
-		background: rgba(255, 255, 255, 0.05);
-	}
-
-	.slot-top {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 0.3rem;
-	}
-
-	.slot-ext {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.78rem;
-		font-weight: 700;
-		color: #ffffff;
-	}
-
-	.slot-tag {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.52rem;
-		letter-spacing: 0.12em;
-		color: #38bdf8;
-		font-weight: 600;
-	}
-
-	.slot-desc {
-		font-family: 'Inter', -apple-system, sans-serif;
-		font-size: 0.7rem;
-		line-height: 1.38;
-		color: rgba(255, 255, 255, 0.58);
-	}
-
 	.bay-footer {
-		margin-top: 0.85rem;
-		padding-top: 0.65rem;
+		margin-top: 0.75rem;
+		padding-top: 0.6rem;
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
 		display: flex;
 		align-items: center;
@@ -2422,6 +2548,24 @@
 		font-size: 0.55rem;
 		letter-spacing: 0.12em;
 		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.bay-footer-toggle {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.55rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		color: #38bdf8;
+		background: transparent;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		transition: color 0.15s ease;
+	}
+
+	.bay-footer-toggle:hover {
+		color: #ffffff;
+		text-decoration: underline;
 	}
 
 	/* ----------------------------------------------------------------------------------- */
@@ -2624,8 +2768,8 @@
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		background: #faf8f3;
 		color: #111318;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.72rem;
+		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
+		font-size: 0.85rem;
 	}
 
 	.rg-cell {
@@ -2634,6 +2778,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
+		font-family: 'CMU Serif', 'Computer Modern Serif', Georgia, serif;
 	}
 
 	.rg-cell.text-center { justify-content: center; }
@@ -2643,7 +2788,7 @@
 		background: #efece3;
 		border-bottom: 1.5px solid #111318;
 		font-weight: 700;
-		font-size: 0.65rem;
+		font-size: 0.8rem;
 		color: #1e2430;
 	}
 
@@ -2664,6 +2809,7 @@
 	}
 
 	.rg-tag {
+		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.54rem;
 		letter-spacing: 0.08em;
 		background: #0202f1;
