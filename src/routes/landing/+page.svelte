@@ -14,6 +14,63 @@
 	let copied = $state(false);
 	let copyTimeout: ReturnType<typeof setTimeout>;
 
+	// Subtle, non-intrusive palette preset switcher for Specimen 01 & 02
+	type PaletteKey = 'klein' | 'sage' | 'ochre';
+	let activePalette = $state<PaletteKey>('klein');
+
+	const palettes: Record<
+		PaletteKey,
+		{
+			code: string;
+			name: string;
+			rowTint: string;
+			cellPeak: string;
+			cellSub: string;
+			accentHex: string;
+			badgeText: string;
+			texColorDef: string;
+			texRowMacro: string;
+			texCellMacro: string;
+		}
+	> = {
+		klein: {
+			code: 'P-01',
+			name: 'KLEIN SLATE',
+			rowTint: '#E6ECFF',
+			cellPeak: '#C7D6FF',
+			cellSub: '#EEF2FF',
+			accentHex: '#0202F1',
+			badgeText: '#1E293B',
+			texColorDef: '\\definecolor{samaraTint}{HTML}{E6ECFF}',
+			texRowMacro: '\\rowcolor{samaraTint}',
+			texCellMacro: '\\cellcolor{samaraPeak}'
+		},
+		sage: {
+			code: 'P-02',
+			name: 'BOTANICAL SAGE',
+			rowTint: '#E2F2EA',
+			cellPeak: '#BFE4D1',
+			cellSub: '#EEF7F2',
+			accentHex: '#0D6E52',
+			badgeText: '#0F291E',
+			texColorDef: '\\definecolor{samaraTint}{HTML}{E2F2EA}',
+			texRowMacro: '\\rowcolor{samaraTint}',
+			texCellMacro: '\\cellcolor{samaraPeak}'
+		},
+		ochre: {
+			code: 'P-03',
+			name: 'WARM OCHRE',
+			rowTint: '#F9EBDD',
+			cellPeak: '#F1D2B3',
+			cellSub: '#FDF5ED',
+			accentHex: '#B84A00',
+			badgeText: '#331A08',
+			texColorDef: '\\definecolor{samaraTint}{HTML}{F9EBDD}',
+			texRowMacro: '\\rowcolor{samaraTint}',
+			texCellMacro: '\\cellcolor{samaraPeak}'
+		}
+	};
+
 	const terminalCommands: Record<OSType, string> = {
 		windows: 'irm https://samara.app/install.ps1 | iex',
 		macos: 'curl -fsSL https://samara.app/install.sh | sh',
@@ -279,371 +336,700 @@
 	</section>
 
 	<!-- =================================================================================== -->
-	<!-- SPECIFICATION & CAPABILITIES (高能机能工控长卷 · TACTICAL BLUEPRINT SPECIMEN)           -->
+	<!-- § 02 SPECIFICATION (EXPOSED ARCHITECTURAL BLUEPRINT × HUMANIST MONOGRAPH)           -->
 	<!-- =================================================================================== -->
-	<section id="features" class="features-wrapper">
-		<div class="section-container">
-			<div class="features-header">
-				<div class="features-title-row">
-					<h2 class="features-title">Specification</h2>
-					<span class="features-sub-tag">§ 02</span>
-				</div>
-				<div class="features-meta">
-					// ARCHITECTURAL CAPABILITIES & ENGINE FIDELITY // CTEX REV.2026
-				</div>
+	<section id="features" class="spec-section">
+		<!-- 顶部过渡机能警戒分界带 -->
+		<div class="spec-transition-ribbon">
+			<div class="ribbon-inner">
+				<span>⌜ SECTION 02 // ARCHITECTURAL SPECIFICATION MONOGRAPH</span>
+				<span class="hide-mobile">GRID SYSTEM: EXPOSED 1PX // COLORIMETRY: FULL-SPECTRUM</span>
+				<span>TOLERANCE: ±0.00PT ⌝</span>
 			</div>
+		</div>
 
-			<div class="specimen-tracks">
-				<!-- TRACK 01: 视觉塑形 (Visual Parametric Styling) -->
-				<div class="specimen-track">
-					<div class="track-info">
-						<div class="track-index">// 01 · PARAMETRIC STYLING</div>
-						<h3 class="track-heading">Visual Styling<br />Without Code</h3>
-						<p class="track-desc">
-							Directly orchestrate cell background tints, rule calipers, column dimensions, and inline math expressions. Publication-grade aesthetics with zero macro syntax required.
-						</p>
-						<div class="track-telemetry">
-							<span class="telemetry-pill">RULE: 0.08em</span>
-							<span class="telemetry-pill">CMIDRULE(LR)</span>
-							<span class="telemetry-pill">TINT: RGBA</span>
-							<span class="telemetry-pill">KATEX MATH</span>
+		<div class="spec-container">
+			<!-- 贯穿式暴露网格总框 -->
+			<div class="blueprint-frame">
+				<!-- --------------------------------------------------------------------------- -->
+				<!-- MONUMENTAL HEADER                                                           -->
+				<!-- --------------------------------------------------------------------------- -->
+				<div class="blueprint-header">
+					<div class="bp-header-left">
+						<div class="bp-tag-row">
+							<span class="bp-section-badge">§ 02</span>
+							<span class="bp-doc-code">DOC.REF // SMR-2026-ENG</span>
 						</div>
+						<h2 class="bp-main-title">
+							Specification.<br />
+							<span class="bp-title-italic">Form, Color &amp; Fidelity.</span>
+						</h2>
 					</div>
 
-					<div class="track-stage">
-						<div class="stage-frame">
-							<!-- 四角机能切角十字标 (HUD Crosshairs) -->
-							<div class="hud-crosshair top-l">+</div>
-							<div class="hud-crosshair top-r">+</div>
-							<div class="hud-crosshair btm-l">+</div>
-							<div class="hud-crosshair btm-r">+</div>
-
-							<!-- 悬浮参数操作条 -->
-							<div class="stage-toolbar">
-								<div class="toolbar-item active">
-									<span class="swatch-dot"></span>
-									<span>Cell Tint: #162038</span>
-								</div>
-								<div class="toolbar-sep">/</div>
-								<div class="toolbar-item">
-									<span class="rule-sample"></span>
-									<span>1.0pt Toprule</span>
-								</div>
-								<div class="toolbar-sep">/</div>
-								<div class="toolbar-item">
-									<span class="cmidrule-sample">╌</span>
-									<span>\cmidrule(lr)</span>
-								</div>
-								<div class="toolbar-sep">/</div>
-								<div class="toolbar-item">
-									<span class="math-symbol">fx</span>
-									<span>$\mathcal&#123;L&#125;_\text&#123;val&#125;$</span>
-								</div>
-								<div class="toolbar-status">CALIBRATED // 96DPI</div>
+					<div class="bp-header-right">
+						<div class="bp-abstract-label">// EDITORIAL ABSTRACT</div>
+						<p class="bp-abstract-copy">
+							Academic tables deserve the expressive depth of fine print editorial typography—without the friction of raw macro programming. Samara unites direct spreadsheet manipulation with full-spectrum chromatic styling, dual-stream code and graphics output, and universal data ingestion.
+						</p>
+						<div class="bp-header-metrics">
+							<div class="bp-metric-cell">
+								<span class="bp-metric-val">1:1</span>
+								<span class="bp-metric-lbl">CANVAS-TO-CODE PARITY</span>
 							</div>
-
-							<!-- 列宽刻度标尺 (CAD Caliper Ruler) -->
-							<div class="caliper-ruler">
-								<div class="ruler-segment col-1">
-									<span class="ruler-line"></span>
-									<span class="ruler-val">140pt</span>
-								</div>
-								<div class="ruler-segment col-2">
-									<span class="ruler-line"></span>
-									<span class="ruler-val">80pt</span>
-								</div>
-								<div class="ruler-segment col-3">
-									<span class="ruler-line"></span>
-									<span class="ruler-val">80pt</span>
-								</div>
-								<div class="ruler-segment col-4">
-									<span class="ruler-line"></span>
-									<span class="ruler-val">80pt</span>
-								</div>
+							<div class="bp-metric-cell">
+								<span class="bp-metric-val">600<small>DPI</small></span>
+								<span class="bp-metric-lbl">VECTOR &amp; RASTER EXPORT</span>
 							</div>
-
-							<!-- 真实学术表格切片 (多层复合表头 + 截断线 + 行染色 + 公式) -->
-							<div class="table-specimen">
-								<table class="academic-table">
-									<thead>
-										<tr class="rule-top-border">
-											<th rowspan="2" class="text-left col-1">Architecture</th>
-											<th colspan="3" class="text-center col-group">
-												Validation Performance (ImageNet-1K)
-											</th>
-										</tr>
-										<tr class="rule-cmid-row">
-											<th class="text-right col-2">Top-1 Acc</th>
-											<th class="text-right col-3">Top-5 Acc</th>
-											<th class="text-right col-4 math-header">$\mathcal&#123;L&#125;_\text&#123;val&#125;$</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td class="text-left font-mono">ResNet-50</td>
-											<td class="text-right font-mono">76.13%</td>
-											<td class="text-right font-mono">92.86%</td>
-											<td class="text-right font-mono math-cell">0.82 ± 0.02</td>
-										</tr>
-										<tr class="highlighted-row">
-											<td class="text-left font-mono font-semibold">Samara-Net (Ours)</td>
-											<td class="text-right font-mono font-semibold">82.45%</td>
-											<td class="text-right font-mono font-semibold">96.12%</td>
-											<td class="text-right font-mono font-semibold math-cell">0.41 ± 0.01</td>
-										</tr>
-										<tr>
-											<td class="text-left font-mono">ViT-Base/16</td>
-											<td class="text-right font-mono">81.80%</td>
-											<td class="text-right font-mono">95.60%</td>
-											<td class="text-right font-mono math-cell">0.48 ± 0.03</td>
-										</tr>
-									</tbody>
-									<tfoot>
-										<tr class="rule-bottom-border">
-											<td colspan="4"></td>
-										</tr>
-									</tfoot>
-								</table>
-
-								<!-- 精确尺寸与引线标定 (CAD Callout Pins) -->
-								<div class="pin pin-top-rule">
-									<span class="pin-dot"></span>
-									<span class="pin-line"></span>
-									<span class="pin-tag">TOPRULE // 1.0pt</span>
-								</div>
-								<div class="pin pin-cmid">
-									<span class="pin-dot"></span>
-									<span class="pin-line"></span>
-									<span class="pin-tag">\cmidrule(lr) // 0.5pt TRIM</span>
-								</div>
-								<div class="pin pin-highlight">
-									<span class="pin-dot"></span>
-									<span class="pin-line"></span>
-									<span class="pin-tag">FILL // #162038</span>
-								</div>
+							<div class="bp-metric-cell">
+								<span class="bp-metric-val">AST</span>
+								<span class="bp-metric-lbl">BI-DIRECTIONAL PARSER</span>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<!-- TRACK 02: 1:1 双生镜像 (Identical Twin Parity) -->
-				<div class="specimen-track">
-					<div class="track-info">
-						<div class="track-index">// 02 · 1:1 TWIN PARITY</div>
-						<h3 class="track-heading">Identical Parity:<br />Image & LaTeX</h3>
-						<p class="track-desc">
-							Export high-resolution vector images for quick documentation, or compile pure native LaTeX for conference submission. The visual canvas and compiled PDF match with zero drift.
+				<!-- =========================================================================== -->
+				<!-- MODULE 01: EXPRESSIVE PARAMETRIC CANVAS (所见即所得的富格式与色彩排印)         -->
+				<!-- =========================================================================== -->
+				<article class="bp-module">
+					<!-- 左侧机能竖排导轨 -->
+					<div class="bp-spine">
+						<span class="spine-code">02.01</span>
+						<span class="spine-line"></span>
+						<span class="spine-text">PARAMETRIC STYLING &amp; COLORIMETRY</span>
+					</div>
+
+					<!-- 中栏：人文阐述与机能规格列表 -->
+					<div class="bp-narrative">
+						<div class="module-kicker">
+							<span class="kicker-index">MODULE // 01</span>
+							<span class="kicker-pill">DIRECT MANIPULATION</span>
+						</div>
+
+						<h3 class="module-title">
+							Sculpt With Color<br />
+							&amp; Structure.<br />
+							<span class="module-title-italic">Like a Spreadsheet.</span>
+						</h3>
+
+						<p class="module-lead">
+							Shape multi-tier headers, row highlights, heatmap cell fills, rule weights, and inline mathematical expressions directly on an interactive grid. Every visual refinement translates into publication-grade typography—no manual macro syntax required.
 						</p>
-						<div class="track-telemetry">
-							<span class="telemetry-pill">DELTA: 0.00pt</span>
-							<span class="telemetry-pill">WIDTH PARITY: 100%</span>
-							<span class="telemetry-pill">ARRAYBACKSLASH</span>
-						</div>
-					</div>
 
-					<div class="track-stage">
-						<div class="stage-frame split-stage">
-							<div class="hud-crosshair top-l">+</div>
-							<div class="hud-crosshair top-r">+</div>
-							<div class="hud-crosshair btm-l">+</div>
-							<div class="hud-crosshair btm-r">+</div>
-
-							<!-- 左侧：图像交付预览 -->
-							<div class="split-col split-left">
-								<div class="split-header">
-									<span>VECTOR IMAGE CANVAS</span>
-									<span class="split-tag">HIGH-DPI</span>
-								</div>
-								<!-- 列宽卡尺对齐标注 -->
-								<div class="split-ruler-bar">
-									<span class="ruler-col-tag w-130">130pt</span>
-									<span class="ruler-col-tag w-70">70pt</span>
-									<span class="ruler-col-tag w-65">65pt</span>
-								</div>
-								<div class="split-body table-mini">
-									<div class="mini-rule thick"></div>
-									<div class="mini-row head">
-										<span class="w-130">Architecture</span>
-										<span class="w-70 text-center">Top-1 Acc</span>
-										<span class="w-65 text-right">Latency</span>
-									</div>
-									<div class="mini-rule thin"></div>
-									<div class="mini-row">
-										<span class="w-130">Baseline ResNet</span>
-										<span class="w-70 text-center">76.13%</span>
-										<span class="w-65 text-right">12.4 ms</span>
-									</div>
-									<div class="mini-row active">
-										<span class="w-130 font-semibold">Samara-Net</span>
-										<span class="w-70 text-center font-semibold">82.45%</span>
-										<span class="w-65 text-right font-semibold">8.1 ms</span>
-									</div>
-									<div class="mini-rule thick"></div>
-								</div>
+						<!-- 硬核规格清单 -->
+						<div class="spec-ledger">
+							<div class="ledger-row">
+								<span class="ledger-key">01 / CHROMATIC FILL</span>
+								<span class="ledger-val">Full RGB/HEX row tints &amp; per-cell heatmap shading</span>
 							</div>
-
-							<!-- 中央对齐基准线 -->
-							<div class="split-datum">
-								<div class="datum-line"></div>
-								<div class="datum-badge">
-									<span>= 1:1 =</span>
-									<span class="sub-datum">PARITY</span>
-								</div>
-								<div class="datum-line"></div>
+							<div class="ledger-row">
+								<span class="ledger-key">02 / BOOKTABS RULES</span>
+								<span class="ledger-val">Calibrated top, mid, bottom &amp; trimmed <code>\cmidrule(lr)</code></span>
 							</div>
-
-							<!-- 右侧：真实、完整的纯净 LaTeX 代码 (含列宽、自动换行与行颜色) -->
-							<div class="split-col split-right">
-								<div class="split-header">
-									<span>NATIVE LATEX STREAM</span>
-									<span class="split-tag">COMPILER READY</span>
-								</div>
-								<div class="split-body code-body">
-									<pre><code><span class="code-comment">% Dimensions precisely mapped</span>
-\begin&#123;tabular&#125;&#123;
-  <span class="code-macro">&gt;&#123;\raggedright\arraybackslash&#125;m&#123;130pt&#125;</span>
-  <span class="code-macro">&gt;&#123;\centering\arraybackslash&#125;m&#123;70pt&#125;</span>
-  <span class="code-macro">&gt;&#123;\raggedleft\arraybackslash&#125;m&#123;65pt&#125;</span>
-&#125;
-  <span class="code-macro">\toprule</span>
-  \textbf&#123;Architecture&#125; & \textbf&#123;Top-1 Acc&#125; & \textbf&#123;Latency&#125; \\
-  <span class="code-macro">\midrule</span>
-  Baseline ResNet & 76.13\% & 12.4 ms \\
-  <span class="code-highlight">\rowcolor&#123;blue!12&#125; \textbf&#123;Samara-Net&#125; & \textbf&#123;82.45\%&#125; & \textbf&#123;8.1 ms&#125; \\</span>
-  <span class="code-macro">\bottomrule</span>
-\end&#123;tabular&#125;</code></pre>
-								</div>
+							<div class="ledger-row">
+								<span class="ledger-key">03 / TYPOGRAPHIC HIERARCHY</span>
+								<span class="ledger-val">Bold/underline SOTA markers, alignment &amp; exact pt widths</span>
+							</div>
+							<div class="ledger-row">
+								<span class="ledger-key">04 / NATIVE MATH</span>
+								<span class="ledger-val">Live KaTeX rendering for inline symbols &amp; uncertainty bounds</span>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<!-- TRACK 03: 外部数据直通导入 (Universal Ingestion) -->
-				<div class="specimen-track">
-					<div class="track-info">
-						<div class="track-index">// 03 · DIRECT INGESTION</div>
-						<h3 class="track-heading">Universal Data<br />Ingestion</h3>
-						<p class="track-desc">
-							Directly ingest raw tabular data from external spreadsheets, publications, or raw files into the live canvas. Grid dimensions and formatting adapt automatically to publication standards.
+					<!-- 右栏：重工机能外框 + 暖白学术出版纸张内胆 (Scheme A 核心高光舞台) -->
+					<div class="bp-stage">
+						<div class="tactical-chamber">
+							<!-- 四角工业准星 -->
+							<span class="chamber-corner tl"></span>
+							<span class="chamber-corner tr"></span>
+							<span class="chamber-corner bl"></span>
+							<span class="chamber-corner br"></span>
+
+							<!-- 顶部控制舱栏 (带克制、精致的色板切换开关，锦上添花) -->
+							<div class="chamber-topbar">
+								<div class="chamber-status">
+									<span class="signal-dot"></span>
+									<span>SPECIMEN STAGE // WYSIWYG PAPER VIEWPORT</span>
+								</div>
+
+								<div class="palette-switcher" role="group" aria-label="Color Palette Presets">
+									<span class="switcher-label">PALETTE:</span>
+									{#each Object.entries(palettes) as [key, p]}
+										<button
+											type="button"
+											class="palette-chip {activePalette === key ? 'active' : ''}"
+											onclick={() => (activePalette = key as PaletteKey)}
+										>
+											<span class="chip-swatch" style="background: {p.accentHex}"></span>
+											<span>{p.name}</span>
+										</button>
+									{/each}
+								</div>
+							</div>
+
+							<!-- 精密游标卡尺刻度条 -->
+							<div class="cad-caliper-strip">
+								<div class="caliper-col w-arch">
+									<span>├ 145pt // LEFT-ALIGN</span>
+								</div>
+								<div class="caliper-col w-backbone">
+									<span>├ 76pt // CENTER</span>
+								</div>
+								<div class="caliper-col w-metric">
+									<span>├ 88pt // NUM-RIGHT</span>
+								</div>
+								<div class="caliper-col w-metric">
+									<span>├ 88pt // NUM-RIGHT</span>
+								</div>
+								<div class="caliper-col w-loss">
+									<span>├ 92pt // MATH ┤</span>
+								</div>
+							</div>
+
+							<!-- 暖白学术出版纸张画布 (Humanist Editorial Paper Sheet) -->
+							<div
+								class="paper-sheet"
+								style="--row-tint: {palettes[activePalette].rowTint}; --cell-peak: {palettes[activePalette].cellPeak}; --cell-sub: {palettes[activePalette].cellSub}; --accent-ink: {palettes[activePalette].accentHex}; --badge-ink: {palettes[activePalette].badgeText};"
+							>
+								<div class="paper-caption">
+									<span class="caption-bold">Table 1.</span>
+									<span class="caption-serif">
+										Quantitative comparison of vision-language foundation architectures on standard multi-modal benchmarks. Best results are highlighted in
+										<strong class="caption-highlight">tinted bold</strong>, second-best are <u>underlined</u>.
+									</span>
+								</div>
+
+								<div class="paper-table-wrap">
+									<table class="monograph-table">
+										<thead>
+											<tr class="m-toprule">
+												<th rowspan="2" class="m-left">Architecture</th>
+												<th rowspan="2" class="m-center">Params</th>
+												<th colspan="2" class="m-center m-span-head">
+													Zero-Shot Classification (%)
+												</th>
+												<th rowspan="2" class="m-right">
+													Validation Loss (<span class="m-math"><i>L</i><sub>val</sub></span>) ↓
+												</th>
+											</tr>
+											<tr class="m-cmidrule">
+												<th class="m-right">ImageNet-1K ↑</th>
+												<th class="m-right">COCO-Retrieval ↑</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td class="m-left m-model">ResNet-101 (Baseline)</td>
+												<td class="m-center m-mono">44.5M</td>
+												<td class="m-right m-mono">77.37</td>
+												<td class="m-right m-mono">58.40</td>
+												<td class="m-right m-mono">0.842 ± 0.015</td>
+											</tr>
+											<tr>
+												<td class="m-left m-model">ViT-Large / 14</td>
+												<td class="m-center m-mono">304.3M</td>
+												<td class="m-right m-mono"><u>83.12</u></td>
+												<td class="m-right m-mono">64.95</td>
+												<td class="m-right m-mono">0.518 ± 0.009</td>
+											</tr>
+											<tr>
+												<td class="m-left m-model">ConvNeXt-XL</td>
+												<td class="m-center m-mono">350.0M</td>
+												<td class="m-right m-mono">82.89</td>
+												<td class="m-right m-mono cell-sub-shaded"><u>66.18</u></td>
+												<td class="m-right m-mono"><u>0.491 ± 0.007</u></td>
+											</tr>
+											<tr class="m-row-tinted">
+												<td class="m-left m-model m-bold">
+													Samara-Former (Ours)
+													<span class="sota-pill">SOTA</span>
+												</td>
+												<td class="m-center m-mono m-bold">118.2M</td>
+												<td class="m-right m-mono m-bold cell-peak-shaded">86.45</td>
+												<td class="m-right m-mono m-bold cell-peak-shaded">71.84</td>
+												<td class="m-right m-mono m-bold">0.364 ± 0.004</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<!-- 纸张底部工程解剖标注条 -->
+								<div class="paper-annotations">
+									<div class="annot-chip">
+										<span class="annot-dot"></span>
+										<span>\toprule 0.08em</span>
+									</div>
+									<div class="annot-chip">
+										<span class="annot-dot"></span>
+										<span>\cmidrule(lr)&#123;3-4&#125;</span>
+									</div>
+									<div class="annot-chip active">
+										<span class="annot-swatch" style="background: {palettes[activePalette].rowTint}"></span>
+										<span>ROW FILL: {palettes[activePalette].rowTint}</span>
+									</div>
+									<div class="annot-chip active">
+										<span class="annot-swatch" style="background: {palettes[activePalette].cellPeak}"></span>
+										<span>CELL PEAK: {palettes[activePalette].cellPeak}</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- 底部遥测状态栏 -->
+							<div class="chamber-Bottombar">
+								<span>FONT: COMPUTER MODERN SERIF + MONO</span>
+								<span>DIRECT CELL SELECTION // LIVE COLOR PICKER</span>
+								<span class="status-ok">● RENDER FIDELITY: 100%</span>
+							</div>
+						</div>
+					</div>
+				</article>
+
+				<!-- =========================================================================== -->
+				<!-- MODULE 02: DUAL-STREAM OUTPUT MANIFOLD (代码与多格式高清图片 1:1 共生输出)      -->
+				<!-- =========================================================================== -->
+				<article class="bp-module">
+					<!-- 左侧机能竖排导轨 -->
+					<div class="bp-spine">
+						<span class="spine-code">02.02</span>
+						<span class="spine-line"></span>
+						<span class="spine-text">DUAL-STREAM OUTPUT MANIFOLD</span>
+					</div>
+
+					<!-- 中栏：人文阐述与双擎亮点 -->
+					<div class="bp-narrative">
+						<div class="module-kicker">
+							<span class="kicker-index">MODULE // 02</span>
+							<span class="kicker-pill">CODE &amp; GRAPHICS SYMMETRY</span>
+						</div>
+
+						<h3 class="module-title">
+							Pure LaTeX Code.<br />
+							Multi-Format Images.<br />
+							<span class="module-title-italic">Identical by Design.</span>
+						</h3>
+
+						<p class="module-lead">
+							Whether submitting source files to an academic journal or embedding crisp figures into slides, Word documents, or posters—Samara outputs both streams from the exact same visual state with zero metric or chromatic drift.
 						</p>
-						<div class="track-telemetry">
-							<span class="telemetry-pill">AUTO-DELIMIT</span>
-							<span class="telemetry-pill">STRUCTURE-PRESERVED</span>
-							<span class="telemetry-pill">STREAM BUS</span>
-						</div>
-					</div>
 
-					<div class="track-stage">
-						<div class="stage-frame ingest-stage">
-							<div class="hud-crosshair top-l">+</div>
-							<div class="hud-crosshair top-r">+</div>
-							<div class="hud-crosshair btm-l">+</div>
-							<div class="hud-crosshair btm-r">+</div>
-
-							<!-- 左侧：原始数据流 -->
-							<div class="stream-inflow">
-								<div class="stream-header">
-									<span>RAW TABULAR BUFFER</span>
-									<span class="stream-badge">UNFORMATTED TSV</span>
-								</div>
-								<div class="stream-code">
-									Method       Accuracy   Latency<br />
-									Baseline     76.13      12.4<br />
-									Samara-Net   82.45      8.1
-								</div>
+						<div class="spec-ledger">
+							<div class="ledger-row">
+								<span class="ledger-key">STREAM A // NATIVE .TEX</span>
+								<span class="ledger-val">Auto-synthesizes <code>\definecolor</code>, <code>\rowcolor</code>, <code>\cellcolor</code> &amp; <code>booktabs</code></span>
 							</div>
-
-							<!-- 转换流水线指示 -->
-							<div class="stream-conduit">
-								<span class="conduit-label">AUTO-PARSE</span>
-								<div class="conduit-arrow">→</div>
-								<span class="conduit-sub">ZERO-CONFIG</span>
+							<div class="ledger-row">
+								<span class="ledger-key">STREAM B // VECTOR .SVG</span>
+								<span class="ledger-val">Resolution-independent Bézier curves for Illustrator, Figma &amp; Keynote</span>
 							</div>
-
-							<!-- 右侧：结构化规范排版 -->
-							<div class="stream-outflow">
-								<div class="stream-header">
-									<span>PUBLICATION TYPESET</span>
-									<span class="stream-badge text-cyan">STANDARDIZED</span>
-								</div>
-								<div class="stream-table">
-									<div class="out-rule thick"></div>
-									<div class="out-row head">
-										<span>Method</span>
-										<span class="text-center">Accuracy</span>
-										<span class="text-right">Latency</span>
-									</div>
-									<div class="out-rule thin"></div>
-									<div class="out-row">
-										<span>Baseline</span>
-										<span class="text-center">76.13%</span>
-										<span class="text-right">12.4ms</span>
-									</div>
-									<div class="out-row highlight">
-										<span class="font-semibold">Samara-Net</span>
-										<span class="text-center font-semibold">82.45%</span>
-										<span class="text-right font-semibold">8.1ms</span>
-									</div>
-									<div class="out-rule thick"></div>
-								</div>
+							<div class="ledger-row">
+								<span class="ledger-key">STREAM C // RETINA .PNG / .JPG</span>
+								<span class="ledger-val">Up to 600 DPI raster export with transparent or paper-white canvas</span>
+							</div>
+							<div class="ledger-row">
+								<span class="ledger-key">STREAM D // CLIPBOARD BUS</span>
+								<span class="ledger-val">One-click instant copy directly into PowerPoint, Word, or Overleaf</span>
 							</div>
 						</div>
 					</div>
-				</div>
+
+					<!-- 右栏：双擎工业分流舱 (左：带颜色宏的完整 LaTeX 代码 / 右：多格式高清图片矩阵) -->
+					<div class="bp-stage">
+						<div class="manifold-grid">
+							<!-- 引擎舱 A：全样式原生 LaTeX 代码流 -->
+							<div class="manifold-bay bay-code">
+								<div class="bay-header">
+									<div class="bay-title-group">
+										<span class="bay-id">BAY A</span>
+										<span class="bay-name">COMPILER-READY .TEX STREAM</span>
+									</div>
+									<span class="bay-badge">OVERLEAF &amp; ARXIV READY</span>
+								</div>
+
+								<div class="bay-code-viewport">
+									<pre><code><span class="c-dim">% Auto-generated chromatic &amp; booktabs definitions</span>
+<span class="c-kw">\usepackage</span>&#123;booktabs, multirow, colortbl, xcolor&#125;
+<span class="c-hl">{palettes[activePalette].texColorDef}</span>
+<span class="c-hl">\definecolor&#123;samaraPeak&#125;&#123;HTML&#125;&#123;{palettes[activePalette].cellPeak.replace('#', '')}&#125;</span>
+
+<span class="c-kw">\begin</span>&#123;tabular&#125;&#123;l c r r r&#125;
+  <span class="c-macro">\toprule</span>
+  <span class="c-kw">\multirow</span>&#123;2&#125;*&#123;\textbf&#123;Architecture&#125;&#125; &amp; \multirow&#123;2&#125;*&#123;\textbf&#123;Params&#125;&#125; &amp;
+  <span class="c-kw">\multicolumn</span>&#123;2&#125;&#123;c&#125;&#123;\textbf&#123;Zero-Shot (%)&#125;&#125; &amp; \textbf&#123;Loss&#125; \\
+  <span class="c-macro">\cmidrule(lr)&#123;3-4&#125;</span>
+   &amp; &amp; \textbf&#123;IN-1K&#125; &amp; \textbf&#123;COCO&#125; &amp; $\mathcal&#123;L&#125;_\text&#123;val&#125;$ \\
+  <span class="c-macro">\midrule</span>
+  ResNet-101 &amp; 44.5M &amp; 77.37 &amp; 58.40 &amp; 0.842 \\
+  ViT-Large/14 &amp; 304.3M &amp; \underline&#123;83.12&#125; &amp; 64.95 &amp; 0.518 \\
+  <span class="c-row-active">{palettes[activePalette].texRowMacro} \textbf&#123;Samara-Former&#125; &amp; \textbf&#123;118.2M&#125; &amp; {palettes[activePalette].texCellMacro}\textbf&#123;86.45&#125; &amp; {palettes[activePalette].texCellMacro}\textbf&#123;71.84&#125; &amp; \textbf&#123;0.364&#125; \\</span>
+  <span class="c-macro">\bottomrule</span>
+<span class="c-kw">\end</span>&#123;tabular&#125;</code></pre>
+								</div>
+
+								<div class="bay-footer">
+									<span>✓ ZERO HAND-WRITTEN MACROS</span>
+									<span>SYNCED WITH PALETTE: {palettes[activePalette].code}</span>
+								</div>
+							</div>
+
+							<!-- 中央等位连接母线 -->
+							<div class="manifold-conduit">
+								<div class="conduit-rail"></div>
+								<div class="conduit-node">
+									<span class="node-eq">1:1</span>
+									<span class="node-lbl">SYMMETRY</span>
+								</div>
+								<div class="conduit-rail"></div>
+							</div>
+
+							<!-- 引擎舱 B：多格式出版级图像导出矩阵 -->
+							<div class="manifold-bay bay-graphics">
+								<div class="bay-header">
+									<div class="bay-title-group">
+										<span class="bay-id">BAY B</span>
+										<span class="bay-name">MULTI-FORMAT GRAPHICS BAY</span>
+									</div>
+									<span class="bay-badge orange">NO LATEX REQUIRED</span>
+								</div>
+
+								<!-- 光学透明网格上的高定图像卡片预览 -->
+								<div class="graphics-specimen-well">
+									<div class="checkerboard-label">OPTICAL ALPHA &amp; VECTOR LAYER PREVIEW</div>
+									<div
+										class="rendered-image-card"
+										style="--row-tint: {palettes[activePalette].rowTint}; --cell-peak: {palettes[activePalette].cellPeak}; --accent-ink: {palettes[activePalette].accentHex};"
+									>
+										<!-- 矢量锚点装饰 -->
+										<span class="vec-node tl"></span>
+										<span class="vec-node tr"></span>
+										<span class="vec-node bl"></span>
+										<span class="vec-node br"></span>
+
+										<div class="img-mini-rule thick"></div>
+										<div class="img-mini-row head">
+											<span>Architecture</span>
+											<span class="text-right">IN-1K</span>
+											<span class="text-right">COCO</span>
+											<span class="text-right">Loss ↓</span>
+										</div>
+										<div class="img-mini-rule thin"></div>
+										<div class="img-mini-row">
+											<span>ViT-Large / 14</span>
+											<span class="text-right"><u>83.12</u></span>
+											<span class="text-right">64.95</span>
+											<span class="text-right">0.518</span>
+										</div>
+										<div class="img-mini-row tinted">
+											<span class="font-bold">Samara-Former</span>
+											<span class="text-right font-bold peak-box">86.45</span>
+											<span class="text-right font-bold peak-box">71.84</span>
+											<span class="text-right font-bold">0.364</span>
+										</div>
+										<div class="img-mini-rule thick"></div>
+									</div>
+								</div>
+
+								<!-- 四大导出格式硬核矩阵 -->
+								<div class="format-matrix">
+									<div class="format-slot">
+										<div class="slot-top">
+											<span class="slot-ext">.SVG</span>
+											<span class="slot-tag">VECTOR</span>
+										</div>
+										<div class="slot-desc">Infinite scale curves for Illustrator, Figma &amp; PDF figures.</div>
+									</div>
+
+									<div class="format-slot">
+										<div class="slot-top">
+											<span class="slot-ext">.PNG</span>
+											<span class="slot-tag">300 / 600 DPI</span>
+										</div>
+										<div class="slot-desc">Lossless retina bitmap with alpha transparency or paper fill.</div>
+									</div>
+
+									<div class="format-slot">
+										<div class="slot-top">
+											<span class="slot-ext">.JPG</span>
+											<span class="slot-tag">PUBLICATION</span>
+										</div>
+										<div class="slot-desc">High-density flattened print specimen for manuscripts &amp; web.</div>
+									</div>
+
+									<div class="format-slot">
+										<div class="slot-top">
+											<span class="slot-ext">CTRL+C</span>
+											<span class="slot-tag">CLIPBOARD</span>
+										</div>
+										<div class="slot-desc">Instant visual paste straight into PowerPoint, Word &amp; Notion.</div>
+									</div>
+								</div>
+
+								<div class="bay-footer">
+									<span>✓ PIXEL-EXACT TYPOGRAPHY</span>
+									<span>TRANSPARENT / PAPER BACKGROUND</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</article>
+
+				<!-- =========================================================================== -->
+				<!-- MODULE 03: UNIVERSAL INGESTION & AST REVERSE-PARSER (万物皆可导入与粘贴)       -->
+				<!-- =========================================================================== -->
+				<article class="bp-module bp-module-last">
+					<!-- 左侧机能竖排导轨 -->
+					<div class="bp-spine">
+						<span class="spine-code">02.03</span>
+						<span class="spine-line"></span>
+						<span class="spine-text">UNIVERSAL DATA INGESTION</span>
+					</div>
+
+					<!-- 中栏：人文阐述与三通道导入能力 -->
+					<div class="bp-narrative">
+						<div class="module-kicker">
+							<span class="kicker-index">MODULE // 03</span>
+							<span class="kicker-pill">ZERO-FRICTION ONBOARDING</span>
+						</div>
+
+						<h3 class="module-title">
+							Paste From Anywhere.<br />
+							Reverse-Parse Old Code.<br />
+							<span class="module-title-italic">Edit Instantly.</span>
+						</h3>
+
+						<p class="module-lead">
+							Never build a table from scratch or count ampersands in legacy code again. Drop spreadsheet files, paste raw cell ranges from Excel, or feed existing LaTeX tables directly into Samara to reconstruct an editable visual grid in milliseconds.
+						</p>
+
+						<div class="spec-ledger">
+							<div class="ledger-row">
+								<span class="ledger-key">PORT 01 // SPREADSHEETS</span>
+								<span class="ledger-val">Direct <code>Ctrl+V</code> from Excel, Numbers, WPS or <code>.xlsx</code> / <code>.csv</code> drop</span>
+							</div>
+							<div class="ledger-row">
+								<span class="ledger-key">PORT 02 // LATEX AST PARSER</span>
+								<span class="ledger-val">Reverse-engineers complex <code>\multicolumn</code> &amp; <code>\multirow</code> code into live cells</span>
+							</div>
+							<div class="ledger-row">
+								<span class="ledger-key">PORT 03 // MARKDOWN &amp; LOGS</span>
+								<span class="ledger-val">Ingests LLM Markdown tables, Pandas dataframes &amp; raw TSV streams</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- 右栏：三通道战术解码器架构图 (Tri-Channel Ingestion Matrix) -->
+					<div class="bp-stage">
+						<div class="ingest-architecture">
+							<!-- 顶部三路输入源端口 -->
+							<div class="ingest-ports-grid">
+								<!-- PORT 01: EXCEL / CSV -->
+								<div class="ingest-port-card">
+									<div class="port-head">
+										<span class="port-num">IN_01</span>
+										<span class="port-type">XLSX / CSV / CLIPBOARD</span>
+									</div>
+									<div class="port-title">Excel &amp; Spreadsheets</div>
+									<div class="port-sample-box">
+										<div class="excel-mock">
+											<div class="ex-row ex-head">
+												<span>A</span><span>B</span><span>C</span>
+											</div>
+											<div class="ex-row">
+												<span>Model</span><span>Acc</span><span> F1 </span>
+											</div>
+											<div class="ex-row ex-sel">
+												<span>Ours</span><span>86.4</span><span>91.2</span>
+											</div>
+										</div>
+									</div>
+									<div class="port-foot">DIRECT CTRL+V OR DRAG &amp; DROP</div>
+								</div>
+
+								<!-- PORT 02: LEGACY LATEX REVERSE PARSER -->
+								<div class="ingest-port-card port-featured">
+									<div class="port-head">
+										<span class="port-num">IN_02</span>
+										<span class="port-type">REVERSE AST PARSER</span>
+									</div>
+									<div class="port-title">Existing LaTeX Code</div>
+									<div class="port-sample-box code-sample">
+										<code>\multicolumn&#123;2&#125;&#123;c&#125;&#123;Score&#125; \\</code>
+										<code>\cmidrule(lr)&#123;2-3&#125;</code>
+										<code>Ours &amp; \textbf&#123;86.4&#125; &amp; 91.2 \\</code>
+									</div>
+									<div class="port-foot">RECONSTRUCTS SPANS &amp; STYLES</div>
+								</div>
+
+								<!-- PORT 03: MARKDOWN / TSV -->
+								<div class="ingest-port-card">
+									<div class="port-head">
+										<span class="port-num">IN_03</span>
+										<span class="port-type">MD / TSV / PYTHON</span>
+									</div>
+									<div class="port-title">Markdown &amp; Raw Logs</div>
+									<div class="port-sample-box code-sample">
+										<code>| Model | Acc  | F1   |</code>
+										<code>|-------|------|------|</code>
+										<code>| Ours  | 86.4 | 91.2 |</code>
+									</div>
+									<div class="port-foot">AUTO-DELIMITS &amp; CLEANS SYNTAX</div>
+								</div>
+							</div>
+
+							<!-- 中央总线解码器汇流层 -->
+							<div class="ingest-bus-bar">
+								<div class="bus-line"></div>
+								<div class="bus-processor">
+									<span class="proc-dot"></span>
+									<span>SAMARA AST DECODER // AUTO-SPAN &amp; STRUCTURE NORMALIZATION</span>
+									<span class="proc-arrow">↓</span>
+								</div>
+								<div class="bus-line"></div>
+							</div>
+
+							<!-- 底部还原后的可视化工作台画布 -->
+							<div class="ingest-output-deck">
+								<div class="deck-meta">
+									<span>OUTPUT // RECONSTRUCTED INTERACTIVE CANVAS</span>
+									<span class="deck-ready">READY FOR VISUAL STYLING &amp; EXPORT</span>
+								</div>
+
+								<div class="reconstructed-grid-preview">
+									<div class="rg-cell rg-head">Model Architecture</div>
+									<div class="rg-cell rg-head text-center">Accuracy (%)</div>
+									<div class="rg-cell rg-head text-center">F1-Score (%)</div>
+									<div class="rg-cell rg-head text-right">Action</div>
+
+									<div class="rg-cell rg-active">
+										<span class="rg-handle">⋮⋮</span>
+										<strong>Samara-Former (Ours)</strong>
+									</div>
+									<div class="rg-cell rg-active text-center">
+										<span class="rg-val-highlight">86.45</span>
+									</div>
+									<div class="rg-cell rg-active text-center">
+										<span class="rg-val-highlight">91.20</span>
+									</div>
+									<div class="rg-cell rg-active text-right">
+										<span class="rg-tag">RESIZE / COLOR / EXPORT</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</article>
 			</div>
 		</div>
 	</section>
 
 	<!-- =================================================================================== -->
-	<!-- PLATFORMS (三平台下载矩阵)                                                         -->
+	<!-- § 03 PLATFORMS (TACTICAL DEPLOYMENT DOCK · 三联装工业部署坞)                          -->
 	<!-- =================================================================================== -->
 	<section id="platforms" class="platforms-wrapper">
-		<div class="section-container platforms-center">
-			<div class="platforms-header">
-				<div class="platforms-sub">ACROSS ALL COMPUTERS</div>
-				<h2 class="platforms-title">Samara Desktop App</h2>
-			</div>
-
-			<div class="platforms-grid">
-				<div class="platform-card">
-					<div class="platform-meta">macOS 12+</div>
-					<h3 class="platform-name">macOS</h3>
-					<a
-						href="https://github.com/sylvester1001/samara/releases"
-						target="_blank"
-						rel="noreferrer"
-						class="platform-download-btn"
-					>
-						{@render appleIcon('size-5')}
-						<span>Download .dmg</span>
-					</a>
+		<div class="section-container">
+			<div class="deploy-frame">
+				<div class="deploy-header">
+					<div class="deploy-header-left">
+						<div class="deploy-sub">// § 03 · NATIVE &amp; WEB DEPLOYMENT</div>
+						<h2 class="deploy-title">
+							Engineered for Every<br />
+							<span class="title-italic">Research Workstation.</span>
+						</h2>
+					</div>
+					<div class="deploy-header-right">
+						<div class="deploy-specs-badge">
+							<span>RUST + TAURI CORE</span>
+							<span>•</span>
+							<span>100% OFFLINE CAPABLE</span>
+							<span>•</span>
+							<span>ZERO TELEMETRY</span>
+						</div>
+					</div>
 				</div>
 
-				<div class="platform-card">
-					<div class="platform-meta">Windows 10/11</div>
-					<h3 class="platform-name">Windows</h3>
-					<a
-						href="https://github.com/sylvester1001/samara/releases"
-						target="_blank"
-						rel="noreferrer"
-						class="platform-download-btn"
-					>
-						{@render windowsIcon('size-5')}
-						<span>Download .msi</span>
-					</a>
+				<div class="platforms-grid">
+					<!-- macOS -->
+					<div class="platform-card">
+						<div class="plat-top-bar">
+							<span class="plat-bay-id">BAY 01 // DARWIN</span>
+							<span class="plat-arch">ARM64 + INTEL</span>
+						</div>
+						<div class="plat-body">
+							<div class="plat-icon-wrap">
+								{@render appleIcon('size-7')}
+							</div>
+							<h3 class="platform-name">macOS</h3>
+							<p class="plat-desc">Universal native binary for Apple Silicon (M1–M4) and Intel Macs. macOS 12.0+.</p>
+						</div>
+						<a
+							href="https://github.com/sylvester1001/samara/releases"
+							target="_blank"
+							rel="noreferrer"
+							class="platform-download-btn"
+						>
+							<span>Download .dmg Installer</span>
+							<ArrowRight class="size-4" />
+						</a>
+					</div>
+
+					<!-- Windows -->
+					<div class="platform-card">
+						<div class="plat-top-bar">
+							<span class="plat-bay-id">BAY 02 // WIN32</span>
+							<span class="plat-arch">X86_64 NATIVE</span>
+						</div>
+						<div class="plat-body">
+							<div class="plat-icon-wrap">
+								{@render windowsIcon('size-6')}
+							</div>
+							<h3 class="platform-name">Windows</h3>
+							<p class="plat-desc">Lightweight native workstation installer for Windows 10 &amp; 11. Instant cold start.</p>
+						</div>
+						<a
+							href="https://github.com/sylvester1001/samara/releases"
+							target="_blank"
+							rel="noreferrer"
+							class="platform-download-btn"
+						>
+							<span>Download .msi Package</span>
+							<ArrowRight class="size-4" />
+						</a>
+					</div>
+
+					<!-- Linux -->
+					<div class="platform-card">
+						<div class="plat-top-bar">
+							<span class="plat-bay-id">BAY 03 // LINUX</span>
+							<span class="plat-arch">APPIMAGE / DEB</span>
+						</div>
+						<div class="plat-body">
+							<div class="plat-icon-wrap">
+								{@render linuxIcon('size-7')}
+							</div>
+							<h3 class="platform-name">Linux</h3>
+							<p class="plat-desc">Portable AppImage &amp; CLI installer for Ubuntu, Arch, Fedora, and Debian distributions.</p>
+						</div>
+						<a
+							href="https://github.com/sylvester1001/samara/releases"
+							target="_blank"
+							rel="noreferrer"
+							class="platform-download-btn"
+						>
+							<span>Download AppImage</span>
+							<ArrowRight class="size-4" />
+						</a>
+					</div>
 				</div>
 
-				<div class="platform-card">
-					<div class="platform-meta">Any Distro</div>
-					<h3 class="platform-name">Linux</h3>
-					<a
-						href="https://github.com/sylvester1001/samara/releases"
-						target="_blank"
-						rel="noreferrer"
-						class="platform-download-btn"
-					>
-						{@render linuxIcon('size-5')}
-						<span>Install via Terminal</span>
+				<!-- 底部即开即用 Web Terminal 横向通栏 -->
+				<div class="web-launch-banner">
+					<div class="web-banner-left">
+						<span class="web-live-tag">INSTANT BROWSER STATION</span>
+						<span class="web-banner-text">Prefer zero installation? Run the full Samara typesetting engine directly in your browser.</span>
+					</div>
+					<a href="/" class="web-banner-btn">
+						<span>Launch Web Application</span>
+						<ArrowRight class="size-4" />
 					</a>
 				</div>
 			</div>
@@ -654,7 +1040,7 @@
 	<!-- FOOTER                                                                              -->
 	<!-- =================================================================================== -->
 	<footer class="landing-footer">
-		<div>TYPESET IN CORMORANT GARAMOND & JETBRAINS MONO. (C) 2026 SAMARA ENGINE.</div>
+		<div>TYPESET IN CORMORANT GARAMOND &amp; JETBRAINS MONO. (C) 2026 SAMARA ENGINE.</div>
 		<div class="footer-links">
 			<a href="https://github.com/sylvester1001/samara" target="_blank" rel="noreferrer">GitHub</a>
 			<a href="https://github.com/sylvester1001/samara/releases" target="_blank" rel="noreferrer">Releases</a>
@@ -1145,16 +1531,1161 @@
 		pointer-events: none;
 	}
 
-	/* FEATURES & SPECIFICATION (TACTICAL BLUEPRINT SLATE) */
-	.features-wrapper {
-		background-color: #07080d;
-		background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-		background-size: 24px 24px;
+	/* =================================================================================== */
+	/* § 02 SPECIFICATION (EXPOSED BLUEPRINT GRID × HUMANIST MONOGRAPH)                    */
+	/* =================================================================================== */
+	.spec-section {
+		background-color: #06070c;
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+		background-size: 48px 48px;
 		color: #ffffff;
-		padding: 7rem clamp(2.8rem, 5vw, 5.5rem);
-		border-top: 1px solid rgba(255, 255, 255, 0.15);
-		box-sizing: border-box;
 		position: relative;
+		box-sizing: border-box;
+		padding-bottom: 7rem;
+	}
+
+	/* 顶部机能过渡分界带 */
+	.spec-transition-ribbon {
+		background: #040509;
+		border-top: 1px solid rgba(255, 255, 255, 0.22);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+		padding: 0.65rem clamp(2.8rem, 5vw, 5.5rem);
+	}
+
+	.ribbon-inner {
+		max-width: 1600px;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.62rem;
+		letter-spacing: 0.18em;
+		color: rgba(255, 255, 255, 0.55);
+	}
+
+	.spec-container {
+		max-width: 1600px;
+		margin: 0 auto;
+		padding: 4.5rem clamp(2.8rem, 5vw, 5.5rem) 0;
+		box-sizing: border-box;
+	}
+
+	/* 暴露式工程蓝图主框架 */
+	.blueprint-frame {
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		background: rgba(9, 11, 18, 0.88);
+		backdrop-filter: blur(6px);
+		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+	}
+
+	/* ----------------------------------------------------------------------------------- */
+	/* MONUMENTAL HEADER                                                                   */
+	/* ----------------------------------------------------------------------------------- */
+	.blueprint-header {
+		display: grid;
+		grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+	}
+
+	.bp-header-left {
+		padding: clamp(2.5rem, 4vw, 4rem);
+		border-right: 1px solid rgba(255, 255, 255, 0.18);
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.bp-tag-row {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.bp-section-badge {
+		background: #0202f1;
+		color: #ffffff;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		padding: 0.28rem 0.65rem;
+		border: 1px solid rgba(255, 255, 255, 0.35);
+	}
+
+	.bp-doc-code {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.65rem;
+		letter-spacing: 0.18em;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.bp-main-title {
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: clamp(3.4rem, 2.6rem + 2.2vw, 5.2rem);
+		font-weight: 300;
+		line-height: 0.98;
+		letter-spacing: -0.015em;
+		margin: 0;
+		color: #ffffff;
+	}
+
+	.bp-title-italic {
+		font-style: italic;
+		font-weight: 300;
+		color: rgba(255, 255, 255, 0.88);
+	}
+
+	.bp-header-right {
+		padding: clamp(2.5rem, 4vw, 4rem);
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		background: rgba(255, 255, 255, 0.015);
+	}
+
+	.bp-abstract-label {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.64rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		color: #ff4d00;
+		margin-bottom: 1rem;
+	}
+
+	.bp-abstract-copy {
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: clamp(1.25rem, 1.05rem + 0.5vw, 1.55rem);
+		line-height: 1.48;
+		font-weight: 400;
+		color: rgba(255, 255, 255, 0.88);
+		margin: 0 0 2rem 0;
+	}
+
+	.bp-header-metrics {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		border-top: 1px solid rgba(255, 255, 255, 0.15);
+		padding-top: 1.4rem;
+		gap: 1rem;
+	}
+
+	.bp-metric-cell {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.bp-metric-val {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 1.35rem;
+		font-weight: 700;
+		color: #ffffff;
+		letter-spacing: 0.04em;
+	}
+
+	.bp-metric-val small {
+		font-size: 0.7rem;
+		opacity: 0.65;
+		margin-left: 2px;
+	}
+
+	.bp-metric-lbl {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.56rem;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	/* ----------------------------------------------------------------------------------- */
+	/* BLUEPRINT MODULE GRID (SPINE + NARRATIVE + STAGE)                                   */
+	/* ----------------------------------------------------------------------------------- */
+	.bp-module {
+		display: grid;
+		grid-template-columns: 52px minmax(310px, 0.82fr) minmax(0, 1.45fr);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+	}
+
+	.bp-module-last {
+		border-bottom: none;
+	}
+
+	/* 左侧竖排机能导轨 */
+	.bp-spine {
+		border-right: 1px solid rgba(255, 255, 255, 0.15);
+		background: rgba(2, 2, 241, 0.08);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 2rem 0;
+		gap: 1rem;
+		user-select: none;
+	}
+
+	.spine-code {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.68rem;
+		font-weight: 700;
+		color: #ffffff;
+		background: #0202f1;
+		padding: 0.25rem 0.35rem;
+		letter-spacing: 0.06em;
+	}
+
+	.spine-line {
+		width: 1px;
+		height: 36px;
+		background: rgba(255, 255, 255, 0.25);
+	}
+
+	.spine-text {
+		writing-mode: vertical-rl;
+		text-orientation: mixed;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		letter-spacing: 0.22em;
+		color: rgba(255, 255, 255, 0.48);
+		text-transform: uppercase;
+	}
+
+	/* 中栏：人文叙述与规格账本 */
+	.bp-narrative {
+		padding: clamp(2.2rem, 3.5vw, 3.5rem);
+		border-right: 1px solid rgba(255, 255, 255, 0.15);
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.module-kicker {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		margin-bottom: 1.2rem;
+	}
+
+	.kicker-index {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		color: #ff4d00;
+	}
+
+	.kicker-pill {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		letter-spacing: 0.14em;
+		padding: 0.18rem 0.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	.module-title {
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: clamp(2.4rem, 1.9rem + 1.1vw, 3.3rem);
+		font-weight: 300;
+		line-height: 1.04;
+		letter-spacing: -0.01em;
+		color: #ffffff;
+		margin: 0 0 1.25rem 0;
+	}
+
+	.module-title-italic {
+		font-style: italic;
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	.module-lead {
+		font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-size: 0.9rem;
+		line-height: 1.68;
+		color: rgba(255, 255, 255, 0.68);
+		margin: 0 0 2rem 0;
+	}
+
+	.spec-ledger {
+		border-top: 1px solid rgba(255, 255, 255, 0.15);
+		display: flex;
+		flex-direction: column;
+		margin-top: auto;
+	}
+
+	.ledger-row {
+		display: flex;
+		flex-direction: column;
+		gap: 0.22rem;
+		padding: 0.75rem 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.ledger-key {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.ledger-val {
+		font-family: 'Inter', -apple-system, sans-serif;
+		font-size: 0.8rem;
+		color: rgba(255, 255, 255, 0.58);
+		line-height: 1.45;
+	}
+
+	.ledger-val code {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		color: #93c5fd;
+		background: rgba(2, 2, 241, 0.22);
+		padding: 0.08rem 0.3rem;
+	}
+
+	/* 右栏舞台容器 */
+	.bp-stage {
+		padding: clamp(2rem, 3vw, 3.2rem);
+		background: rgba(4, 5, 10, 0.65);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 0;
+	}
+
+	/* ----------------------------------------------------------------------------------- */
+	/* STAGE 01: TACTICAL CHAMBER + WARM ACADEMIC PAPER SPECIMEN                           */
+	/* ----------------------------------------------------------------------------------- */
+	.tactical-chamber {
+		width: 100%;
+		border: 1px solid rgba(255, 255, 255, 0.24);
+		background: #0b0d15;
+		position: relative;
+		padding: 1.25rem;
+		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+	}
+
+	.chamber-corner {
+		position: absolute;
+		width: 9px;
+		height: 9px;
+		pointer-events: none;
+	}
+
+	.chamber-corner.tl { top: -3px; left: -3px; border-top: 2px solid #ffffff; border-left: 2px solid #ffffff; }
+	.chamber-corner.tr { top: -3px; right: -3px; border-top: 2px solid #ffffff; border-right: 2px solid #ffffff; }
+	.chamber-corner.bl { bottom: -3px; left: -3px; border-bottom: 2px solid #ffffff; border-left: 2px solid #ffffff; }
+	.chamber-corner.br { bottom: -3px; right: -3px; border-bottom: 2px solid #ffffff; border-right: 2px solid #ffffff; }
+
+	.chamber-topbar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		padding-bottom: 0.85rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+		margin-bottom: 0.75rem;
+	}
+
+	.chamber-status {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.62rem;
+		letter-spacing: 0.15em;
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	.signal-dot {
+		width: 6px;
+		height: 6px;
+		background: #ff4d00;
+		display: inline-block;
+	}
+
+	.palette-switcher {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		flex-wrap: wrap;
+	}
+
+	.switcher-label {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.45);
+		margin-right: 0.2rem;
+	}
+
+	.palette-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		color: rgba(255, 255, 255, 0.7);
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		letter-spacing: 0.1em;
+		padding: 0.25rem 0.55rem;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.palette-chip:hover {
+		border-color: rgba(255, 255, 255, 0.5);
+		color: #ffffff;
+	}
+
+	.palette-chip.active {
+		background: #ffffff;
+		color: #06070c;
+		border-color: #ffffff;
+		font-weight: 700;
+	}
+
+	.chip-swatch {
+		width: 8px;
+		height: 8px;
+		display: inline-block;
+	}
+
+	/* 游标卡尺条 */
+	.cad-caliper-strip {
+		display: grid;
+		grid-template-columns: 1.5fr 0.8fr 1fr 1fr 1.1fr;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.54rem;
+		letter-spacing: 0.08em;
+		color: rgba(255, 255, 255, 0.48);
+		padding: 0.25rem 0.4rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		margin-bottom: 0.75rem;
+	}
+
+	.caliper-col {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* 暖白学术出版纸张切面 (Scheme A 核心质感) */
+	.paper-sheet {
+		background: #faf8f3;
+		color: #111318;
+		padding: clamp(1.4rem, 2.2vw, 2.2rem);
+		border: 1px solid #d6d1c4;
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.6),
+			0 10px 30px rgba(0, 0, 0, 0.35);
+	}
+
+	.paper-caption {
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: 0.98rem;
+		line-height: 1.45;
+		color: #1e2028;
+		margin-bottom: 1rem;
+	}
+
+	.caption-bold {
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		margin-right: 0.3rem;
+	}
+
+	.caption-highlight {
+		background: var(--row-tint);
+		padding: 0 0.3rem;
+		color: var(--badge-ink);
+	}
+
+	.paper-table-wrap {
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	.monograph-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: 0.96rem;
+		color: #111318;
+	}
+
+	.monograph-table th {
+		font-weight: 600;
+		padding: 0.5rem 0.65rem;
+		color: #0b0d13;
+		letter-spacing: 0.01em;
+	}
+
+	.monograph-table td {
+		padding: 0.52rem 0.65rem;
+		color: #1e2430;
+	}
+
+	.m-toprule th {
+		border-top: 2px solid #0b0d13;
+	}
+
+	.m-span-head {
+		border-bottom: 1px solid #222630;
+	}
+
+	.m-cmidrule th {
+		border-bottom: 1.2px solid #0b0d13;
+	}
+
+	.monograph-table tbody tr:last-child td {
+		border-bottom: 2px solid #0b0d13;
+	}
+
+	.m-left { text-align: left; }
+	.m-center { text-align: center; }
+	.m-right { text-align: right; }
+
+	.m-model {
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: 1rem;
+	}
+
+	.m-mono {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.76rem;
+		letter-spacing: -0.01em;
+	}
+
+	.m-bold {
+		font-weight: 700 !important;
+		color: #05070b !important;
+	}
+
+	.m-row-tinted td {
+		background-color: var(--row-tint);
+		transition: background-color 0.2s ease;
+	}
+
+	.cell-peak-shaded {
+		background-color: var(--cell-peak) !important;
+		transition: background-color 0.2s ease;
+	}
+
+	.cell-sub-shaded {
+		background-color: var(--cell-sub) !important;
+		transition: background-color 0.2s ease;
+	}
+
+	.sota-pill {
+		display: inline-block;
+		margin-left: 0.4rem;
+		padding: 0.08rem 0.35rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.55rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		background: var(--accent-ink);
+		color: #ffffff;
+		vertical-align: middle;
+	}
+
+	.paper-annotations {
+		margin-top: 1.1rem;
+		padding-top: 0.75rem;
+		border-top: 1px dashed #c8c2b4;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.annot-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		letter-spacing: 0.08em;
+		color: #3f4454;
+		background: #efece3;
+		border: 1px solid #d5cfc0;
+		padding: 0.2rem 0.5rem;
+	}
+
+	.annot-chip.active {
+		color: #0b0d13;
+		font-weight: 600;
+		border-color: #aba391;
+	}
+
+	.annot-dot {
+		width: 5px;
+		height: 5px;
+		background: #0b0d13;
+		border-radius: 50%;
+	}
+
+	.annot-swatch {
+		width: 9px;
+		height: 9px;
+		border: 1px solid rgba(0, 0, 0, 0.25);
+	}
+
+	.chamber-Bottombar {
+		margin-top: 0.75rem;
+		padding-top: 0.65rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.status-ok {
+		color: #38bdf8;
+		font-weight: 700;
+	}
+
+	/* ----------------------------------------------------------------------------------- */
+	/* STAGE 02: DUAL-STREAM OUTPUT MANIFOLD                                               */
+	/* ----------------------------------------------------------------------------------- */
+	.manifold-grid {
+		width: 100%;
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.1fr);
+		gap: 1rem;
+		align-items: stretch;
+	}
+
+	.manifold-bay {
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		background: #0b0d15;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 1.15rem;
+		min-width: 0;
+	}
+
+	.bay-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+		margin-bottom: 0.9rem;
+	}
+
+	.bay-title-group {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.bay-id {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.56rem;
+		font-weight: 700;
+		background: #0202f1;
+		color: #ffffff;
+		padding: 0.15rem 0.4rem;
+		letter-spacing: 0.1em;
+	}
+
+	.bay-name {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.62rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		color: #ffffff;
+	}
+
+	.bay-badge {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.54rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		padding: 0.18rem 0.45rem;
+		border: 1px solid rgba(56, 189, 248, 0.45);
+		color: #38bdf8;
+	}
+
+	.bay-badge.orange {
+		border-color: rgba(255, 77, 0, 0.55);
+		color: #ff6a2b;
+	}
+
+	.bay-code-viewport {
+		background: #06080e;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 0.95rem;
+		overflow-x: auto;
+		flex: 1;
+		display: flex;
+		align-items: center;
+	}
+
+	.bay-code-viewport pre {
+		margin: 0;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.66rem;
+		line-height: 1.62;
+		color: #cbd5e1;
+	}
+
+	.c-dim { color: #64748b; font-style: italic; }
+	.c-kw { color: #93c5fd; font-weight: 600; }
+	.c-macro { color: #38bdf8; font-weight: 700; }
+	.c-hl {
+		color: #fbbf24;
+		background: rgba(251, 191, 36, 0.1);
+		padding: 0 0.2rem;
+	}
+	.c-row-active {
+		display: inline-block;
+		background: rgba(2, 2, 241, 0.28);
+		color: #ffffff;
+		border-left: 2px solid #38bdf8;
+		padding-left: 0.35rem;
+	}
+
+	.manifold-conduit {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.conduit-rail {
+		width: 1px;
+		flex: 1;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.1));
+	}
+
+	.conduit-node {
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		background: #0202f1;
+		padding: 0.45rem 0.5rem;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+
+	.node-eq {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.node-lbl {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.46rem;
+		letter-spacing: 0.16em;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	/* 光学图层与多格式矩阵 */
+	.graphics-specimen-well {
+		background-color: #080a10;
+		background-image:
+			linear-gradient(45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+			linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 25%, transparent 25%),
+			linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.04) 75%),
+			linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.04) 75%);
+		background-size: 16px 16px;
+		background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		padding: 0.85rem;
+		margin-bottom: 0.85rem;
+	}
+
+	.checkerboard-label {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.52rem;
+		letter-spacing: 0.15em;
+		color: rgba(255, 255, 255, 0.45);
+		margin-bottom: 0.55rem;
+	}
+
+	.rendered-image-card {
+		background: #faf8f3;
+		color: #111318;
+		padding: 0.7rem 0.85rem;
+		position: relative;
+		border: 1px solid #38bdf8;
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.65rem;
+	}
+
+	.vec-node {
+		position: absolute;
+		width: 6px;
+		height: 6px;
+		background: #ffffff;
+		border: 1.5px solid #0202f1;
+	}
+	.vec-node.tl { top: -4px; left: -4px; }
+	.vec-node.tr { top: -4px; right: -4px; }
+	.vec-node.bl { bottom: -4px; left: -4px; }
+	.vec-node.br { bottom: -4px; right: -4px; }
+
+	.img-mini-rule.thick { height: 1.5px; background: #111318; margin: 0.2rem 0; }
+	.img-mini-rule.thin { height: 1px; background: #4b5563; margin: 0.2rem 0; }
+
+	.img-mini-row {
+		display: grid;
+		grid-template-columns: 1.5fr 0.8fr 0.8fr 0.8fr;
+		padding: 0.22rem 0.25rem;
+		align-items: center;
+	}
+
+	.img-mini-row.head {
+		font-weight: 700;
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: 0.78rem;
+	}
+
+	.img-mini-row.tinted {
+		background: var(--row-tint);
+	}
+
+	.peak-box {
+		background: var(--cell-peak);
+		padding: 0.05rem 0.2rem;
+	}
+
+	.format-matrix {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.55rem;
+	}
+
+	.format-slot {
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		background: rgba(255, 255, 255, 0.025);
+		padding: 0.65rem 0.75rem;
+		transition: border-color 0.15s, background 0.15s;
+	}
+
+	.format-slot:hover {
+		border-color: rgba(255, 255, 255, 0.45);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.slot-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.3rem;
+	}
+
+	.slot-ext {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.78rem;
+		font-weight: 700;
+		color: #ffffff;
+	}
+
+	.slot-tag {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.52rem;
+		letter-spacing: 0.12em;
+		color: #38bdf8;
+		font-weight: 600;
+	}
+
+	.slot-desc {
+		font-family: 'Inter', -apple-system, sans-serif;
+		font-size: 0.7rem;
+		line-height: 1.38;
+		color: rgba(255, 255, 255, 0.58);
+	}
+
+	.bay-footer {
+		margin-top: 0.85rem;
+		padding-top: 0.65rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.55rem;
+		letter-spacing: 0.12em;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	/* ----------------------------------------------------------------------------------- */
+	/* STAGE 03: UNIVERSAL INGESTION & AST REVERSE-PARSER                                  */
+	/* ----------------------------------------------------------------------------------- */
+	.ingest-architecture {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.ingest-ports-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.85rem;
+	}
+
+	.ingest-port-card {
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		background: #0b0d15;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.ingest-port-card.port-featured {
+		border-color: rgba(56, 189, 248, 0.5);
+		background: linear-gradient(180deg, rgba(2, 2, 241, 0.16) 0%, #0b0d15 100%);
+	}
+
+	.port-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.55rem;
+	}
+
+	.port-num {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		font-weight: 700;
+		padding: 0.12rem 0.4rem;
+		background: rgba(255, 255, 255, 0.12);
+		color: #ffffff;
+		letter-spacing: 0.1em;
+	}
+
+	.port-featured .port-num {
+		background: #ff4d00;
+	}
+
+	.port-type {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.52rem;
+		letter-spacing: 0.12em;
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.port-title {
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: 1.35rem;
+		font-weight: 500;
+		color: #ffffff;
+		margin-bottom: 0.7rem;
+	}
+
+	.port-sample-box {
+		background: #06080e;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 0.65rem;
+		margin-bottom: 0.75rem;
+		min-height: 76px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.code-sample {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		line-height: 1.55;
+		color: #94a3b8;
+		overflow-x: auto;
+	}
+
+	.code-sample code {
+		display: block;
+		white-space: nowrap;
+	}
+
+	.excel-mock {
+		display: flex;
+		flex-direction: column;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+	}
+
+	.ex-row {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr 1fr;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.ex-row:last-child {
+		border-bottom: none;
+	}
+
+	.ex-row span {
+		padding: 0.15rem 0.35rem;
+		border-right: 1px solid rgba(255, 255, 255, 0.08);
+		color: #cbd5e1;
+	}
+
+	.ex-row.ex-head {
+		background: rgba(255, 255, 255, 0.06);
+		color: rgba(255, 255, 255, 0.45);
+		font-size: 0.52rem;
+		text-align: center;
+	}
+
+	.ex-row.ex-sel {
+		background: rgba(16, 185, 129, 0.18);
+		outline: 1px dashed #34d399;
+	}
+
+	.port-foot {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.52rem;
+		letter-spacing: 0.12em;
+		color: rgba(255, 255, 255, 0.48);
+	}
+
+	/* 中央总线解码条 */
+	.ingest-bus-bar {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.bus-line {
+		flex: 1;
+		height: 1px;
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.bus-processor {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		padding: 0.4rem 0.9rem;
+		background: #0202f1;
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		color: #ffffff;
+	}
+
+	.proc-dot {
+		width: 6px;
+		height: 6px;
+		background: #ffffff;
+		border-radius: 50%;
+	}
+
+	.proc-arrow {
+		font-size: 0.8rem;
+	}
+
+	/* 底部还原工作台 */
+	.ingest-output-deck {
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		background: #0b0d15;
+		padding: 1.1rem;
+	}
+
+	.deck-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.58rem;
+		letter-spacing: 0.14em;
+		color: rgba(255, 255, 255, 0.55);
+		margin-bottom: 0.75rem;
+	}
+
+	.deck-ready {
+		color: #34d399;
+		font-weight: 700;
+	}
+
+	.reconstructed-grid-preview {
+		display: grid;
+		grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		background: #faf8f3;
+		color: #111318;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+	}
+
+	.rg-cell {
+		padding: 0.55rem 0.75rem;
+		border-right: 1px solid #d5cfc0;
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.rg-cell.text-center { justify-content: center; }
+	.rg-cell.text-right { justify-content: flex-end; border-right: none; }
+
+	.rg-head {
+		background: #efece3;
+		border-bottom: 1.5px solid #111318;
+		font-weight: 700;
+		font-size: 0.65rem;
+		color: #1e2430;
+	}
+
+	.rg-active {
+		background: #e6ecff;
+	}
+
+	.rg-handle {
+		color: #0202f1;
+		font-weight: 700;
+	}
+
+	.rg-val-highlight {
+		background: #c7d6ff;
+		padding: 0.1rem 0.4rem;
+		font-weight: 700;
+		color: #0202f1;
+	}
+
+	.rg-tag {
+		font-size: 0.54rem;
+		letter-spacing: 0.08em;
+		background: #0202f1;
+		color: #ffffff;
+		padding: 0.18rem 0.45rem;
+		font-weight: 700;
+	}
+
+	/* =================================================================================== */
+	/* § 03 PLATFORMS (TACTICAL DEPLOYMENT DOCK)                                           */
+	/* =================================================================================== */
+	.platforms-wrapper {
+		background: #0202f1;
+		color: #ffffff;
+		padding: 6.5rem clamp(2.8rem, 5vw, 5.5rem);
+		border-top: 1px solid rgba(255, 255, 255, 0.25);
+		box-sizing: border-box;
 	}
 
 	.section-container {
@@ -1163,721 +2694,188 @@
 		width: 100%;
 	}
 
-	.features-header {
+	.deploy-frame {
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		background: rgba(0, 0, 0, 0.22);
+	}
+
+	.deploy-header {
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-		padding-bottom: 1.5rem;
-		margin-bottom: 1rem;
-	}
-
-	.features-title-row {
-		display: flex;
-		align-items: baseline;
-		gap: 1.2rem;
-	}
-
-	.features-title {
-		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
-		font-size: clamp(3.8rem, 2.8rem + 2vw, 5.2rem);
-		line-height: 0.95;
-		font-weight: 300;
-		text-transform: uppercase;
-		letter-spacing: 0.01em;
-		margin: 0;
-		color: #ffffff;
-	}
-
-	.features-sub-tag {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 1.2rem;
-		color: #38bdf8;
-		font-weight: 600;
-		letter-spacing: 0.1em;
-	}
-
-	.features-meta {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-		letter-spacing: 0.18em;
-		color: rgba(255, 255, 255, 0.5);
-		text-transform: uppercase;
-	}
-
-	/* SPECIMEN TRACKS (开放式大通栏) */
-	.specimen-tracks {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.specimen-track {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-		gap: clamp(2.5rem, 5vw, 5.5rem);
-		padding: clamp(4rem, 6vw, 6rem) 0;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		align-items: center;
-		box-sizing: border-box;
-	}
-
-	.specimen-track:last-child {
-		border-bottom: none;
-	}
-
-	.track-info {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.track-index {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.18em;
-		color: #38bdf8;
-		text-transform: uppercase;
-		margin-bottom: 1rem;
-	}
-
-	.track-heading {
-		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
-		font-size: clamp(2.6rem, 2rem + 1.2vw, 3.5rem);
-		font-weight: 300;
-		line-height: 1.05;
-		letter-spacing: -0.015em;
-		color: #ffffff;
-		margin: 0 0 1.4rem 0;
-	}
-
-	.track-desc {
-		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-		font-size: 0.92rem;
-		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.7);
-		margin: 0 0 1.8rem 0;
-		max-width: 480px;
-	}
-
-	.track-telemetry {
-		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem;
+		gap: 2rem;
+		padding: clamp(2.2rem, 3.5vw, 3.5rem);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 	}
 
-	.telemetry-pill {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.62rem;
-		font-weight: 600;
-		letter-spacing: 0.12em;
-		padding: 0.3rem 0.65rem;
-		border: 1px solid rgba(255, 255, 255, 0.18);
-		background: rgba(255, 255, 255, 0.05);
-		color: #cbd5e1;
-		text-transform: uppercase;
-	}
-
-	/* TACTICAL STAGES */
-	.track-stage {
-		width: 100%;
-		display: flex;
-	}
-
-	.stage-frame {
-		width: 100%;
-		background: #0d0f18;
-		border: 1px solid rgba(255, 255, 255, 0.18);
-		padding: 2.2rem;
-		position: relative;
-		box-sizing: border-box;
-		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
-	}
-
-	/* 四角机能切角十字标 (HUD Crosshairs) */
-	.hud-crosshair {
-		position: absolute;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.75rem;
-		color: #38bdf8;
-		pointer-events: none;
-		line-height: 1;
-		opacity: 0.8;
-	}
-
-	.hud-crosshair.top-l { top: 6px; left: 8px; }
-	.hud-crosshair.top-r { top: 6px; right: 8px; }
-	.hud-crosshair.btm-l { bottom: 6px; left: 8px; }
-	.hud-crosshair.btm-r { bottom: 6px; right: 8px; }
-
-	/* STAGE 1: 视觉微操工具栏与解剖表格 */
-	.stage-toolbar {
-		display: flex;
-		align-items: center;
-		gap: 0.8rem;
-		padding: 0.5rem 0.9rem;
-		background: #131724;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		margin-bottom: 1rem;
+	.deploy-sub {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.68rem;
-		letter-spacing: 0.05em;
-		color: #cbd5e1;
+		letter-spacing: 0.18em;
+		color: rgba(255, 255, 255, 0.72);
+		margin-bottom: 0.75rem;
 	}
 
-	.toolbar-item {
+	.deploy-title {
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: clamp(3rem, 2.4rem + 1.5vw, 4.2rem);
+		line-height: 1.02;
+		margin: 0;
+		font-weight: 300;
+	}
+
+	.deploy-specs-badge {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.4rem;
-	}
-
-	.toolbar-item.active {
-		color: #38bdf8;
-		font-weight: 600;
-	}
-
-	.swatch-dot {
-		width: 10px;
-		height: 10px;
-		border-radius: 2px;
-		background: #162038;
-		border: 1px solid #38bdf8;
-		display: inline-block;
-	}
-
-	.rule-sample {
-		width: 20px;
-		height: 2px;
-		background: #38bdf8;
-		display: inline-block;
-	}
-
-	.cmidrule-sample {
-		color: #38bdf8;
-		font-weight: 700;
-	}
-
-	.math-symbol {
-		font-weight: 700;
-		color: #38bdf8;
-		font-style: italic;
-	}
-
-	.toolbar-sep {
-		color: rgba(255, 255, 255, 0.2);
-	}
-
-	.toolbar-status {
-		margin-left: auto;
-		font-size: 0.58rem;
-		letter-spacing: 0.15em;
-		color: #38bdf8;
-		font-weight: 700;
-	}
-
-	/* 列宽刻度标尺 */
-	.caliper-ruler {
-		display: grid;
-		grid-template-columns: 140px 80px 80px 80px;
-		gap: 0;
-		border-bottom: 1px solid rgba(56, 189, 248, 0.35);
-		margin-bottom: 0.8rem;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.58rem;
-		color: #38bdf8;
-		background: rgba(56, 189, 248, 0.04);
-	}
-
-	.ruler-segment {
-		border-left: 1px solid rgba(56, 189, 248, 0.4);
-		padding: 3px 6px;
-	}
-
-	.ruler-segment:last-child {
-		border-right: 1px solid rgba(56, 189, 248, 0.4);
-	}
-
-	.table-specimen {
-		position: relative;
-		width: 100%;
-		padding-bottom: 2.2rem;
-	}
-
-	.academic-table {
-		width: 100%;
-		border-collapse: collapse;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.78rem;
-		color: #e2e8f0;
-	}
-
-	.academic-table th {
-		padding: 0.65rem 0.8rem;
-		font-weight: 600;
-		color: #ffffff;
-		letter-spacing: 0.04em;
-	}
-
-	.academic-table td {
-		padding: 0.65rem 0.8rem;
-		color: #cbd5e1;
-	}
-
-	.rule-top-border th {
-		border-top: 2px solid #ffffff;
-	}
-
-	.col-group {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-	}
-
-	.rule-cmid-row th {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.75);
-	}
-
-	.rule-bottom-border td {
-		border-bottom: 2px solid #ffffff;
-		padding: 0;
-		height: 2px;
-	}
-
-	.academic-table .highlighted-row td {
-		background: rgba(37, 99, 235, 0.22);
-		color: #93c5fd;
-	}
-
-	.math-header,
-	.math-cell {
-		color: #38bdf8;
-	}
-
-	.pin {
-		position: absolute;
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.58rem;
-		letter-spacing: 0.12em;
-		color: #38bdf8;
-		font-weight: 600;
-		pointer-events: none;
-	}
-
-	.pin-dot {
-		width: 5px;
-		height: 5px;
-		border-radius: 50%;
-		background: #38bdf8;
-	}
-
-	.pin-line {
-		width: 22px;
-		height: 1px;
-		background: #38bdf8;
-	}
-
-	.pin-tag {
-		background: #0f172a;
-		border: 1px solid #38bdf8;
-		padding: 0.15rem 0.4rem;
-	}
-
-	.pin-top-rule {
-		top: -0.2rem;
-		right: 0.5rem;
-	}
-
-	.pin-cmid {
-		top: 2rem;
-		right: 0.5rem;
-	}
-
-	.pin-highlight {
-		bottom: 0.2rem;
-		right: 0.5rem;
-	}
-
-	/* STAGE 2: 1:1 双生镜像 (Split Stage) */
-	.split-stage {
-		display: grid;
-		grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.35fr);
-		gap: 1.2rem;
-		align-items: stretch;
-	}
-
-	.split-col {
-		display: flex;
-		flex-direction: column;
-		background: #111420;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		padding: 1.2rem;
-	}
-
-	.split-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.6rem;
-		letter-spacing: 0.15em;
-		color: rgba(255, 255, 255, 0.65);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		padding-bottom: 0.6rem;
-		margin-bottom: 0.8rem;
-	}
-
-	.split-tag {
-		color: #38bdf8;
-		font-weight: 700;
-		font-size: 0.55rem;
-	}
-
-	.split-ruler-bar {
-		display: flex;
-		gap: 0;
-		border-bottom: 1px dashed rgba(56, 189, 248, 0.35);
-		padding-bottom: 2px;
-		margin-bottom: 8px;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.55rem;
-		color: #38bdf8;
-	}
-
-	.ruler-col-tag.w-130 {
-		width: 130px;
-		border-left: 1px solid rgba(56, 189, 248, 0.4);
-		padding-left: 3px;
-	}
-
-	.ruler-col-tag.w-70 {
-		width: 70px;
-		text-align: center;
-		border-left: 1px solid rgba(56, 189, 248, 0.4);
-	}
-
-	.ruler-col-tag.w-65 {
-		width: 65px;
-		text-align: right;
-		border-left: 1px solid rgba(56, 189, 248, 0.4);
-		border-right: 1px solid rgba(56, 189, 248, 0.4);
-		padding-right: 3px;
-	}
-
-	.table-mini {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		height: 100%;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.72rem;
-	}
-
-	.mini-rule.thick {
-		height: 2px;
-		background: #ffffff;
-		margin: 0.4rem 0;
-	}
-
-	.mini-rule.thin {
-		height: 1px;
-		background: rgba(255, 255, 255, 0.45);
-		margin: 0.4rem 0;
-	}
-
-	.mini-row {
-		display: flex;
-		padding: 0.35rem 0.4rem;
-		color: #cbd5e1;
-	}
-
-	.mini-row .w-130 { width: 130px; }
-	.mini-row .w-70 { width: 70px; }
-	.mini-row .w-65 { width: 65px; }
-
-	.mini-row.active {
-		background: rgba(37, 99, 235, 0.25);
-		color: #93c5fd;
-	}
-
-	.split-datum {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-	}
-
-	.datum-line {
-		width: 1px;
-		flex: 1;
-		background: rgba(56, 189, 248, 0.35);
-	}
-
-	.datum-badge {
+		gap: 0.65rem;
+		padding: 0.55rem 1rem;
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		background: rgba(0, 0, 0, 0.3);
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.62rem;
-		font-weight: 700;
-		color: #38bdf8;
-		background: #111420;
-		border: 1px solid #38bdf8;
-		padding: 0.3rem 0.6rem;
-		text-align: center;
-		white-space: nowrap;
-	}
-
-	.sub-datum {
-		font-size: 0.45rem;
-		letter-spacing: 0.18em;
-		opacity: 0.8;
-		display: block;
-	}
-
-	.code-body {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-		line-height: 1.55;
-		color: #cbd5e1;
-		overflow-x: auto;
-		background: #090b12;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		padding: 0.8rem;
-	}
-
-	.code-body pre {
-		margin: 0;
-	}
-
-	.code-comment {
-		color: #64748b;
-		font-style: italic;
-	}
-
-	.code-macro {
-		color: #38bdf8;
-		font-weight: 600;
-	}
-
-	.code-highlight {
-		background: rgba(37, 99, 235, 0.25);
-		color: #93c5fd;
-		font-weight: 600;
-		display: block;
-		padding: 0.1rem 0;
-	}
-
-	/* STAGE 3: 数据直通 (Ingest Stage) */
-	.ingest-stage {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.25fr);
-		gap: 1.2rem;
-		align-items: stretch;
-	}
-
-	.stream-inflow,
-	.stream-outflow {
-		background: #111420;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		padding: 1.2rem;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.stream-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.6rem;
-		letter-spacing: 0.15em;
-		color: rgba(255, 255, 255, 0.65);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		padding-bottom: 0.6rem;
-		margin-bottom: 0.8rem;
-	}
-
-	.stream-badge {
-		font-size: 0.55rem;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		color: rgba(255, 255, 255, 0.5);
-	}
-
-	.stream-badge.text-cyan {
-		color: #38bdf8;
-	}
-
-	.stream-code {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-		line-height: 1.9;
-		color: #94a3b8;
-		white-space: pre;
-	}
-
-	.stream-conduit {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.3rem;
-	}
-
-	.conduit-label {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.55rem;
-		letter-spacing: 0.15em;
-		color: #38bdf8;
-		font-weight: 700;
-	}
-
-	.conduit-arrow {
-		font-size: 1.2rem;
-		color: #38bdf8;
-		font-weight: 700;
-	}
-
-	.conduit-sub {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.5rem;
-		letter-spacing: 0.15em;
-		color: rgba(255, 255, 255, 0.4);
-	}
-
-	.stream-table {
-		display: flex;
-		flex-direction: column;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-	}
-
-	.out-rule.thick {
-		height: 2px;
-		background: #ffffff;
-		margin: 0.3rem 0;
-	}
-
-	.out-rule.thin {
-		height: 1px;
-		background: rgba(255, 255, 255, 0.45);
-		margin: 0.3rem 0;
-	}
-
-	.out-row {
-		display: grid;
-		grid-template-columns: 1.4fr 1fr 1fr;
-		padding: 0.25rem 0.3rem;
-		color: #cbd5e1;
-	}
-
-	.out-row.head {
-		font-weight: 700;
-		color: #ffffff;
-	}
-
-	.out-row.highlight {
-		background: rgba(37, 99, 235, 0.25);
-		color: #93c5fd;
-		font-weight: 600;
-	}
-
-	/* PLATFORMS */
-	.platforms-wrapper {
-		background: #0202f1;
-		color: #ffffff;
-		padding: 7rem clamp(2.8rem, 5vw, 5.5rem);
-		border-top: 1px solid rgba(255, 255, 255, 0.2);
-		box-sizing: border-box;
-	}
-
-	.platforms-center {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	.platforms-header {
-		text-align: center;
-		margin-bottom: 3.5rem;
-	}
-
-	.platforms-sub {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.68rem;
-		letter-spacing: 0.2em;
-		color: rgba(255, 255, 255, 0.7);
-		margin-bottom: 0.6rem;
-	}
-
-	.platforms-title {
-		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
-		font-size: 3.8rem;
-		margin: 0;
-		letter-spacing: 0.01em;
-		font-weight: 400;
+		letter-spacing: 0.14em;
 	}
 
 	.platforms-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: 1.8rem;
-		width: 100%;
-		max-width: 1100px;
 	}
 
 	.platform-card {
-		border: 1px solid rgba(255, 255, 255, 0.25);
-		background: rgba(0, 0, 0, 0.25);
-		padding: 2.5rem 1.8rem;
+		border-right: 1px solid rgba(255, 255, 255, 0.25);
+		padding: clamp(2rem, 3vw, 2.8rem);
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		text-align: center;
+		justify-content: space-between;
 		box-sizing: border-box;
-		transition: border-color 0.15s;
+		transition: background 0.15s;
+	}
+
+	.platform-card:last-child {
+		border-right: none;
 	}
 
 	.platform-card:hover {
-		border-color: #ffffff;
+		background: rgba(255, 255, 255, 0.05);
 	}
 
-	.platform-meta {
+	.plat-top-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.65rem;
+		font-size: 0.6rem;
 		letter-spacing: 0.15em;
-		color: rgba(255, 255, 255, 0.55);
-		text-transform: uppercase;
-		margin-bottom: 0.8rem;
+		color: rgba(255, 255, 255, 0.6);
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+		margin-bottom: 1.8rem;
+	}
+
+	.plat-arch {
+		color: #ffffff;
+		font-weight: 700;
+	}
+
+	.plat-icon-wrap {
+		margin-bottom: 1rem;
+		color: #ffffff;
 	}
 
 	.platform-name {
-		font-family: 'Cormorant Garamond', Garamond, 'Georgia', serif;
-		font-size: 2.6rem;
-		margin: 0 0 2rem 0;
+		font-family: 'Cormorant Garamond', Garamond, Georgia, serif;
+		font-size: 2.8rem;
+		margin: 0 0 0.75rem 0;
 		font-weight: 400;
 		letter-spacing: 0.01em;
 	}
 
+	.plat-desc {
+		font-family: 'Inter', -apple-system, sans-serif;
+		font-size: 0.85rem;
+		line-height: 1.55;
+		color: rgba(255, 255, 255, 0.72);
+		margin: 0 0 2.2rem 0;
+	}
+
 	.platform-download-btn {
 		width: 100%;
-		height: 44px;
+		height: 46px;
 		background: #ffffff;
 		color: #0202f1;
-		font-family: 'JetBrains Mono', 'Inter', 'Source Han Sans SC', sans-serif;
-		font-size: 0.75rem;
+		font-family: 'JetBrains Mono', 'Inter', sans-serif;
+		font-size: 0.74rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		text-decoration: none;
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		gap: 0.65rem;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-		transition: background 0.15s;
+		justify-content: space-between;
+		padding: 0 1.25rem;
+		box-sizing: border-box;
+		box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.35);
+		transition: background 0.15s, transform 0.1s;
 	}
 
 	.platform-download-btn:hover {
 		background: #f0f0ff;
+		transform: translateY(-1px);
+	}
+
+	.web-launch-banner {
+		border-top: 1px solid rgba(255, 255, 255, 0.25);
+		background: rgba(0, 0, 0, 0.35);
+		padding: 1.4rem clamp(2rem, 3vw, 2.8rem);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.web-banner-left {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.85rem;
+	}
+
+	.web-live-tag {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		background: #ff4d00;
+		color: #ffffff;
+		padding: 0.22rem 0.55rem;
+	}
+
+	.web-banner-text {
+		font-family: 'Inter', -apple-system, sans-serif;
+		font-size: 0.88rem;
+		color: rgba(255, 255, 255, 0.88);
+	}
+
+	.web-banner-btn {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #ffffff;
+		text-decoration: none;
+		border: 1px solid rgba(255, 255, 255, 0.5);
+		padding: 0.6rem 1.2rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		transition: background 0.15s;
+	}
+
+	.web-banner-btn:hover {
+		background: rgba(255, 255, 255, 0.15);
 	}
 
 	/* FOOTER */
@@ -1918,7 +2916,36 @@
 		font-weight: 700;
 	}
 
-	/* RESPONSIVE (仅在小屏单栏堆叠时触发，其余全程平滑线性缩放) */
+	/* RESPONSIVE */
+	@media (max-width: 1180px) {
+		.bp-module {
+			grid-template-columns: 44px 1fr;
+		}
+
+		.bp-spine {
+			grid-row: span 2;
+		}
+
+		.bp-narrative {
+			border-right: none;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+		}
+
+		.manifold-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.manifold-conduit {
+			flex-direction: row;
+			padding: 0.25rem 0;
+		}
+
+		.conduit-rail {
+			width: 100%;
+			height: 1px;
+		}
+	}
+
 	@media (max-width: 999px) {
 		.landing-nav {
 			padding: 0 2rem;
@@ -1950,37 +2977,43 @@
 			font-size: 3.6rem;
 		}
 
-		.features-wrapper,
+		.spec-container,
 		.platforms-wrapper,
-		.landing-footer {
-			padding-left: 2rem;
-			padding-right: 2rem;
+		.landing-footer,
+		.spec-transition-ribbon {
+			padding-left: 1.5rem;
+			padding-right: 1.5rem;
 		}
 
-		.specimen-track {
-			grid-template-columns: 1fr;
-			gap: 2rem;
-			padding: 3rem 0;
-		}
-
-		.split-stage,
-		.ingest-stage {
+		.blueprint-header {
 			grid-template-columns: 1fr;
 		}
 
-		.split-datum,
-		.stream-conduit {
-			flex-direction: row;
-			margin: 0.5rem 0;
+		.bp-header-left {
+			border-right: none;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 		}
 
-		.datum-line {
-			width: 100%;
-			height: 1px;
+		.bp-module {
+			grid-template-columns: 1fr;
 		}
 
+		.bp-spine {
+			display: none;
+		}
+
+		.ingest-ports-grid,
 		.platforms-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.platform-card {
+			border-right: none;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+		}
+
+		.reconstructed-grid-preview {
+			grid-template-columns: 1fr 1fr;
 		}
 
 		.hide-mobile {
