@@ -196,7 +196,6 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 			<a href="/" class="brand-badge">
 				<span class="brand-square"></span>
 				<span class="brand-name">SAMARA</span>
-				<span class="brand-version">// v1.2.0</span>
 			</a>
 
 			<nav class="nav-links">
@@ -263,7 +262,7 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 					<span class="colophon-divider" aria-hidden="true">/</span>
 					<div class="colophon-item">
 						<span class="c-roman">ii.</span>
-						<span class="c-label">VECTOR .SVG &amp; 600 DPI RASTER</span>
+						<span class="c-label">VECTOR .SVG &amp; HIGH-DPI RASTER</span>
 					</div>
 					<span class="colophon-divider" aria-hidden="true">/</span>
 					<div class="colophon-item">
@@ -433,9 +432,9 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 		<!-- 顶部过渡机能警戒分界带 -->
 		<div class="spec-transition-ribbon">
 			<div class="ribbon-inner">
-				<span>⌜ SECTION 02 // ARCHITECTURAL SPECIFICATION MONOGRAPH</span>
+				<span>SECTION 02 // ARCHITECTURAL SPECIFICATION MONOGRAPH</span>
 				<span class="hide-mobile">GRID SYSTEM: EXPOSED 1PX // COLORIMETRY: FULL-SPECTRUM</span>
-				<span>TOLERANCE: ±0.00PT ⌝</span>
+				<span>TOLERANCE: ±0.00PT</span>
 			</div>
 		</div>
 
@@ -468,7 +467,7 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 								<span class="bp-metric-lbl">CANVAS-TO-CODE PARITY</span>
 							</div>
 							<div class="bp-metric-cell">
-								<span class="bp-metric-val">600<small>DPI</small></span>
+								<span class="bp-metric-val">HIGH<small>DPI</small></span>
 								<span class="bp-metric-lbl">VECTOR &amp; RASTER EXPORT</span>
 							</div>
 							<div class="bp-metric-cell">
@@ -693,7 +692,7 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">STREAM C // RETINA .PNG / .JPG</span>
-								<span class="ledger-val">Up to 600 DPI export with transparent or paper-white canvas.</span>
+								<span class="ledger-val">High-DPI raster export with transparent or paper-white canvas.</span>
 							</div>
 							<div class="ledger-row">
 								<span class="ledger-key">STREAM D // CLIPBOARD BUS</span>
@@ -720,7 +719,7 @@ ViT-Large / 14 & $\\mathcal{O}(N\\log N)$ & \\textit{83.12\\%} & 64.95\\% & $0.5
 
 								<div class="export-pill-bar">
 									<span class="exp-pill"><b>.SVG</b> VECTOR</span>
-									<span class="exp-pill"><b>.PNG</b> 600 DPI</span>
+									<span class="exp-pill"><b>.PNG</b> HIGH-DPI</span>
 									<span class="exp-pill"><b>.JPG</b> PRINT</span>
 									<span class="exp-pill accent"><b>CLIPBOARD</b> COPY</span>
 								</div>
@@ -1153,7 +1152,7 @@ ViT-Large / 14 &amp; $\mathcal&#123;O&#125;(N\log N)$ &amp; \textit&#123;83.12\%
 	<!-- FOOTER                                                                              -->
 	<!-- =================================================================================== -->
 	<footer class="landing-footer">
-		<div>TYPESET IN CORMORANT GARAMOND &amp; JETBRAINS MONO. (C) 2026 SAMARA ENGINE.</div>
+		<div>© 2026 SAMARA ENGINE. PRECISION ACADEMIC TYPESETTING.</div>
 		<div class="footer-links">
 			<a href="https://github.com/sylvester1001/samara" target="_blank" rel="noreferrer">GitHub</a>
 			<a href="https://github.com/sylvester1001/samara/releases" target="_blank" rel="noreferrer">Releases</a>
